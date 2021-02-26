@@ -1,14 +1,10 @@
 {
   "hosting": [
     {
-      "target": "cubepb-65c9e-staging",
+      "target": "cubepb-65c9e-alpha-client",
       "public": "dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
-    },
-    {
-      "target": "cubepb-65c9e",
-      "public": "dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "trailingSlash": false
     }
   ]
 }
