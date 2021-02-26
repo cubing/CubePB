@@ -1,7 +1,7 @@
 {
   "name": "functions",
   "scripts": {
-    "lint": "eslint --ext .js,.ts .",
+    "lint": "eslint --ext .ts",
     "build": "tsc",
     "serve": "set DEV=1 && tsc && firebase emulators:start --only functions",
     "db:sync": "set DEV=1 && ts-node src/scripts/syncDatabase.ts",
