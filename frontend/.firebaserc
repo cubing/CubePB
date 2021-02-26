@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "cubepb-65c9e"
+  },
+  "targets": {
+    "cubepb-65c9e": {
+      "hosting": {
+        "cubepb-65c9e-staging": [
+          "cubepb-65c9e-staging"
+        ]
+      }
+    }
+  }
+}
