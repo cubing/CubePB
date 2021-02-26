@@ -1,6 +1,7 @@
 import { getEvents, getProducts, getPersonalBestClasses } from '../dropdown'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
+import EditPersonalBestDialog from '~/components/dialog/personalBest/editPersonalBestDialog.vue'
 
 export default <RecordInfo<'personalBest'>>{
   type: 'personalBest',
@@ -57,6 +58,7 @@ export default <RecordInfo<'personalBest'>>{
       getOptions: getProducts,
       type: 'product',
       inputType: 'server-combobox',
+      optional: true,
     },
     'product.name': {
       text: 'Cube',
@@ -65,42 +67,42 @@ export default <RecordInfo<'personalBest'>>{
       text: 'Time',
       inputRules: [
         (value) => {
-          const regEx = /^(\d+:)?\d{1,2}\.\d{2,3}$/
+          const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
           return (
-            regEx.test(value) || 'Invalid Time Format, must be like 1234:56.789'
+            regEx.test(value) || 'Invalid Time Format, must be like 1234:56.78'
           )
         },
       ],
       serialize: (value) => {
-        let totalMs = Number(value)
+        let totalCs = Number(value) / 10
 
-        const minutes = Math.floor(totalMs / (60 * 1000))
+        const minutes = Math.floor(totalCs / (60 * 100))
 
-        totalMs -= minutes * 60 * 1000
+        totalCs -= minutes * 60 * 100
 
-        const seconds = Math.floor(totalMs / 1000)
+        const seconds = Math.floor(totalCs / 100)
 
-        totalMs -= seconds * 1000
+        totalCs -= seconds * 100
 
-        const ms = totalMs
+        const cs = totalCs
 
         return (
           (minutes ? minutes + ':' : '') +
           (minutes ? String(seconds).padStart(2, '0') : seconds) +
           '.' +
-          ms
+          String(cs).substring(0, 2)
         )
       },
       parseValue: (value) => {
         if (typeof value !== 'string') throw new Error('Invalid value')
-        const regEx = /^(\d+:)?\d{1,2}\.\d{2,3}$/
+        const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
         if (!regEx.test(value)) throw new Error('Invalid value')
 
-        // convert string to number of ms.
+        // convert string to number of cs.
         const parts = value.split('.')
         let seconds = 0
 
-        seconds += Number(parts[parts.length - 1]) / 1000
+        seconds += Number(parts[parts.length - 1]) / 100
 
         const firstParts = parts[0].split(':')
 
@@ -109,7 +111,8 @@ export default <RecordInfo<'personalBest'>>{
         } else {
           seconds += Number(firstParts[0])
         }
-        return seconds * 1000
+        // round to tens
+        return (1000 * Math.floor(seconds * 100)) / 100
       },
     },
     attempts_succeeded: {
@@ -123,11 +126,6 @@ export default <RecordInfo<'personalBest'>>{
     happened_on: {
       text: 'Date Happened',
       inputType: 'datepicker',
-    },
-    show_ms: {
-      text: 'Show ms?',
-      inputType: 'switch',
-      default: () => false,
     },
     created_at: {
       text: 'Created At',
@@ -144,39 +142,27 @@ export default <RecordInfo<'personalBest'>>{
       'pb_class.id',
       'set_size',
       'time_elapsed',
-      'show_ms',
       'happened_on',
       'attempts_succeeded',
       'attempts_total',
       'product.id',
     ],
+    component: EditPersonalBestDialog,
   },
-  editOptions: {
-    fields: [
-      'event.id',
-      'pb_class.id',
-      'set_size',
-      'time_elapsed',
-      'show_ms',
-      'happened_on',
-      'attempts_succeeded',
-      'attempts_total',
-      'product.id',
-    ],
-  },
+  editOptions: undefined,
   viewOptions: {
     fields: [
       'event.id',
       'pb_class.id',
       'set_size',
       'time_elapsed',
-      'show_ms',
       'happened_on',
       'attempts_succeeded',
       'attempts_total',
       'product.id',
       'score',
     ],
+    component: EditPersonalBestDialog,
   },
   deleteOptions: {},
   shareOptions: {

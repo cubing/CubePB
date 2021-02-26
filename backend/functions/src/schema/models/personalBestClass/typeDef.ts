@@ -8,6 +8,7 @@ import {
   generateStringField,
   generateTypenameField,
   generateTextField,
+  generateIntegerField,
 } from "../../helpers/typeDef";
 
 export default new JomqlObjectType(<ObjectTypeDefinition>{
@@ -18,6 +19,10 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     ...generateTypenameField(PersonalBestClass),
     name: generateStringField({ allowNull: false }),
     description: generateTextField({ allowNull: true }),
+    set_size: generateIntegerField({
+      allowNull: true,
+      typeDefOptions: { addable: true, updateable: false },
+    }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),
     ...generateCreatedByField(User),

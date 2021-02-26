@@ -12,5 +12,16 @@
     "ui": {
       "enabled": true
     }
+  },
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "trailingSlash": false,
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "api"
+      }
+    ]
   }
 }

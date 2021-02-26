@@ -7,6 +7,7 @@ import {
   generateCreatedByField,
   generateStringField,
   generateTypenameField,
+  generateIntegerField,
 } from "../../helpers/typeDef";
 
 export default new JomqlObjectType(<ObjectTypeDefinition>{
@@ -21,6 +22,11 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       sqlDefinition: {
         unique: true,
       },
+    }),
+    max_attempts: generateIntegerField({
+      allowNull: false,
+      defaultValue: 1,
+      typeDefOptions: { addable: true, updateable: false },
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),

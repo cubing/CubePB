@@ -1,6 +1,5 @@
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
-import EditPersonalBestDialog from '~/components/dialog/personalBest/editRecordDialog.vue'
 
 export default <RecordInfo<'personalBestClass'>>{
   type: 'personalBestClass',
@@ -28,6 +27,11 @@ export default <RecordInfo<'personalBestClass'>>{
     description: {
       text: 'Description',
       inputType: 'textarea',
+      optional: true,
+    },
+    set_size: {
+      text: 'Sample Size',
+      optional: true,
     },
     created_at: {
       text: 'Created At',
@@ -39,16 +43,13 @@ export default <RecordInfo<'personalBestClass'>>{
     },
   },
   addOptions: {
-    fields: ['name', 'description'],
-    component: EditPersonalBestDialog,
+    fields: ['name', 'description', 'set_size'],
   },
   editOptions: {
     fields: ['name', 'description'],
-    component: EditPersonalBestDialog,
   },
   viewOptions: {
-    fields: ['name', 'description'],
-    component: EditPersonalBestDialog,
+    fields: ['name', 'description', 'set_size'],
   },
   deleteOptions: {},
   shareOptions: {
@@ -59,6 +60,12 @@ export default <RecordInfo<'personalBestClass'>>{
       field: 'name',
       sortable: true,
     },
+    {
+      field: 'set_size',
+      sortable: false,
+      width: '100px',
+    },
+
     {
       field: 'created_at',
       width: '150px',

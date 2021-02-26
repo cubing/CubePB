@@ -6,6 +6,7 @@ import * as Resolver from "../../helpers/resolver";
 import * as errorHelper from "../../helpers/error";
 import * as sqlHelper from "../../helpers/sql";
 import { ServiceFunctionInputs } from "../../../types";
+import { JomqlBaseError } from "jomql";
 
 export class PersonalBestService extends PaginatedService {
   defaultTypename = "personalBest";
@@ -53,7 +54,92 @@ export class PersonalBestService extends PaginatedService {
   }: ServiceFunctionInputs) {
     // args should be validated already
     const validatedArgs = <any>args;
-    await this.handleLookupArgs(args, fieldPath);
+
+    // get event.max_attempts
+    const eventRecords = await sqlHelper.fetchTableRows({
+      select: [
+        { field: "id" },
+        {
+          field: "max_attempts",
+        },
+      ],
+      from: "event",
+      where: {
+        connective: "AND",
+        fields: Object.entries(validatedArgs.event).map(([field, value]) => ({
+          field,
+          value,
+        })),
+      },
+    });
+
+    if (eventRecords.length < 1)
+      throw new JomqlBaseError({
+        message: `Event not found`,
+        fieldPath,
+      });
+
+    const event = eventRecords[0];
+
+    // attempts_total must be <= event.max_attempts
+    if (validatedArgs.attempts_total > event.max_attempts)
+      throw new JomqlBaseError({
+        message: `This event allows a maximum of ${event.max_attempts} total attempts`,
+        fieldPath,
+      });
+
+    // attempts_succeeded must be <= attempts_total
+    if (validatedArgs.attempts_succeeded > validatedArgs.attempts_total) {
+      throw new JomqlBaseError({
+        message: `Attempts Succeeded cannot be greater than Attempts Total`,
+        fieldPath,
+      });
+    }
+
+    // get pb_class.set_size
+    const pbClassRecords = await sqlHelper.fetchTableRows({
+      select: [
+        { field: "id" },
+        {
+          field: "set_size",
+        },
+      ],
+      from: "personalBestClass",
+      where: {
+        connective: "AND",
+        fields: Object.entries(validatedArgs.pb_class).map(
+          ([field, value]) => ({
+            field,
+            value,
+          })
+        ),
+      },
+    });
+
+    if (pbClassRecords.length < 1)
+      throw new JomqlBaseError({
+        message: `PersonalBestClass not found`,
+        fieldPath,
+      });
+
+    const pbClass = pbClassRecords[0];
+
+    // if pb_class.set_size, args.set_size must be equal to that
+    if (
+      pbClass.set_size !== null &&
+      pbClass.set_size !== validatedArgs.set_size
+    ) {
+      throw new JomqlBaseError({
+        message: `Invalid set size for this PersonalBestClass`,
+        fieldPath,
+      });
+    }
+
+    // set this now to save the work in handleLookupArgs
+    validatedArgs.event = event.id;
+    validatedArgs.pb_class = pbClass.id;
+
+    await this.handleLookupArgs(validatedArgs, fieldPath);
 
     // calculate the score based on time, attempts_total, and attempts_succeeded
     const score =
@@ -70,6 +156,12 @@ export class PersonalBestService extends PaginatedService {
       },
       req,
       fieldPath,
+      options: {
+        onConflict: {
+          columns: ["pb_class", "event", "set_size"],
+          action: "merge",
+        },
+      },
     });
 
     return this.getRecord({
@@ -80,84 +172,5 @@ export class PersonalBestService extends PaginatedService {
       isAdmin,
       data,
     });
-  }
-
-  @permissionsCheck("update")
-  async updateRecord({
-    req,
-    fieldPath,
-    args,
-    query,
-    data = {},
-    isAdmin = false,
-  }: ServiceFunctionInputs) {
-    // args should be validated already
-    const validatedArgs = <any>args;
-    // check if record exists, get ID
-    // also fetching all fields involved in calculating score
-    const records = await sqlHelper.fetchTableRows({
-      select: [
-        { field: "id" },
-        {
-          field: "time_elapsed",
-        },
-        {
-          field: "attempts_total",
-        },
-        {
-          field: "attempts_succeeded",
-        },
-      ],
-      from: this.typename,
-      where: {
-        connective: "AND",
-        fields: Object.entries(validatedArgs.item).map(([field, value]) => ({
-          field,
-          value,
-        })),
-      },
-    });
-
-    if (records.length < 1) {
-      throw errorHelper.itemNotFoundError(fieldPath);
-    }
-
-    const itemId = records[0].id;
-    const item = records[0];
-
-    // convert any lookup/joined fields into IDs
-    await this.handleLookupArgs(validatedArgs.fields, fieldPath);
-
-    // merge update args into record
-    Object.assign(item, validatedArgs.fields);
-
-    // calculate the score based on time, attempts_total, and attempts_succeeded
-    const score =
-      item.time_elapsed *
-      ((item.attempts_total - item.attempts_succeeded) * -1 +
-        item.attempts_succeeded * 1);
-
-    await Resolver.updateObjectType({
-      typename: this.typename,
-      id: itemId,
-      updateFields: {
-        ...validatedArgs.fields,
-        score,
-        updated_at: 1,
-      },
-      req,
-      fieldPath,
-    });
-
-    const returnData = await this.getRecord({
-      req,
-      args: { id: itemId },
-      query,
-      fieldPath,
-      isAdmin,
-      data,
-    });
-
-    return returnData;
   }
 }

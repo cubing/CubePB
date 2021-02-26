@@ -44,6 +44,8 @@ export type RecordInfo<T extends keyof MainTypes> = {
 
       // is the field hidden? if yes, won't fetch it for edit fields
       hidden?: boolean
+      // is the field nullable? if so, we will add some text saying that to the input
+      optional?: boolean
       default?: (that) => unknown
       serialize?: (val: unknown) => unknown // fetching from API
       parseValue?: (val: unknown) => unknown // submitting to API

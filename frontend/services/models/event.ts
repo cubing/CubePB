@@ -27,6 +27,9 @@ export default <RecordInfo<'event'>>{
     code: {
       text: 'Code',
     },
+    max_attempts: {
+      text: 'Max Attempts',
+    },
     created_at: {
       text: 'Created At',
       component: TimeagoColumn,
@@ -37,13 +40,13 @@ export default <RecordInfo<'event'>>{
     },
   },
   addOptions: {
-    fields: ['name', 'code'],
+    fields: ['name', 'code', 'max_attempts'],
   },
   editOptions: {
     fields: ['name', 'code'],
   },
   viewOptions: {
-    fields: ['name', 'code'],
+    fields: ['name', 'code', 'max_attempts'],
   },
   deleteOptions: {},
   shareOptions: {
@@ -55,11 +58,15 @@ export default <RecordInfo<'event'>>{
       sortable: true,
     },
     {
+      field: 'max_attempts',
+      sortable: false,
+      width: '150px',
+    },
+    {
       field: 'code',
       sortable: false,
       width: '100px',
     },
-
     {
       field: 'created_at',
       width: '150px',

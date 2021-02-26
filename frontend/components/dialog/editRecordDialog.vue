@@ -42,13 +42,19 @@
                 filled
                 dense
                 class="py-0"
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
               ></v-textarea>
               <v-switch
                 v-else-if="item.fieldInfo.inputType === 'switch'"
                 v-model="item.value"
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
               ></v-switch>
               <v-menu
@@ -63,10 +69,13 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
                     v-model="item.value"
-                    :label="item.fieldInfo.text || item.field"
+                    :label="
+                      (item.fieldInfo.text || item.field) +
+                      (item.fieldInfo.optional ? ' (optional)' : '')
+                    "
                     :readonly="item.readonly || mode === 'view'"
                     :clearable="!item.readonly && mode !== 'view'"
-                    prepend-icon="mdi-calendar"
+                    filled
                     autocomplete="off"
                     v-bind="attrs"
                     v-on="on"
@@ -86,7 +95,10 @@
                 :items="item.options"
                 item-text="name"
                 item-value="id"
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
                 :clearable="!item.readonly && mode !== 'view'"
                 filled
@@ -101,7 +113,10 @@
                 :items="item.options"
                 item-text="name"
                 item-value="id"
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
                 :clearable="!item.readonly && mode !== 'view'"
                 filled
@@ -118,7 +133,10 @@
                 :items="item.options"
                 item-text="name"
                 item-value="id"
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
                 :clearable="!item.readonly && mode !== 'view'"
                 filled
@@ -132,7 +150,10 @@
                 :items="item.options"
                 item-text="name"
                 item-value="id"
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
                 :clearable="!item.readonly && mode !== 'view'"
                 filled
@@ -148,7 +169,10 @@
                 v-model="item.value"
                 :items="item.options"
                 filled
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
                 :clearable="!item.readonly && mode !== 'view'"
                 item-text="name"
@@ -158,7 +182,10 @@
               <v-text-field
                 v-else
                 v-model="item.value"
-                :label="item.fieldInfo.text || item.field"
+                :label="
+                  (item.fieldInfo.text || item.field) +
+                  (item.fieldInfo.optional ? ' (optional)' : '')
+                "
                 :readonly="item.readonly || mode === 'view'"
                 :rules="item.fieldInfo.inputRules"
                 filled

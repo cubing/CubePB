@@ -23,6 +23,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.increments();
       table.string("name").notNullable();
       table.string("code").notNullable().unique();
+      table.integer("max_attempts").notNullable().defaultTo(1);
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
@@ -38,6 +39,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.increments();
       table.string("name").notNullable();
       table.text("description").nullable();
+      table.integer("set_size").nullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
@@ -48,12 +50,11 @@ export async function up(knex: Knex): Promise<void[]> {
       table.integer("event").notNullable();
       table.integer("set_size").notNullable();
       table.integer("score").notNullable();
-      table.integer("attempts_succeeded").notNullable().defaultTo(1);
-      table.integer("attempts_total").notNullable().defaultTo(1);
+      table.integer("attempts_succeeded").notNullable();
+      table.integer("attempts_total").notNullable();
       table.integer("product").nullable();
       table.date("happened_on").notNullable();
       table.integer("time_elapsed").notNullable();
-      table.boolean("show_ms").notNullable().defaultTo(false);
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();

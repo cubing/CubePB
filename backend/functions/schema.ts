@@ -79,6 +79,7 @@ export type FilterByField<T> = {
   /**Unknown value*/ unknown: unknown;
   /**Image URL Field*/ imageUrl: string;
   /**UNIX Timestamp (Seconds since Epoch Time)*/ unixTimestamp: number;
+  /**Date YYYY-MM-DD*/ date: string;
   /**Valid generic JSON that is stored in database as string*/ jsonAsString: unknown;
   /**ID Field*/ id: number;
   /**Regex Field*/ regex: RegExp;
@@ -102,19 +103,19 @@ export type FilterByField<T> = {
   productGroupByKey: undefined;
   personalBestClassSortByKey: "id" | "created_at";
   personalBestClassGroupByKey: undefined;
-  personalBestSortByKey: "id" | "created_at";
+  personalBestSortByKey: "id" | "created_at" | "score";
   personalBestGroupByKey: undefined;
 };
 /**All Input types*/ export type InputTypes = {
   getUser: { id?: Scalars["id"] };
   "userFilterByField/id": FilterByField<Scalars["id"]>;
-  "userFilterByField/created_by": FilterByField<Scalars["id"]>;
+  "userFilterByField/created_by.id": FilterByField<Scalars["id"]>;
   "userFilterByField/created_by.name": FilterByField<Scalars["string"]>;
   "userFilterByField/role": FilterByField<Scalars["userRole"]>;
   "userFilterByField/name": FilterByField<Scalars["string"]>;
   userFilterByObject: {
     id?: InputTypes["userFilterByField/id"];
-    created_by?: InputTypes["userFilterByField/created_by"];
+    "created_by.id"?: InputTypes["userFilterByField/created_by.id"];
     "created_by.name"?: InputTypes["userFilterByField/created_by.name"];
     role?: InputTypes["userFilterByField/role"];
     name?: InputTypes["userFilterByField/name"];
@@ -180,8 +181,16 @@ export type FilterByField<T> = {
     groupBy?: Scalars["eventGroupByKey"][];
     search?: Scalars["string"];
   };
-  createEvent: { name: Scalars["string"]; code: Scalars["string"] };
-  updateEventFields: { name?: Scalars["string"]; code?: Scalars["string"] };
+  createEvent: {
+    name: Scalars["string"];
+    code: Scalars["string"];
+    max_attempts?: Scalars["number"];
+  };
+  updateEventFields: {
+    name?: Scalars["string"];
+    code?: Scalars["string"];
+    max_attempts?: Scalars["number"];
+  };
   updateEvent: {
     item: InputTypes["getEvent"];
     fields: InputTypes["updateEventFields"];
@@ -231,10 +240,12 @@ export type FilterByField<T> = {
   createPersonalBestClass: {
     name: Scalars["string"];
     description?: Scalars["string"] | null;
+    set_size?: Scalars["number"] | null;
   };
   updatePersonalBestClassFields: {
     name?: Scalars["string"];
     description?: Scalars["string"] | null;
+    set_size?: Scalars["number"] | null;
   };
   updatePersonalBestClass: {
     item: InputTypes["getPersonalBestClass"];
@@ -242,10 +253,12 @@ export type FilterByField<T> = {
   };
   getPersonalBest: { id?: Scalars["id"] };
   "personalBestFilterByField/id": FilterByField<Scalars["id"]>;
-  "personalBestFilterByField/created_by": FilterByField<Scalars["id"]>;
+  "personalBestFilterByField/created_by.id": FilterByField<Scalars["id"]>;
+  "personalBestFilterByField/product.id": FilterByField<Scalars["id"]>;
   personalBestFilterByObject: {
     id?: InputTypes["personalBestFilterByField/id"];
-    created_by?: InputTypes["personalBestFilterByField/created_by"];
+    "created_by.id"?: InputTypes["personalBestFilterByField/created_by.id"];
+    "product.id"?: InputTypes["personalBestFilterByField/product.id"];
   };
   getPersonalBestPaginator: {
     first?: Scalars["number"];
@@ -262,25 +275,21 @@ export type FilterByField<T> = {
     pb_class: InputTypes["getPersonalBestClass"];
     event: InputTypes["getEvent"];
     set_size: Scalars["number"];
-    score: Scalars["number"];
     attempts_succeeded?: Scalars["number"];
     attempts_total?: Scalars["number"];
     product?: InputTypes["getProduct"] | null;
-    happened_on: Scalars["unixTimestamp"];
+    happened_on: Scalars["date"];
     time_elapsed: Scalars["number"];
-    show_ms?: Scalars["boolean"];
   };
   updatePersonalBestFields: {
     pb_class?: InputTypes["getPersonalBestClass"];
     event?: InputTypes["getEvent"];
     set_size?: Scalars["number"];
-    score?: Scalars["number"];
     attempts_succeeded?: Scalars["number"];
     attempts_total?: Scalars["number"];
     product?: InputTypes["getProduct"] | null;
-    happened_on?: Scalars["unixTimestamp"];
+    happened_on?: Scalars["date"];
     time_elapsed?: Scalars["number"];
-    show_ms?: Scalars["boolean"];
   };
   updatePersonalBest: {
     item: InputTypes["getPersonalBest"];
@@ -436,6 +445,7 @@ export type PersonalBestEdge = Edge<PersonalBest>;
   };
   name: { Type: Scalars["string"]; Args: undefined };
   code: { Type: Scalars["string"]; Args: undefined };
+  max_attempts: { Type: Scalars["number"]; Args: undefined };
   /**When the record was created*/ created_at: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
@@ -471,6 +481,7 @@ export type PersonalBestEdge = Edge<PersonalBest>;
   };
   name: { Type: Scalars["string"]; Args: undefined };
   description: { Type: Scalars["string"] | null; Args: undefined };
+  set_size: { Type: Scalars["number"] | null; Args: undefined };
   /**When the record was created*/ created_at: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
@@ -500,12 +511,11 @@ export type PersonalBestEdge = Edge<PersonalBest>;
     Args: undefined;
   };
   product: { Type: Product | null; Args: undefined };
-  happened_on: { Type: Scalars["unixTimestamp"]; Args: undefined };
+  happened_on: { Type: Scalars["date"]; Args: undefined };
   /**The amount of ms time elapsed for the pb attempt*/ time_elapsed: {
     Type: Scalars["number"];
     Args: undefined;
   };
-  show_ms: { Type: Scalars["boolean"]; Args: undefined };
   /**When the record was created*/ created_at: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;

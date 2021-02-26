@@ -14,7 +14,6 @@ import {
   generateTypenameField,
   generateJoinableField,
   generateIntegerField,
-  generateBooleanField,
   generateDateField,
 } from "../../helpers/typeDef";
 
@@ -50,12 +49,10 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     }),
     attempts_succeeded: generateIntegerField({
       allowNull: false,
-      defaultValue: 1,
       description: "The number of successful attempts",
     }),
     attempts_total: generateIntegerField({
       allowNull: false,
-      defaultValue: 1,
       description: "The total number of attempts",
     }),
     product: generateJoinableField({
@@ -68,10 +65,6 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     time_elapsed: generateIntegerField({
       allowNull: false,
       description: "The amount of ms time elapsed for the pb attempt",
-    }),
-    show_ms: generateBooleanField({
-      allowNull: false,
-      defaultValue: false,
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),
