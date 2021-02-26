@@ -7,6 +7,9 @@
       "hosting": {
         "cubepb-65c9e-staging": [
           "cubepb-65c9e-staging"
+        ],
+        "cubepb-65c9e-alpha-client": [
+          "cubepb-65c9e-alpha-client"
         ]
       }
     }
