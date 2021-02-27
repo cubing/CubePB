@@ -16,7 +16,7 @@
 
 <script>
 import sharedService from '~/services/shared'
-import authService from '~/services/auth'
+import { handleLogin } from '~/services/auth'
 import { executeJomql } from '~/services/jomql'
 
 export default {
@@ -66,7 +66,7 @@ export default {
           },
         })
 
-        await authService.handleLogin(this, data)
+        await handleLogin(this, data)
 
         this.$router.push('/')
       } catch (err) {

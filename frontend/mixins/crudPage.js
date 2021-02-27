@@ -1,5 +1,6 @@
 import sharedService from '~/services/shared'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
+import { isObject } from '~/services/common'
 
 export default {
   computed: {
@@ -15,8 +16,9 @@ export default {
     filters() {
       const filterArray = []
       if (this.$route.query.filters) {
-        this.$route.query.filters.split(',').forEach((ele) => {
-          const filterParts = ele.split('-')
+        this.$route.query.filters.split('&').forEach((ele) => {
+          const decoded = decodeURIComponent(ele)
+          const filterParts = decoded.split(' ')
           if (filterParts.length === 3) {
             const filter = this.recordInfo.filters.find(
               (filterObject) => filterObject.field === filterParts[0]
@@ -52,8 +54,14 @@ export default {
       // if ele.value is "__null", it is understood to be null
       const filterString = filterInputsArray
         .filter((ele) => ele.value !== undefined && ele.value !== null)
-        .map((ele) => `${ele.field}-${ele.operator}-${ele.value}`)
-        .join(',')
+        .map((ele) =>
+          encodeURIComponent(
+            `${ele.field} ${ele.operator} ${
+              isObject(ele.value) ? ele.value.id : ele.value
+            }`
+          )
+        )
+        .join('&')
 
       const query = {
         ...this.$route.query,
@@ -69,10 +77,13 @@ export default {
         delete query.filters
       }
 
-      this.$router.replace({
-        path: this.$route.path,
-        query,
-      })
+      this.$router
+        .replace({
+          path: this.$route.path,
+          query,
+        })
+        .catch((e) => e)
+      // catches if the query is exactly the same
     },
   },
 

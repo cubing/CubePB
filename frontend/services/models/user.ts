@@ -1,7 +1,7 @@
 import personalBestRecordInfo from './personalBest'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
-import { getUserRoles } from '~/services/dropdown'
+import { getBooleanOptions, getUserRoles } from '~/services/dropdown'
 
 export default <RecordInfo<'user'>>{
   type: 'user',
@@ -16,6 +16,10 @@ export default <RecordInfo<'user'>>{
   filters: [
     {
       field: 'role',
+      operator: 'eq',
+    },
+    {
+      field: 'is_public',
       operator: 'eq',
     },
     {
@@ -36,6 +40,12 @@ export default <RecordInfo<'user'>>{
     role: {
       text: 'User Role',
       getOptions: getUserRoles,
+      inputType: 'select',
+    },
+    is_public: {
+      text: 'Is Public',
+      getOptions: getBooleanOptions,
+      parseValue: (val) => (typeof val === 'boolean' ? val : val === 'true'),
       inputType: 'select',
     },
     created_at: {

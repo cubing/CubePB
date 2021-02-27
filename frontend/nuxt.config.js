@@ -9,6 +9,7 @@ export default {
     VER: process.env.VER,
     apiUrl: process.env.API_URL,
     wcaAuthUrl: process.env.WCA_AUTH_URL,
+    wcaAccountManagementUrl: process.env.WCA_ACCOUNT_MANAGEMENT_URL,
     build_date: new Date().toDateString(),
   },
 

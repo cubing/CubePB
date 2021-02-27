@@ -10,6 +10,7 @@ import {
   getNestedProperty,
   generateTimeAgoString,
   capitalizeString,
+  isObject,
 } from '~/services/common'
 
 export default {
@@ -333,7 +334,7 @@ export default {
         .map((ele) => ({
           field: ele.field,
           operator: ele.operator,
-          value: ele.value,
+          value: isObject(ele.value) ? ele.value.id : ele.value,
         }))
     },
 
@@ -582,7 +583,7 @@ export default {
                     // change value to object
                     matchingInputObject.value = res
 
-                    matchingInputObject.options.push(...res)
+                    matchingInputObject.options.push(res)
                   })
                   .catch((e) => e)
               }
@@ -628,6 +629,7 @@ export default {
           const filterObject = {
             field: ele.field,
             fieldInfo,
+            title: ele.title,
             operator: ele.operator,
             options: [],
             value: null,

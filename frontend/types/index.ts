@@ -126,6 +126,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
 
 type FilterObject = {
   field: string
+  title?: string
   operator: string
   value: any
 }

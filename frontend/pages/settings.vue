@@ -6,6 +6,15 @@
           <v-toolbar color="accent" flat>
             <v-toolbar-title>User Settings</v-toolbar-title>
             <v-spacer></v-spacer>
+            <v-btn text @click="goToWcaAccountManagement()">
+              <img
+                src="../static/WCAlogo_notext.svg"
+                alt=""
+                style="width: 32px"
+                class="pr-2"
+              />
+              Manage WCA Account
+            </v-btn>
           </v-toolbar>
           <v-card-text>
             <v-text-field
@@ -34,6 +43,7 @@
 <script>
 import { executeJomql } from '~/services/jomql'
 import sharedService from '~/services/shared'
+import { goToWcaAccountManagement } from '~/services/auth'
 
 export default {
   components: {},
@@ -61,6 +71,7 @@ export default {
   },
 
   methods: {
+    goToWcaAccountManagement,
     async handleSubmit() {
       this.loading.submitting = true
       try {

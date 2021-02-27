@@ -89,8 +89,42 @@
               lg="3"
               class="py-0"
             >
+              <v-switch
+                v-if="item.fieldInfo.inputType === 'switch'"
+                v-model="item.value"
+                :label="item.title || item.fieldInfo.text || item.field"
+                @change="filterChanged = true"
+              ></v-switch>
+              <v-menu
+                v-else-if="item.fieldInfo.inputType === 'datepicker'"
+                v-model="item.focused"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="item.value"
+                    :label="item.title || item.fieldInfo.text || item.field"
+                    clearable
+                    filled
+                    autocomplete="off"
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="item.value"
+                  color="primary"
+                  no-title
+                  @input="item.focused = false"
+                  @change="filterChanged = true"
+                ></v-date-picker>
+              </v-menu>
               <v-autocomplete
-                v-if="
+                v-else-if="
                   item.fieldInfo.inputType === 'autocomplete' ||
                   item.fieldInfo.inputType === 'combobox'
                 "
@@ -98,7 +132,7 @@
                 :items="item.options"
                 item-text="name"
                 item-value="id"
-                :label="item.fieldInfo.text || item.field"
+                :label="item.title || item.fieldInfo.text || item.field"
                 :prepend-icon="item.fieldInfo.icon"
                 clearable
                 filled
@@ -116,7 +150,7 @@
                 :items="item.options"
                 item-text="name"
                 item-value="id"
-                :label="item.fieldInfo.text || item.field"
+                :label="item.title || item.fieldInfo.text || item.field"
                 :prepend-icon="item.fieldInfo.icon"
                 clearable
                 filled
@@ -133,7 +167,7 @@
                 v-model="item.value"
                 :items="item.options"
                 filled
-                :label="item.fieldInfo.text || item.field"
+                :label="item.title || item.fieldInfo.text || item.field"
                 :prepend-icon="item.fieldInfo.icon"
                 clearable
                 item-text="name"
@@ -144,7 +178,7 @@
               <v-text-field
                 v-else
                 v-model="item.value"
-                :label="item.fieldInfo.text || item.field"
+                :label="item.title || item.fieldInfo.text || item.field"
                 :prepend-icon="item.fieldInfo.icon"
                 filled
                 clearable

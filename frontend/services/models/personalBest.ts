@@ -1,7 +1,9 @@
 import { getEvents, getProducts, getPersonalBestClasses } from '../dropdown'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
+import TimeElapsedColumn from '~/components/table/common/timeElapsedColumn.vue'
 import EditPersonalBestDialog from '~/components/dialog/personalBest/editPersonalBestDialog.vue'
+import { serializeTime } from '~/services/common'
 
 export default <RecordInfo<'personalBest'>>{
   type: 'personalBest',
@@ -12,11 +14,33 @@ export default <RecordInfo<'personalBest'>>{
     sortBy: ['created_at'],
     sortDesc: [true],
   },
-  hasSearch: true,
+  hasSearch: false,
   filters: [
+    {
+      field: 'event.id',
+      operator: 'eq',
+    },
+    {
+      field: 'pb_class.id',
+      operator: 'eq',
+    },
     {
       field: 'product.id',
       operator: 'eq',
+    },
+    {
+      field: 'created_by.id',
+      operator: 'eq',
+    },
+    {
+      field: 'happened_on',
+      title: 'Happened After',
+      operator: 'gt',
+    },
+    {
+      field: 'happened_on',
+      title: 'Happened Before',
+      operator: 'lt',
     },
     {
       field: 'id',
@@ -73,26 +97,7 @@ export default <RecordInfo<'personalBest'>>{
           )
         },
       ],
-      serialize: (value) => {
-        let totalCs = Number(value) / 10
-
-        const minutes = Math.floor(totalCs / (60 * 100))
-
-        totalCs -= minutes * 60 * 100
-
-        const seconds = Math.floor(totalCs / 100)
-
-        totalCs -= seconds * 100
-
-        const cs = totalCs
-
-        return (
-          (minutes ? minutes + ':' : '') +
-          (minutes ? String(seconds).padStart(2, '0') : seconds) +
-          '.' +
-          String(cs).substring(0, 2)
-        )
-      },
+      serialize: serializeTime,
       parseValue: (value) => {
         if (typeof value !== 'string') throw new Error('Invalid value')
         const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
@@ -114,6 +119,7 @@ export default <RecordInfo<'personalBest'>>{
         // round to tens
         return (1000 * Math.floor(seconds * 100)) / 100
       },
+      component: TimeElapsedColumn,
     },
     attempts_succeeded: {
       text: 'Total Succeeded',
@@ -126,6 +132,12 @@ export default <RecordInfo<'personalBest'>>{
     happened_on: {
       text: 'Date Happened',
       inputType: 'datepicker',
+    },
+    'created_by.id': {
+      text: 'Created By',
+      inputType: 'server-autocomplete',
+      type: 'user',
+      parseValue: (val) => Number(val),
     },
     created_at: {
       text: 'Created At',
@@ -185,8 +197,19 @@ export default <RecordInfo<'personalBest'>>{
       width: '125px',
     },
     {
-      field: 'score',
+      field: 'time_elapsed',
       sortable: true,
+      width: '125px',
+    },
+    {
+      field: 'attempts_succeeded',
+      sortable: true,
+      width: '150px',
+    },
+    {
+      field: 'attempts_total',
+      sortable: true,
+      width: '150px',
     },
     {
       field: 'happened_on',
@@ -194,13 +217,7 @@ export default <RecordInfo<'personalBest'>>{
       width: '150px',
     },
     {
-      field: 'created_at',
-      width: '150px',
-      sortable: true,
-    },
-    {
-      field: 'updated_at',
-      width: '150px',
+      field: 'score',
       sortable: true,
     },
   ],

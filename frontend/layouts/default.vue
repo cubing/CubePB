@@ -29,6 +29,23 @@
       </v-list>
       <v-divider></v-divider>
       <v-list dense>
+        <v-list-item
+          v-for="(item, i) in visibleNavItems"
+          :key="i"
+          :to="item.to"
+          router
+          exact
+        >
+          <v-list-item-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title" />
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+      <v-list dense>
         <v-list-group
           v-for="item in visibleFeatureGroups"
           :key="item.title"
@@ -179,7 +196,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Snackbar from '~/components/snackbar/snackbar'
-import authService from '~/services/auth'
+import { goToWcaAuth, handleLogout } from '~/services/auth'
 import sharedService from '~/services/shared'
 import { copyToClipboard } from '~/services/common'
 
@@ -199,11 +216,32 @@ export default {
           to: '/',
         },
       ],
+      navItems: [
+        {
+          icon: 'mdi-timer',
+          title: 'My PBs',
+          to: '/my-pbs',
+          loginRequired: true,
+        },
+        {
+          icon: 'mdi-account',
+          title: 'Users',
+          to: '/users?filters=' + encodeURIComponent('is_public eq true'),
+          loginRequired: false,
+        },
+        {
+          icon: 'mdi-star',
+          title: 'All PBs',
+          to: '/personalBests',
+          loginRequired: false,
+        },
+      ],
+
       featureItems: [
         {
           action: 'mdi-star',
           active: true,
-          roles: ['NORMAL', 'ADMIN'],
+          roles: ['ADMIN'],
           permissions: [],
           items: [
             {
@@ -231,19 +269,13 @@ export default {
               permissions: [],
             },
             {
-              title: 'All PBs',
+              title: 'PBs',
               to: 'personalBests',
               roles: ['NORMAL', 'ADMIN'],
               permissions: [],
             },
-            {
-              title: 'My PBs',
-              to: 'my-pbs',
-              roles: ['NORMAL', 'ADMIN'],
-              permissions: [],
-            },
           ],
-          title: 'Features',
+          title: 'Administration',
         },
       ],
       accountItems: [{ title: 'Settings', to: '/settings', exact: false }],
@@ -264,12 +296,16 @@ export default {
         this.canSee(item.roles, item.permissions)
       )
     },
+
+    visibleNavItems() {
+      return this.navItems.filter(
+        (item) => this.$store.getters['auth/user'] || !item.loginRequired
+      )
+    },
   },
 
   methods: {
-    goToWcaAuth() {
-      authService.goToWcaAuth()
-    },
+    goToWcaAuth,
 
     toggleTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark
@@ -294,7 +330,7 @@ export default {
       try {
         this.$router.push('/')
 
-        authService.handleLogout(this)
+        handleLogout(this)
       } catch (err) {
         sharedService.handleError(err, this.$root)
       }

@@ -15,6 +15,9 @@ export class PersonalBestService extends PaginatedService {
     id: {},
     "created_by.id": {},
     "product.id": {},
+    "event.id": {},
+    "pb_class.id": {},
+    happened_on: {},
   };
 
   uniqueKeyMap = {
@@ -54,6 +57,13 @@ export class PersonalBestService extends PaginatedService {
   }: ServiceFunctionInputs) {
     // args should be validated already
     const validatedArgs = <any>args;
+
+    // time_elapsed must be positive integer
+    if (validatedArgs.time_elapsed <= 0)
+      throw new JomqlBaseError({
+        message: `Time elapsed must be positive`,
+        fieldPath,
+      });
 
     // get event.max_attempts
     const eventRecords = await sqlHelper.fetchTableRows({
