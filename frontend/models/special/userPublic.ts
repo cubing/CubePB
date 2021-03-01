@@ -38,6 +38,11 @@ export const UserPublic = {
             operator: 'eq',
             value: item.id,
           },
+          {
+            field: 'created_by.is_public',
+            operator: 'eq',
+            value: true,
+          },
         ]
       },
     },
