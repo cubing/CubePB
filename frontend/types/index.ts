@@ -4,6 +4,9 @@ export type RecordInfo<T extends keyof MainTypes> = {
   // name of the type
   type: T
   name: string
+  pluralName: string
+  // route that shareUrl and enterItem should be based off
+  viewItemRoute?: string
   icon?: string
   // how to render the item as a string
   renderItem?: (item) => string
@@ -29,7 +32,14 @@ export type RecordInfo<T extends keyof MainTypes> = {
     [K in keyof MainTypes[T]['Type']]?: {
       text?: string
       icon?: string
+
+      // if this field is a virtual field, must specify the mainField
+      mainField?: string
+      // if any additional fields, other than the main field, are required
+      requiredFields?: string[]
+
       inputType?:
+        | 'avatar'
         | 'datepicker'
         | 'switch'
         | 'textarea'
@@ -92,9 +102,9 @@ export type RecordInfo<T extends keyof MainTypes> = {
   shareOptions?: {
     // custom component
     component?: any
-    // the route used to share the item, must start with /
-    route: string
   }
+
+  enterOptions?: {}
 
   // the headers of the table
   headers: {

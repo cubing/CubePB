@@ -1,11 +1,13 @@
 import personalBestRecordInfo from './personalBest'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
+import UserColumn from '~/components/table/common/userColumn.vue'
 import { getBooleanOptions, getUserRoles } from '~/services/dropdown'
 
 export default <RecordInfo<'user'>>{
   type: 'user',
   name: 'User',
+  pluralName: 'Users',
   icon: 'mdi-account',
   renderItem: (item) => item.email,
   options: {
@@ -22,10 +24,6 @@ export default <RecordInfo<'user'>>{
       field: 'is_public',
       operator: 'eq',
     },
-    {
-      field: 'id',
-      operator: 'eq',
-    },
   ],
   fields: {
     id: {
@@ -34,8 +32,24 @@ export default <RecordInfo<'user'>>{
     name: {
       text: 'Name',
     },
+    'name+avatar': {
+      text: 'Name',
+      mainField: 'name',
+      requiredFields: ['avatar'],
+      component: UserColumn,
+    },
     email: {
       text: 'Email',
+    },
+    avatar: {
+      text: 'Avatar URL',
+      inputType: 'avatar',
+    },
+    country: {
+      text: 'Country',
+    },
+    wca_id: {
+      text: 'WCA ID',
     },
     role: {
       text: 'User Role',
@@ -59,18 +73,35 @@ export default <RecordInfo<'user'>>{
   },
   addOptions: undefined,
   editOptions: {
-    fields: ['name', 'role'],
+    fields: [
+      'avatar',
+      'name',
+      'email',
+      'wca_id',
+      'country',
+      'role',
+      'is_public',
+    ],
   },
   viewOptions: {
-    fields: ['name', 'email', 'role'],
+    fields: [
+      'avatar',
+      'name',
+      'email',
+      'wca_id',
+      'country',
+      'role',
+      'is_public',
+    ],
   },
   deleteOptions: {},
   shareOptions: {
-    route: '/users',
+    route: '/user',
   },
+  enterOptions: {},
   headers: [
     {
-      field: 'name',
+      field: 'name+avatar',
       sortable: false,
     },
     {
@@ -97,7 +128,9 @@ export default <RecordInfo<'user'>>{
   expandTypes: [
     {
       recordInfo: personalBestRecordInfo,
-      name: 'Personal Bests',
+      name: 'PBs',
+      excludeFilters: ['created_by.id'],
+      excludeHeaders: ['created_by.name+created_by.avatar'],
       lockedFilters: (_that, item) => {
         return [
           {

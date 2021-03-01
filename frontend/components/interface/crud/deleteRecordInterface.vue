@@ -1,39 +1,32 @@
 <template>
-  <v-dialog v-model="status" max-width="500px" @click:outside="close()">
-    <v-card>
-      <v-card-title>
-        <v-icon left>mdi-delete</v-icon>
-        <span class="headline">Delete {{ capitalizedType }}</span>
-      </v-card-title>
-      <v-card-text class="py-0">
-        <v-alert v-if="selectedItem" type="error">
-          Confirm Delete: {{ itemIdentifier }}
-        </v-alert>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="close()">Cancel</v-btn>
-        <v-btn
-          color="error"
-          text
-          :loading="loading.deleteRecord"
-          @click="deleteRecord()"
-          >Delete</v-btn
-        >
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <v-card flat>
+    <slot name="toolbar"></slot>
+    <v-card-text class="py-0 mt-3">
+      <v-alert type="error">
+        Confirm Delete{{ itemIdentifier ? ': ' + itemIdentifier : '' }}
+      </v-alert>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <slot name="footer-action"></slot>
+      <v-btn
+        color="error"
+        text
+        :loading="loading.deleteRecord"
+        @click="deleteRecord()"
+        >Delete</v-btn
+      >
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
 import sharedService from '~/services/shared'
 import { executeJomql } from '~/services/jomql'
+import { capitalizeString } from '~/services/common'
 
 export default {
   props: {
-    status: {
-      type: Boolean,
-    },
     selectedItem: {
       type: Object,
       default: () => ({}),
@@ -52,30 +45,18 @@ export default {
   },
 
   computed: {
-    capitalizedType() {
-      return sharedService.capitalizeString(this.recordInfo.type)
-    },
     itemIdentifier() {
-      if (!this.status) return
       return this.recordInfo.renderItem
         ? this.recordInfo.renderItem(this.selectedItem)
         : this.selectedItem
     },
-  },
 
-  watch: {
-    status() {
-      if (this.status) {
-        this.reset()
-      }
+    capitalizedType() {
+      return capitalizeString(this.recordInfo.type)
     },
   },
 
   methods: {
-    close() {
-      this.$emit('close')
-    },
-
     async deleteRecord() {
       this.loading.deleteRecord = true
       try {
@@ -94,7 +75,7 @@ export default {
           variant: 'success',
         })
 
-        this.$emit('submit', data)
+        this.$emit('handleSubmit', data)
 
         this.close()
       } catch (err) {
@@ -102,8 +83,6 @@ export default {
       }
       this.loading.deleteRecord = false
     },
-
-    reset() {},
   },
 }
 </script>

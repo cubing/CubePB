@@ -20,9 +20,9 @@
     >
       <template v-slot:top>
         <v-toolbar flat color="accent">
-          <v-icon left>{{ recordInfo.icon || 'mdi-domain' }}</v-icon>
+          <v-icon left>{{ icon || recordInfo.icon || 'mdi-domain' }}</v-icon>
           <v-toolbar-title>{{
-            title || `${recordInfo.name}s`
+            title || `${recordInfo.pluralName}`
           }}</v-toolbar-title>
           <v-divider
             v-if="recordInfo.addOptions"
@@ -41,7 +41,6 @@
             New {{ recordInfo.name }}
           </v-btn>
           <v-divider v-if="hasFilters" class="mx-4" inset vertical></v-divider>
-
           <v-btn
             v-if="hasFilters"
             icon
@@ -62,6 +61,7 @@
           <v-btn icon @click="syncFilters() || reset()">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
+          <slot name="header-action"></slot>
         </v-toolbar>
         <v-container v-if="showFilterInterface" fluid class="pb-0 mt-3">
           <v-row>
@@ -255,28 +255,34 @@
           </td>
           <td v-for="(headerItem, i) in headers" :key="i">
             <div v-if="headerItem.value === null">
+              <nuxt-link
+                v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
+                :to="recordInfo.viewRecordRoute + '?id=' + props.item.id"
+              >
+                <v-icon small icon>mdi-location-enter</v-icon>
+              </nuxt-link>
               <v-icon
                 v-if="recordInfo.shareOptions"
                 small
-                @click.stop="openDialog('shareRecord', props.item)"
+                @click.stop="openEditDialog('share', props.item)"
                 >mdi-share-variant</v-icon
               >
               <v-icon
                 v-if="recordInfo.viewOptions"
                 small
-                @click.stop="openDialog('viewRecord', props.item)"
+                @click.stop="openEditDialog('view', props.item)"
                 >mdi-eye</v-icon
               >
               <v-icon
                 v-if="recordInfo.editOptions"
                 small
-                @click.stop="openDialog('editRecord', props.item)"
+                @click.stop="openEditDialog('edit', props.item)"
                 >mdi-pencil</v-icon
               >
               <v-icon
                 v-if="recordInfo.deleteOptions"
                 small
-                @click.stop="openDialog('deleteRecord', props.item)"
+                @click.stop="openEditDialog('delete', props.item)"
                 >mdi-delete</v-icon
               >
             </div>
@@ -314,47 +320,14 @@
       </template>
       <template v-slot:no-data>No records</template>
     </v-data-table>
-    <component
-      :is="currentAddRecordComponent"
-      :status="dialogs.addRecord"
-      :record-info="recordInfo"
-      :selected-item="dialogs.selectedItem"
-      mode="add"
-      @close="dialogs.addRecord = false"
-      @submit="handleListChange()"
-    ></component>
-    <component
-      :is="currentEditRecordComponent"
+    <EditRecordDialog
       :status="dialogs.editRecord"
       :record-info="recordInfo"
       :selected-item="dialogs.selectedItem"
-      mode="edit"
+      :mode="dialogs.editMode"
       @close="dialogs.editRecord = false"
-      @submit="handleListChange()"
-    ></component>
-    <component
-      :is="currentDeleteRecordComponent"
-      :status="dialogs.deleteRecord"
-      :record-info="recordInfo"
-      :selected-item="dialogs.selectedItem"
-      @close="dialogs.deleteRecord = false"
-      @submit="handleListChange()"
-    ></component>
-    <component
-      :is="currentViewRecordComponent"
-      :status="dialogs.viewRecord"
-      :record-info="recordInfo"
-      :selected-item="dialogs.selectedItem"
-      mode="view"
-      @close="dialogs.viewRecord = false"
-    ></component>
-    <component
-      :is="currentShareRecordComponent"
-      :status="dialogs.shareRecord"
-      :record-info="recordInfo"
-      :selected-item="dialogs.selectedItem"
-      @close="dialogs.shareRecord = false"
-    ></component>
+      @handleSubmit="handleListChange()"
+    ></EditRecordDialog>
   </div>
 </template>
 

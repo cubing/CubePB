@@ -1,9 +1,6 @@
 import sharedService from '~/services/shared'
 import { executeJomql, executeJomqlSubscription } from '~/services/jomql'
 import { unsubscribeChannels } from '~/services/pusher'
-import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
-import DeleteRecordDialog from '~/components/dialog/deleteRecordDialog.vue'
-import ShareRecordDialog from '~/components/dialog/shareRecordDialog.vue'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 import {
   collapseObject,
@@ -19,6 +16,10 @@ export default {
   props: {
     // replacement title to override default one
     title: {
+      type: String,
+    },
+    // replacement icon
+    icon: {
       type: String,
     },
     recordInfo: {
@@ -89,13 +90,15 @@ export default {
       filterOptions: {},
 
       dialogs: {
-        viewRecord: false,
+        /*         viewRecord: false,
         addRecord: false,
         editRecord: false,
         deleteRecord: false,
-        shareRecord: false,
+        shareRecord: false, */
 
+        editRecord: false,
         selectedItem: null,
+        editMode: 'view',
       },
 
       subscriptionChannels: [],
@@ -152,22 +155,6 @@ export default {
             CrudRecordInterface
         : null
     },
-
-    currentAddRecordComponent() {
-      return this.recordInfo.addOptions?.component ?? EditRecordDialog
-    },
-    currentEditRecordComponent() {
-      return this.recordInfo.editOptions?.component ?? EditRecordDialog
-    },
-    currentDeleteRecordComponent() {
-      return this.recordInfo.deleteOptions?.component ?? DeleteRecordDialog
-    },
-    currentViewRecordComponent() {
-      return this.recordInfo.viewOptions?.component ?? EditRecordDialog
-    },
-    currentShareRecordComponent() {
-      return this.recordInfo.shareOptions?.component ?? ShareRecordDialog
-    },
     capitalizedType() {
       return capitalizeString(this.recordInfo.type)
     },
@@ -184,23 +171,21 @@ export default {
 
     headers() {
       return this.recordInfo.headers
-        .filter(
-          (headerObject) => !this.hiddenHeaders.includes(headerObject.field)
-        )
-        .map((headerObject) => {
-          const fieldInfo = this.recordInfo.fields[headerObject.field]
+        .filter((headerInfo) => !this.hiddenHeaders.includes(headerInfo.field))
+        .map((headerInfo) => {
+          const fieldInfo = this.recordInfo.fields[headerInfo.field]
 
           // field unknown, abort
-          if (!fieldInfo)
-            throw new Error('Unknown field: ' + headerObject.field)
+          if (!fieldInfo) throw new Error('Unknown field: ' + headerInfo.field)
 
           return {
-            text: fieldInfo.text ?? headerObject.field,
-            align: headerObject.align ?? 'left',
-            sortable: headerObject.sortable,
-            value: headerObject.field,
-            width: headerObject.width ?? null,
+            text: fieldInfo.text ?? headerInfo.field,
+            align: headerInfo.align ?? 'left',
+            sortable: headerInfo.sortable,
+            value: fieldInfo.mainField ?? headerInfo.field,
+            width: headerInfo.width ?? null,
             fieldInfo,
+            // headerInfo,
           }
         })
         .concat({
@@ -397,7 +382,12 @@ export default {
         initializedRecord[lockedFilter.field] = lockedFilter.value
       })
 
-      this.openDialog('addRecord', initializedRecord)
+      this.openEditDialog('add', initializedRecord)
+    },
+
+    openEditDialog(mode, selectedItem) {
+      this.dialogs.editMode = mode
+      this.openDialog('editRecord', selectedItem)
     },
 
     handleUpdateOptions(options) {
@@ -468,14 +458,21 @@ export default {
           edges: {
             node: collapseObject(
               this.recordInfo.headers.reduce(
-                (total, headerObject) => {
-                  const fieldInfo = this.recordInfo.fields[headerObject.field]
+                (total, headerInfo) => {
+                  const fieldInfo = this.recordInfo.fields[headerInfo.field]
 
                   // field unknown, abort
                   if (!fieldInfo)
-                    throw new Error('Unknown field: ' + headerObject.field)
+                    throw new Error('Unknown field: ' + headerInfo.field)
 
-                  total[headerObject.field] = true
+                  total[fieldInfo.mainField ?? headerInfo.field] = true
+
+                  // if fieldInfo.requiredFields, those fields must also be requested
+                  if (fieldInfo.requiredFields) {
+                    fieldInfo.requiredFields.forEach((field) => {
+                      total[field] = true
+                    })
+                  }
                   return total
                 },
                 { id: true } // always add id

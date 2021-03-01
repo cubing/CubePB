@@ -20,6 +20,8 @@ export default {
   },
 
   methods: {
+    getNestedProperty,
+
     setColumnValue(value) {
       const fieldParts = this.fieldpath.split('.')
       if (fieldParts.length === 1) {

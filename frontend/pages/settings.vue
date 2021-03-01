@@ -2,11 +2,44 @@
   <v-container fluid fill-height>
     <v-layout align-center justify-center>
       <v-flex xs12 sm8 md4>
-        <v-card class="elevation-12">
+        <v-card class="elevation-12 mb-3">
           <v-toolbar color="accent" flat>
-            <v-toolbar-title>User Settings</v-toolbar-title>
+            <v-toolbar-title>WCA Profile Settings</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn text @click="goToWcaAccountManagement()">
+          </v-toolbar>
+          <v-card-text>
+            <span
+              >These settings are tied to your official WCA account. To manage
+              these settings, click "Manage WCA Account", then click "Sync WCA
+              Data".</span
+            >
+            <v-text-field
+              v-model="inputs.name"
+              label="Name"
+              prepend-icon="mdi-account-details"
+              readonly
+            ></v-text-field>
+            <v-text-field
+              v-model="inputs.wca_id"
+              label="WCA ID"
+              prepend-icon="mdi-account-details"
+              readonly
+            ></v-text-field>
+            <v-text-field
+              v-model="inputs.avatar"
+              label="Avatar URL"
+              prepend-icon="mdi-account-details"
+              readonly
+            ></v-text-field>
+            <v-text-field
+              v-model="inputs.country"
+              label="Country"
+              prepend-icon="mdi-account-details"
+              readonly
+            ></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn text block @click="goToWcaAccountManagement()">
               <img
                 src="../static/WCAlogo_notext.svg"
                 alt=""
@@ -15,21 +48,40 @@
               />
               Manage WCA Account
             </v-btn>
+          </v-card-actions>
+          <v-card-actions>
+            <v-btn
+              block
+              color="primary"
+              :loading="loading.syncWcaData"
+              @click="goToWcaAuth()"
+              >Sync WCA Data</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+        <v-card class="elevation-12">
+          <v-toolbar color="accent" flat>
+            <v-toolbar-title>CubePB Settings</v-toolbar-title>
+            <v-spacer></v-spacer>
           </v-toolbar>
           <v-card-text>
-            <v-text-field
-              v-model="inputs.name"
-              label="Name"
-              name="name"
-              prepend-icon="mdi-account-details"
-              type="text"
-            ></v-text-field>
+            <span
+              >These settings are tied to your CubePB account. They can be
+              directly edited on this page.</span
+            >
+            <v-divider></v-divider>
+            <v-switch
+              v-model="inputs.is_public"
+              label="Public Profile Page"
+              @change="inputsChanged = true"
+            ></v-switch>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               color="primary"
               :loading="loading.submitting"
+              :disabled="!inputsChanged"
               @click="handleSubmit()"
               >Save Changes</v-btn
             >
@@ -43,7 +95,7 @@
 <script>
 import { executeJomql } from '~/services/jomql'
 import sharedService from '~/services/shared'
-import { goToWcaAccountManagement } from '~/services/auth'
+import { goToWcaAccountManagement, goToWcaAuth } from '~/services/auth'
 
 export default {
   components: {},
@@ -53,10 +105,16 @@ export default {
       inputs: {
         id: null,
         name: null,
+        wca_id: null,
+        avatar: null,
+        country: null,
+        is_public: null,
       },
 
+      inputsChanged: false,
       loading: {
         submitting: false,
+        syncWcaData: false,
         loadUser: false,
       },
     }
@@ -72,6 +130,37 @@ export default {
 
   methods: {
     goToWcaAccountManagement,
+    goToWcaAuth,
+
+    async syncWcaData() {
+      this.loading.syncWcaData = true
+      try {
+        const data = await executeJomql(this, {
+          syncWcaData: {
+            name: true,
+            __args: {
+              item: {
+                id: this.inputs.id,
+              },
+              fields: {
+                is_public: this.inputs.is_public,
+              },
+            },
+          },
+        })
+
+        this.$store.commit('auth/partialUpdateUser', data)
+
+        this.$notifier.showSnackbar({
+          message: 'User info synced successfully',
+          variant: 'success',
+        })
+      } catch (err) {
+        sharedService.handleError(err, this.$root)
+      }
+      this.loading.syncWcaData = false
+    },
+
     async handleSubmit() {
       this.loading.submitting = true
       try {
@@ -83,7 +172,7 @@ export default {
                 id: this.inputs.id,
               },
               fields: {
-                name: this.inputs.name,
+                is_public: this.inputs.is_public,
               },
             },
           },
@@ -95,6 +184,8 @@ export default {
           message: 'User info updated successfully',
           variant: 'success',
         })
+
+        this.inputsChanged = false
       } catch (err) {
         sharedService.handleError(err, this.$root)
       }
@@ -108,13 +199,14 @@ export default {
           getCurrentUser: {
             id: true,
             name: true,
+            wca_id: true,
+            avatar: true,
+            country: true,
+            is_public: true,
           },
         })
 
-        this.inputs = {
-          id: data.id,
-          name: data.name,
-        }
+        this.inputs = data
       } catch (err) {
         sharedService.handleError(err, this.$root)
       }

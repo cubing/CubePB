@@ -79,7 +79,7 @@ export class AuthService extends SimpleService {
           wca_id: wcaData.me.wca_id,
           email: wcaData.me.email,
           name: wcaData.me.name,
-          avatar: wcaData.me.avatar.url,
+          avatar: wcaData.me.avatar.thumb_url,
           country: wcaData.me.country_iso2,
           created_by: 0,
         },
@@ -103,7 +103,25 @@ export class AuthService extends SimpleService {
         email: wcaData.me.email,
       };
     } else {
-      userInfo = userResults[0];
+      // if found, force update wca_id, email, name, avatar, country fields
+      await sqlHelper.updateTableRow(
+        User.typename,
+        {
+          wca_id: wcaData.me.wca_id,
+          email: wcaData.me.email,
+          name: wcaData.me.name,
+          avatar: wcaData.me.avatar.thumb_url,
+          country: wcaData.me.country_iso2,
+        },
+        {
+          fields: [{ field: "id", value: userResults[0].id }],
+        }
+      );
+
+      userInfo = {
+        id: userResults[0].id,
+        email: wcaData.me.email,
+      };
     }
 
     //if OK, return auth payload

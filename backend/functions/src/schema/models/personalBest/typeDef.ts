@@ -68,6 +68,14 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),
-    ...generateCreatedByField(User),
+    // ...generateCreatedByField(User),
+    created_by: generateJoinableField({
+      service: User,
+      allowNull: false,
+      typeDefOptions: { addable: false, updateable: false },
+      sqlDefinition: {
+        unique: "compositeIndex",
+      },
+    }),
   },
 });

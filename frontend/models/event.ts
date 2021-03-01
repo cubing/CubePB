@@ -4,6 +4,7 @@ import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 export default <RecordInfo<'event'>>{
   type: 'event',
   name: 'Event',
+  pluralName: 'Events',
   icon: 'mdi-view-grid',
   renderItem: (item) => item.name,
   options: {
@@ -11,12 +12,7 @@ export default <RecordInfo<'event'>>{
     sortDesc: [true],
   },
   hasSearch: true,
-  filters: [
-    {
-      field: 'id',
-      operator: 'eq',
-    },
-  ],
+  filters: [],
   fields: {
     id: {
       text: 'ID',
@@ -49,9 +45,7 @@ export default <RecordInfo<'event'>>{
     fields: ['name', 'code', 'max_attempts'],
   },
   deleteOptions: {},
-  shareOptions: {
-    route: '/events',
-  },
+  shareOptions: undefined,
   headers: [
     {
       field: 'name',

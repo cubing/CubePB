@@ -12,6 +12,7 @@ export default (context) => {
           email: true,
           name: true,
           role: true,
+          avatar: true,
           permissions: true,
           all_permissions: true,
         },

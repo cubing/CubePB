@@ -43,6 +43,20 @@
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
         </v-list-item>
+        <v-list-item
+          v-if="user"
+          key="-1"
+          :to="currentUserProfileRoute"
+          router
+          exact
+        >
+          <v-list-item-action>
+            <v-icon>mdi-card-account-details</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>My Profile</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <v-divider></v-divider>
       <v-list dense>
@@ -82,16 +96,10 @@
             >
               <template v-slot:activator="{ on }">
                 <v-list-item key="-2" v-on="on">
-                  <v-list-item-action>
-                    <v-img
-                      v-if="user.avatar"
-                      :src="user.avatar"
-                      height="24"
-                      width="24"
-                      contain
-                    />
+                  <v-list-item-avatar>
+                    <v-img v-if="user.avatar" :src="user.avatar" />
                     <v-icon v-else>mdi-account</v-icon>
-                  </v-list-item-action>
+                  </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>{{ user.name }}</v-list-item-title>
                     <v-list-item-subtitle>{{
@@ -165,26 +173,106 @@
       </template>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
-      <v-toolbar-title v-text="title" />
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-img
+        v-if="!drawer"
+        :src="require('../static/cubepb-trimmed.png')"
+        max-height="48"
+        max-width="130"
+        contain
+      />
       <v-spacer />
+      <template v-if="user">
+        <v-menu :close-on-content-click="true" :max-width="300" offset-y bottom>
+          <template v-slot:activator="{ on }">
+            <v-chip pill v-on="on">
+              <v-avatar left>
+                <v-img v-if="user.avatar" :src="user.avatar"></v-img
+                ><v-icon v-else>mdi-account</v-icon>
+              </v-avatar>
+              {{ user.name }}
+            </v-chip>
+          </template>
+
+          <v-card>
+            <v-list>
+              <v-list-item>
+                <v-list-item-avatar>
+                  <v-img v-if="user.avatar" :src="user.avatar" />
+                  <v-icon v-else>mdi-account</v-icon>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title>{{ user.name }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    >Role: {{ user.role }}</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+
+            <v-divider></v-divider>
+
+            <v-list dense>
+              <v-list-item :key="-1" :to="currentUserProfileRoute" exact nuxt>
+                <v-list-item-content>
+                  <v-list-item-title>My Profile</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                v-for="(item, i) in accountItems"
+                :key="i"
+                :to="item.to"
+                exact
+                nuxt
+              >
+                <v-list-item-content>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item @click="logout()">
+                <v-list-item-content>
+                  <v-list-item-title>Logout</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-menu>
+      </template>
+      <v-btn v-else text @click="goToWcaAuth()">
+        <img
+          src="../static/WCAlogo_notext.svg"
+          alt=""
+          style="width: 32px"
+          class="pr-2"
+        />
+        WCA Login
+      </v-btn>
     </v-app-bar>
     <v-main>
       <nuxt />
     </v-main>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
     <v-footer :absolute="!fixed" app>
       <a @click="copyIdTokenToClipboard()">{{ getBuildInfo() }}</a>
       <span>&nbsp;&copy; {{ new Date().getFullYear() }}</span>
-      <v-spacer> </v-spacer>
+      <span class="pl-2"
+        >CubePB is made possible by
+        <a @click="openLink('https://thecubicle.com')">TheCubicle.com</a></span
+      >
+      <v-spacer></v-spacer>
+      <v-icon
+        small
+        class="pr-2"
+        @click="openLink('https://github.com/cubing/CubePB')"
+        >mdi-discord</v-icon
+      >
+      <v-icon
+        small
+        class="pr-2"
+        @click="openLink('https://github.com/cubing/CubePB')"
+        >mdi-github</v-icon
+      >
       <v-btn small text @click="toggleTheme()"
         >Dark Mode: {{ $vuetify.theme.dark ? 'On' : 'Off' }}</v-btn
       >
@@ -198,7 +286,7 @@ import { mapGetters } from 'vuex'
 import Snackbar from '~/components/snackbar/snackbar'
 import { goToWcaAuth, handleLogout } from '~/services/auth'
 import sharedService from '~/services/shared'
-import { copyToClipboard } from '~/services/common'
+import { copyToClipboard, openLink } from '~/services/common'
 
 export default {
   components: {
@@ -226,13 +314,13 @@ export default {
         {
           icon: 'mdi-account',
           title: 'Users',
-          to: '/users?filters=' + encodeURIComponent('is_public eq true'),
+          to: '/public-users',
           loginRequired: false,
         },
         {
           icon: 'mdi-star',
           title: 'All PBs',
-          to: '/personalBests',
+          to: '/all-pbs',
           loginRequired: false,
         },
       ],
@@ -246,31 +334,31 @@ export default {
           items: [
             {
               title: 'Users',
-              to: 'users',
+              to: '/admin/users',
               roles: ['NORMAL', 'ADMIN'],
               permissions: [],
             },
             {
               title: 'Events',
-              to: 'events',
+              to: '/admin/events',
               roles: ['NORMAL', 'ADMIN'],
               permissions: [],
             },
             {
               title: 'PB Types',
-              to: 'personalBestClasses',
+              to: '/admin/personalBestClasses',
               roles: ['NORMAL', 'ADMIN'],
               permissions: [],
             },
             {
               title: 'Products',
-              to: 'products',
+              to: '/admin/products',
               roles: ['NORMAL', 'ADMIN'],
               permissions: [],
             },
             {
               title: 'PBs',
-              to: 'personalBests',
+              to: '/admin/personalBests',
               roles: ['NORMAL', 'ADMIN'],
               permissions: [],
             },
@@ -280,9 +368,6 @@ export default {
       ],
       accountItems: [{ title: 'Settings', to: '/settings', exact: false }],
       miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'CubePB.com',
     }
   },
 
@@ -302,10 +387,17 @@ export default {
         (item) => this.$store.getters['auth/user'] || !item.loginRequired
       )
     },
+
+    currentUserProfileRoute() {
+      return this.$store.getters['auth/user']
+        ? '/user?id=' + this.$store.getters['auth/user'].id
+        : null
+    },
   },
 
   methods: {
     goToWcaAuth,
+    openLink,
 
     toggleTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark
@@ -316,6 +408,7 @@ export default {
       return (
         allowedRoles.includes(this.$store.getters['auth/user']?.role) ||
         allowedPermissions.some((ele) =>
+          // eslint-disable-next-line camelcase
           this.$store.getters['auth/user']?.all_permissions.includes(ele)
         )
       )

@@ -100,3 +100,7 @@ export function serializeTime(ms: number): string {
     String(Math.floor(cs)).padStart(2, '0')
   )
 }
+
+export function openLink(url: string): void {
+  window.open(url)
+}

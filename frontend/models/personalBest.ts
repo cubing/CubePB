@@ -1,13 +1,18 @@
-import { getEvents, getProducts, getPersonalBestClasses } from '../dropdown'
+import {
+  getEvents,
+  getProducts,
+  getPersonalBestClasses,
+} from '../services/dropdown'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import TimeElapsedColumn from '~/components/table/common/timeElapsedColumn.vue'
-import EditPersonalBestDialog from '~/components/dialog/personalBest/editPersonalBestDialog.vue'
+import CreatedByColumn from '~/components/table/common/createdByColumn.vue'
 import { serializeTime } from '~/services/common'
 
 export default <RecordInfo<'personalBest'>>{
   type: 'personalBest',
   name: 'Personal Best',
+  pluralName: 'Personal Bests',
   icon: 'mdi-timer',
   renderItem: (item) => item.name,
   options: {
@@ -42,14 +47,16 @@ export default <RecordInfo<'personalBest'>>{
       title: 'Happened Before',
       operator: 'lt',
     },
-    {
-      field: 'id',
-      operator: 'eq',
-    },
   ],
   fields: {
     id: {
       text: 'ID',
+    },
+    'created_by.name+created_by.avatar': {
+      text: 'Created By',
+      mainField: 'created_by.name',
+      requiredFields: ['created_by.avatar'],
+      component: CreatedByColumn,
     },
     'pb_class.id': {
       text: 'PB Type',
@@ -86,6 +93,12 @@ export default <RecordInfo<'personalBest'>>{
     },
     'product.name': {
       text: 'Cube',
+    },
+    'created_by.name': {
+      text: 'Created By',
+    },
+    'created_by.avatar': {
+      text: 'Created By',
     },
     time_elapsed: {
       text: 'Time',
@@ -159,7 +172,6 @@ export default <RecordInfo<'personalBest'>>{
       'attempts_total',
       'product.id',
     ],
-    component: EditPersonalBestDialog,
   },
   editOptions: undefined,
   viewOptions: {
@@ -173,12 +185,12 @@ export default <RecordInfo<'personalBest'>>{
       'attempts_total',
       'product.id',
       'score',
+      'created_by.name',
     ],
-    component: EditPersonalBestDialog,
   },
   deleteOptions: {},
   shareOptions: {
-    route: '/personalBests',
+    route: '/pb',
   },
   headers: [
     {
@@ -215,6 +227,11 @@ export default <RecordInfo<'personalBest'>>{
       field: 'happened_on',
       sortable: true,
       width: '150px',
+    },
+    {
+      field: 'created_by.name+created_by.avatar',
+      sortable: false,
+      width: '200px',
     },
     {
       field: 'score',

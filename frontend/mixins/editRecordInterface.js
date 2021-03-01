@@ -9,10 +9,6 @@ import {
 
 export default {
   props: {
-    status: {
-      type: Boolean,
-    },
-
     selectedItem: {
       type: Object,
       default: () => ({}),
@@ -30,6 +26,12 @@ export default {
       validator: (value) => {
         return ['add', 'edit', 'view'].includes(value)
       },
+    },
+
+    // in dialog mode, some changes are made in the component, like max-height
+    dialogMode: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -72,20 +74,16 @@ export default {
   },
 
   watch: {
-    status() {
+    selectedItem() {
       this.reset(true)
     },
   },
 
   created() {
-    this.miscInputs = JSON.parse(JSON.stringify(this.originalMiscInputs))
+    this.reset(true)
   },
 
   methods: {
-    close() {
-      this.$emit('close')
-    },
-
     setInputValue(key, value) {
       const inputObject = this.inputsArray.find((ele) => ele.field === key)
       if (!inputObject) throw new Error(`Input key not found: '${key}'`)
@@ -237,9 +235,7 @@ export default {
           variant: 'success',
         })
 
-        this.$emit('submit', data)
-
-        this.close()
+        this.$emit('handleSubmit', data)
       } catch (err) {
         sharedService.handleError(err, this.$root)
       }
@@ -341,8 +337,6 @@ export default {
     },
 
     reset(hardReset = false) {
-      if (!this.status) return
-
       // duplicate misc inputs, if any
       this.miscInputs = JSON.parse(JSON.stringify(this.originalMiscInputs))
 

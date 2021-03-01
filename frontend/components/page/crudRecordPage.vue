@@ -1,8 +1,63 @@
+<template>
+  <v-container fluid>
+    <v-layout column justify-left align-left>
+      <v-flex xs12 sm8 md6>
+        <div class="pt-2">
+          <component
+            :is="interfaceComponent"
+            :record-info="recordInfo"
+            :search="$route.query.search"
+            :filters="filters"
+            :locked-filters="lockedFilters"
+            :hidden-filters="hiddenFilters"
+            :hidden-headers="hiddenHeaders"
+            :title="title"
+            :icon="icon"
+            dense
+            @filters-updated="handleFiltersUpdated"
+          ></component>
+        </div>
+      </v-flex>
+    </v-layout>
+  </v-container>
+</template>
+
+<script>
 import sharedService from '~/services/shared'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 import { isObject } from '~/services/common'
 
 export default {
+  props: {
+    title: {
+      type: String,
+      default: null,
+    },
+    icon: {
+      type: String,
+      default: null,
+    },
+    recordInfo: {
+      type: Object,
+      required: true,
+    },
+    hiddenHeaders: {
+      type: Array,
+      default: () => [],
+    },
+    lockedFilters: {
+      type: Array,
+      default: () => [],
+    },
+    hiddenFilters: {
+      type: Array,
+      default: () => [],
+    },
+    head: {
+      type: Object,
+      default: () => null,
+    },
+  },
   computed: {
     interfaceComponent() {
       return this.recordInfo.interfaceComponent || CrudRecordInterface
@@ -88,8 +143,11 @@ export default {
   },
 
   head() {
-    return {
-      title: 'Manage ' + this.capitalizedType + 's',
-    }
+    return (
+      this.head ?? {
+        title: 'Manage ' + this.recordInfo.pluralName,
+      }
+    )
   },
 }
+</script>

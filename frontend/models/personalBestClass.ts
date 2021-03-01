@@ -1,28 +1,33 @@
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 
-export default <RecordInfo<'product'>>{
-  type: 'product',
-  name: 'Product',
-  icon: 'mdi-dots-grid',
+export default <RecordInfo<'personalBestClass'>>{
+  type: 'personalBestClass',
+  name: 'Personal Best Type',
+  pluralName: 'Personal Best Types',
+  icon: 'mdi-content-copy',
   renderItem: (item) => item.name,
   options: {
     sortBy: ['created_at'],
     sortDesc: [true],
   },
   hasSearch: true,
-  filters: [
-    {
-      field: 'id',
-      operator: 'eq',
-    },
-  ],
+  filters: [],
   fields: {
     id: {
       text: 'ID',
     },
     name: {
       text: 'Name',
+    },
+    description: {
+      text: 'Description',
+      inputType: 'textarea',
+      optional: true,
+    },
+    set_size: {
+      text: 'Sample Size',
+      optional: true,
     },
     created_at: {
       text: 'Created At',
@@ -34,23 +39,27 @@ export default <RecordInfo<'product'>>{
     },
   },
   addOptions: {
-    fields: ['name'],
+    fields: ['name', 'description', 'set_size'],
   },
   editOptions: {
-    fields: ['name'],
+    fields: ['name', 'description'],
   },
   viewOptions: {
-    fields: ['name'],
+    fields: ['name', 'description', 'set_size'],
   },
   deleteOptions: {},
-  shareOptions: {
-    route: '/products',
-  },
+  shareOptions: undefined,
   headers: [
     {
       field: 'name',
       sortable: true,
     },
+    {
+      field: 'set_size',
+      sortable: false,
+      width: '100px',
+    },
+
     {
       field: 'created_at',
       width: '150px',

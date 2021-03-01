@@ -1,38 +1,36 @@
 <template>
-  <v-container fluid>
-    <v-layout column justify-left align-left>
-      <v-flex xs12 sm8 md6>
-        <div class="pt-2">
-          <component
-            :is="interfaceComponent"
-            :record-info="recordInfo"
-            :search="$route.query.search"
-            :filters="filters"
-            :locked-filters="lockedFilters"
-            dense
-            @filters-updated="handleFiltersUpdated"
-          ></component>
-        </div>
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <CrudRecordPage
+    :record-info="recordInfo"
+    :locked-filters="lockedFilters"
+    :hidden-filters="hiddenFilters"
+    :hidden-headers="hiddenHeaders"
+    :title="title"
+    :head="head"
+  ></CrudRecordPage>
 </template>
 
 <script>
-import crudPageMixin from '~/mixins/crudPage'
-import personalBestRecordInfo from '~/services/models/personalBest'
+import CrudRecordPage from '~/components/page/crudRecordPage.vue'
+import personalBestRecordInfo from '~/models/personalBest'
 
 export default {
-  mixins: [crudPageMixin],
+  components: {
+    CrudRecordPage,
+  },
 
   data() {
     return {
       recordInfo: personalBestRecordInfo,
+      head: {
+        title: 'My PBs',
+      },
+      title: 'My PBs',
+      hiddenFilters: ['created_by.id'],
+      hiddenHeaders: ['created_by.name+created_by.avatar'],
     }
   },
 
   computed: {
-    // override
     lockedFilters() {
       return this.$store.getters['auth/user']
         ? [
