@@ -4,7 +4,7 @@
 
 <script>
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
-import productRecordInfo from '~/models/product'
+import { Product } from '~/models'
 
 export default {
   components: {
@@ -13,7 +13,7 @@ export default {
 
   data() {
     return {
-      recordInfo: productRecordInfo,
+      recordInfo: Product,
     }
   },
 }

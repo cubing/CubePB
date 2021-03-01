@@ -10,7 +10,7 @@
 
 <script>
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
-import allPbsRecordInfo from '~/models/special/allPbs'
+import { PbPublic } from '~/models/special'
 
 export default {
   components: {
@@ -19,7 +19,7 @@ export default {
 
   data() {
     return {
-      recordInfo: allPbsRecordInfo,
+      recordInfo: PbPublic,
       head: {
         title: 'Public PBs',
       },

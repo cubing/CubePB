@@ -76,8 +76,6 @@ export default {
         })
 
         this.$emit('handleSubmit', data)
-
-        this.close()
       } catch (err) {
         sharedService.handleError(err, this.$root)
       }

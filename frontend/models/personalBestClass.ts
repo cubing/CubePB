@@ -1,7 +1,7 @@
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 
-export default <RecordInfo<'personalBestClass'>>{
+export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
   type: 'personalBestClass',
   name: 'Personal Best Type',
   pluralName: 'Personal Best Types',

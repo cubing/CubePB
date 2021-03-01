@@ -9,10 +9,11 @@ import TimeElapsedColumn from '~/components/table/common/timeElapsedColumn.vue'
 import CreatedByColumn from '~/components/table/common/createdByColumn.vue'
 import { serializeTime } from '~/services/common'
 
-export default <RecordInfo<'personalBest'>>{
+export const PersonalBest = <RecordInfo<'personalBest'>>{
   type: 'personalBest',
   name: 'Personal Best',
   pluralName: 'Personal Bests',
+  // viewRecordRoute: '/pb',
   icon: 'mdi-timer',
   renderItem: (item) => item.name,
   options: {
@@ -189,9 +190,7 @@ export default <RecordInfo<'personalBest'>>{
     ],
   },
   deleteOptions: {},
-  shareOptions: {
-    route: '/pb',
-  },
+  shareOptions: {},
   headers: [
     {
       field: 'event.name',

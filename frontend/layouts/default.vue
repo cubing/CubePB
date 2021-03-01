@@ -263,13 +263,13 @@
       <v-spacer></v-spacer>
       <v-icon
         small
-        class="pr-2"
+        class="mr-2"
         @click="openLink('https://discord.gg/zg3GafZF')"
         >mdi-discord</v-icon
       >
       <v-icon
         small
-        class="pr-2"
+        class="mr-2"
         @click="openLink('https://github.com/cubing/CubePB')"
         >mdi-github</v-icon
       >

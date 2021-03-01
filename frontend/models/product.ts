@@ -1,7 +1,7 @@
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 
-export default <RecordInfo<'product'>>{
+export const Product = <RecordInfo<'product'>>{
   type: 'product',
   name: 'Product',
   pluralName: 'Products',

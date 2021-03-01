@@ -4,7 +4,7 @@
 
 <script>
 import ViewRecordPage from '~/components/page/viewRecordPage.vue'
-import userPublicRecordInfo from '~/models/special/userPublic'
+import { UserPublic } from '~/models/special'
 
 export default {
   components: {
@@ -12,7 +12,7 @@ export default {
   },
   data() {
     return {
-      recordInfo: userPublicRecordInfo,
+      recordInfo: UserPublic,
     }
   },
 }

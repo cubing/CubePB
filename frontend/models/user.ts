@@ -1,10 +1,10 @@
-import personalBestRecordInfo from './personalBest'
+import { PersonalBest } from '.'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
 import { getBooleanOptions, getUserRoles } from '~/services/dropdown'
 
-export default <RecordInfo<'user'>>{
+export const User = <RecordInfo<'user'>>{
   type: 'user',
   name: 'User',
   pluralName: 'Users',
@@ -127,7 +127,7 @@ export default <RecordInfo<'user'>>{
   ],
   expandTypes: [
     {
-      recordInfo: personalBestRecordInfo,
+      recordInfo: PersonalBest,
       name: 'PBs',
       excludeFilters: ['created_by.id'],
       excludeHeaders: ['created_by.name+created_by.avatar'],

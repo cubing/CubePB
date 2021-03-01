@@ -11,7 +11,7 @@
 
 <script>
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
-import personalBestRecordInfo from '~/models/personalBest'
+import { MyPbs } from '~/models/special'
 
 export default {
   components: {
@@ -20,7 +20,7 @@ export default {
 
   data() {
     return {
-      recordInfo: personalBestRecordInfo,
+      recordInfo: MyPbs,
       head: {
         title: 'My PBs',
       },

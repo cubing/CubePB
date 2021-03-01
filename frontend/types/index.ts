@@ -6,7 +6,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
   name: string
   pluralName: string
   // route that shareUrl and enterItem should be based off
-  viewItemRoute?: string
+  viewRecordRoute?: string
   icon?: string
   // how to render the item as a string
   renderItem?: (item) => string

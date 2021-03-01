@@ -9,7 +9,7 @@
 
 <script>
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
-import userPublicRecordInfo from '~/models/special/userPublic'
+import { UserPublic } from '~/models/special'
 
 export default {
   components: {
@@ -18,7 +18,7 @@ export default {
 
   data() {
     return {
-      recordInfo: userPublicRecordInfo,
+      recordInfo: UserPublic,
       lockedFilters: [
         {
           field: 'is_public',

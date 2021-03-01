@@ -1,8 +1,7 @@
-import userRecordInfo from '../user'
-import personalBestRecordInfo from '../personalBest'
+import { User, PersonalBest } from '..'
 
-export default {
-  ...userRecordInfo,
+export const UserPublic = {
+  ...User,
   viewRecordRoute: '/user',
   filters: [],
   editOptions: undefined,
@@ -28,7 +27,7 @@ export default {
   ],
   expandTypes: [
     {
-      recordInfo: personalBestRecordInfo,
+      recordInfo: PersonalBest,
       name: 'PBs',
       excludeFilters: ['created_by.id'],
       excludeHeaders: ['created_by.name+created_by.avatar'],
