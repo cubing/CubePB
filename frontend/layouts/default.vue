@@ -264,7 +264,7 @@
       <v-icon
         small
         class="pr-2"
-        @click="openLink('https://github.com/cubing/CubePB')"
+        @click="openLink('https://discord.gg/zg3GafZF')"
         >mdi-discord</v-icon
       >
       <v-icon
