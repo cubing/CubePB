@@ -1,6 +1,7 @@
 <template>
   <CrudRecordPage
     :record-info="recordInfo"
+    :locked-filters="lockedFilters"
     :head="head"
     :title="title"
     icon="mdi-star"
@@ -20,9 +21,16 @@ export default {
     return {
       recordInfo: allPbsRecordInfo,
       head: {
-        title: 'All PBs',
+        title: 'Public PBs',
       },
-      title: 'All PBs',
+      lockedFilters: [
+        {
+          field: 'created_by.is_public',
+          operator: 'eq',
+          value: true,
+        },
+      ],
+      title: 'Public PBs',
     }
   },
 }

@@ -46,43 +46,49 @@ export abstract class BaseService {
       isAdmin = false,
     }: ServiceFunctionInputs
   ): Promise<boolean> {
-    if (isAdmin) return true;
+    try {
+      if (isAdmin) return true;
 
-    if (!req.user) return false;
+      // if logged in, attempt to verify permissions using the permissions array
+      if (req.user) {
+        // check against permissions array first. allow if found.
+        const passablePermissionsArray = [
+          userPermissionEnum.A_A,
+          userPermissionEnum[this.typename + "_x"],
+          userPermissionEnum[this.typename + "_" + operation],
+        ];
 
-    // check against permissions array first. allow if found.
-    const passablePermissionsArray = [
-      userPermissionEnum.A_A,
-      userPermissionEnum[this.typename + "_x"],
-      userPermissionEnum[this.typename + "_" + operation],
-    ];
+        if (
+          req.user.permissions.some((ele) =>
+            passablePermissionsArray.includes(ele)
+          )
+        )
+          return true;
+      }
 
-    if (
-      req.user.permissions.some((ele) => passablePermissionsArray.includes(ele))
-    )
-      return true;
-
-    // if that failed, fall back to accessControl
-    let allowed: boolean;
-    if (this.accessControl) {
-      const validatedOperation =
-        operation in this.accessControl ? operation : "*";
-      // if operation not in the accessControl object, deny
-      allowed = this.accessControl[validatedOperation]
-        ? await this.accessControl[validatedOperation]({
-            req,
-            fieldPath,
-            args,
-            query,
-            data,
-            isAdmin,
-          })
-        : false;
-    } else {
+      // if that failed, fall back to accessControl
       // deny by default if no accessControl object
-      allowed = true;
-    }
+      let allowed = false;
+      if (this.accessControl) {
+        const validatedOperation =
+          operation in this.accessControl ? operation : "*";
+        // if operation not in the accessControl object, deny
+        allowed = this.accessControl[validatedOperation]
+          ? await this.accessControl[validatedOperation]({
+              req,
+              fieldPath,
+              args,
+              query,
+              data,
+              isAdmin,
+            })
+          : false;
+      }
 
-    return allowed;
+      return allowed;
+    } catch {
+      // if any error is thrown, return false
+      return false;
+    }
   }
 }

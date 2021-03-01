@@ -33,9 +33,5 @@ export class EventService extends PaginatedService {
     get: () => true,
 
     getMultiple: () => true,
-
-    update: generateUserRoleGuard([userRoleKenum.ADMIN]),
-    create: generateUserRoleGuard([userRoleKenum.ADMIN]),
-    delete: generateUserRoleGuard([userRoleKenum.ADMIN]),
   };
 }

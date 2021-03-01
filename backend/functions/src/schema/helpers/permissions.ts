@@ -7,7 +7,7 @@ import { StringKeyObject } from "jomql";
 
 export const userRoleToPermissionsMap = {
   [userRoleKenum.ADMIN.name]: [userPermissionEnum.A_A],
-  [userRoleKenum.NORMAL.name]: [],
+  [userRoleKenum.NORMAL.name]: [userPermissionEnum.personalBest_create],
 };
 
 export function generateItemCreatedByUserGuard(

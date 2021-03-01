@@ -14,6 +14,7 @@ export class PersonalBestService extends PaginatedService {
   filterFieldsMap = {
     id: {},
     "created_by.id": {},
+    "created_by.is_public": {},
     "product.id": {},
     "event.id": {},
     "pb_class.id": {},
@@ -37,13 +38,52 @@ export class PersonalBestService extends PaginatedService {
   groupByFieldsMap = {};
 
   accessControl = {
-    get: () => true,
+    get: async ({ args, fieldPath }) => {
+      // check the created_by.is_public to see if true
+      const result = await this.lookupRecord(
+        [
+          {
+            field: "created_by.is_public",
+          },
+        ],
+        args,
+        fieldPath
+      );
+      return result["created_by.is_public"] === true;
+    },
 
-    getMultiple: () => true,
+    getMultiple: ({ req, args }) => {
+      // filterBy must have created_by.is_public === true
+      // OR filterBy must have created_by.id === req.user.id
+      if (
+        Array.isArray(args.filterBy) &&
+        args.filterBy.length > 0 &&
+        args.filterBy.every((filterObject) => {
+          return (
+            filterObject["created_by.is_public"].eq === true ||
+            filterObject["created_by.id"] === req.user?.id
+          );
+        })
+      ) {
+        return true;
+      }
 
-    update: generateUserRoleGuard([userRoleKenum.ADMIN]),
-    create: generateUserRoleGuard([userRoleKenum.ADMIN]),
-    delete: generateUserRoleGuard([userRoleKenum.ADMIN]),
+      return false;
+    },
+
+    delete: async ({ req, args, fieldPath }) => {
+      // must be creator of the PB to delete it
+      const result = await this.lookupRecord(
+        [
+          {
+            field: "created_by.id",
+          },
+        ],
+        args,
+        fieldPath
+      );
+      return req.user.id === result["created_by.id"];
+    },
   };
 
   @permissionsCheck("create")

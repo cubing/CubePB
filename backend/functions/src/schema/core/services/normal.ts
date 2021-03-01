@@ -32,6 +32,7 @@ import {
   SqlSortFieldObject,
   ServiceFunctionInputs,
   SqlWhereFieldOperator,
+  SqlSelectFieldObject,
 } from "../../../types";
 
 import { btoa, isObject, capitalizeString } from "../../helpers/shared";
@@ -648,6 +649,34 @@ export class NormalService extends BaseService {
         args[key] = results[0].id;
       }
     }
+  }
+
+  // looks up a record using its keys
+  async lookupRecord(
+    selectFields: SqlSelectFieldObject[],
+    args: any,
+    fieldPath: string[]
+  ): Promise<any> {
+    const results = await sqlHelper.fetchTableRows({
+      select: selectFields ?? [{ field: "id" }],
+      from: this.typename,
+      where: {
+        connective: "AND",
+        fields: Object.entries(args).map(([field, value]) => ({
+          field,
+          value,
+        })),
+      },
+    });
+
+    if (results.length < 1) {
+      throw new JomqlBaseError({
+        message: `${this.typename} not found`,
+        fieldPath,
+      });
+    }
+
+    return results[0];
   }
 
   @permissionsCheck("create")

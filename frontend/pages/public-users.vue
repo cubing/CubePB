@@ -2,6 +2,7 @@
   <CrudRecordPage
     :record-info="recordInfo"
     :locked-filters="lockedFilters"
+    :title="title"
     :head="head"
   ></CrudRecordPage>
 </template>
@@ -18,22 +19,19 @@ export default {
   data() {
     return {
       recordInfo: userPublicRecordInfo,
-      // override
-      head: {
-        title: 'Users',
-      },
-    }
-  },
-  computed: {
-    lockedFilters() {
-      return [
+      lockedFilters: [
         {
           field: 'is_public',
           operator: 'eq',
           value: true,
         },
-      ]
-    },
+      ],
+      // override
+      head: {
+        title: 'Public Users',
+      },
+      title: 'Public Users',
+    }
   },
 }
 </script>

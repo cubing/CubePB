@@ -1,4 +1,5 @@
 import userRecordInfo from '../user'
+import personalBestRecordInfo from '../personalBest'
 
 export default {
   ...userRecordInfo,
@@ -23,6 +24,23 @@ export default {
       field: 'country',
       width: '100px',
       sortable: false,
+    },
+  ],
+  expandTypes: [
+    {
+      recordInfo: personalBestRecordInfo,
+      name: 'PBs',
+      excludeFilters: ['created_by.id'],
+      excludeHeaders: ['created_by.name+created_by.avatar'],
+      lockedFilters: (_that, item) => {
+        return [
+          {
+            field: 'created_by.id',
+            operator: 'eq',
+            value: item.id,
+          },
+        ]
+      },
     },
   ],
 }

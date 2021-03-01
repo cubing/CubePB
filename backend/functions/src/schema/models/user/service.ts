@@ -26,8 +26,32 @@ export class UserService extends PaginatedService {
   };
 
   accessControl = {
-    getMultiple: () => true,
-    get: () => true,
-    "*": generateUserRoleGuard([userRoleKenum.ADMIN]),
+    getMultiple: ({ args }) => {
+      // every args.filterBy array member MUST have is_public: true
+      if (
+        Array.isArray(args.filterBy) &&
+        args.filterBy.length > 0 &&
+        args.filterBy.every((filterObject) => {
+          return filterObject.is_public.eq === true;
+        })
+      ) {
+        return true;
+      }
+
+      return false;
+    },
+    get: async ({ args, fieldPath }) => {
+      // check the user to see if is_public === true
+      const result = await this.lookupRecord(
+        [
+          {
+            field: "is_public",
+          },
+        ],
+        args,
+        fieldPath
+      );
+      return result.is_public === true;
+    },
   };
 }

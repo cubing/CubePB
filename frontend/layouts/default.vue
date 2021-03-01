@@ -313,14 +313,14 @@ export default {
         },
         {
           icon: 'mdi-account',
-          title: 'Users',
+          title: 'Public Users',
           to: '/public-users',
           loginRequired: false,
         },
         {
           icon: 'mdi-star',
-          title: 'All PBs',
-          to: '/all-pbs',
+          title: 'Public PBs',
+          to: '/public-pbs',
           loginRequired: false,
         },
       ],

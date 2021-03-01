@@ -29,11 +29,6 @@ export class PersonalBestClassService extends PaginatedService {
 
   accessControl = {
     get: () => true,
-
     getMultiple: () => true,
-
-    update: generateUserRoleGuard([userRoleKenum.ADMIN]),
-    create: generateUserRoleGuard([userRoleKenum.ADMIN]),
-    delete: generateUserRoleGuard([userRoleKenum.ADMIN]),
   };
 }
