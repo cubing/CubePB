@@ -11,6 +11,7 @@ import { serializeTime } from '~/services/common'
 
 export const PersonalBest = <RecordInfo<'personalBest'>>{
   type: 'personalBest',
+  pluralType: 'personalBests',
   name: 'Personal Best',
   pluralName: 'Personal Bests',
   // viewRecordRoute: '/pb',

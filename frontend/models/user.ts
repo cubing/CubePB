@@ -6,6 +6,7 @@ import { getBooleanOptions, getUserRoles } from '~/services/dropdown'
 
 export const User = <RecordInfo<'user'>>{
   type: 'user',
+  pluralType: 'users',
   name: 'User',
   pluralName: 'Users',
   icon: 'mdi-account',

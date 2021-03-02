@@ -60,6 +60,7 @@ env.pusher && initializePusher(env.pusher);
 initializeJomql(app, jomqlOptions);
 
 app.get("/schema.ts", function (req, res, next) {
+  res.header("Content-Type", "text/plain");
   const tsSchemaGenerator = new CustomSchemaGenerator(jomqlOptions);
   tsSchemaGenerator.buildSchema();
   tsSchemaGenerator.processSchema();

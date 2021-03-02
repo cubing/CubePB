@@ -3,6 +3,7 @@ import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 
 export const Event = <RecordInfo<'event'>>{
   type: 'event',
+  pluralType: 'events',
   name: 'Event',
   pluralName: 'Events',
   icon: 'mdi-view-grid',

@@ -59,9 +59,9 @@
         </v-list-item>
       </v-list>
       <v-divider></v-divider>
-      <v-list dense>
+      <v-list v-if="isAdmin" dense>
         <v-list-group
-          v-for="item in visibleFeatureGroups"
+          v-for="item in adminItems"
           :key="item.title"
           v-model="item.active"
           :prepend-icon="item.action"
@@ -286,7 +286,8 @@ import { mapGetters } from 'vuex'
 import Snackbar from '~/components/snackbar/snackbar'
 import { goToWcaAuth, handleLogout } from '~/services/auth'
 import sharedService from '~/services/shared'
-import { copyToClipboard, openLink } from '~/services/common'
+import { copyToClipboard, openLink, capitalizeString } from '~/services/common'
+import * as models from '~/models'
 
 export default {
   components: {
@@ -324,48 +325,6 @@ export default {
           loginRequired: false,
         },
       ],
-
-      featureItems: [
-        {
-          action: 'mdi-star',
-          active: true,
-          roles: ['ADMIN'],
-          permissions: [],
-          items: [
-            {
-              title: 'Users',
-              to: '/admin/users',
-              roles: ['NORMAL', 'ADMIN'],
-              permissions: [],
-            },
-            {
-              title: 'Events',
-              to: '/admin/events',
-              roles: ['NORMAL', 'ADMIN'],
-              permissions: [],
-            },
-            {
-              title: 'PB Types',
-              to: '/admin/personalBestClasses',
-              roles: ['NORMAL', 'ADMIN'],
-              permissions: [],
-            },
-            {
-              title: 'Products',
-              to: '/admin/products',
-              roles: ['NORMAL', 'ADMIN'],
-              permissions: [],
-            },
-            {
-              title: 'PBs',
-              to: '/admin/personalBests',
-              roles: ['NORMAL', 'ADMIN'],
-              permissions: [],
-            },
-          ],
-          title: 'Administration',
-        },
-      ],
       accountItems: [{ title: 'Settings', to: '/settings', exact: false }],
       miniVariant: false,
     }
@@ -375,12 +334,6 @@ export default {
     ...mapGetters({
       user: 'auth/user',
     }),
-
-    visibleFeatureGroups() {
-      return this.featureItems.filter((item) =>
-        this.canSee(item.roles, item.permissions)
-      )
-    },
 
     visibleNavItems() {
       return this.navItems.filter(
@@ -392,6 +345,25 @@ export default {
       return this.$store.getters['auth/user']
         ? '/user?id=' + this.$store.getters['auth/user'].id
         : null
+    },
+    isAdmin() {
+      return this.$store.getters['auth/user']?.role === 'ADMIN'
+    },
+    adminItems() {
+      return [
+        {
+          action: 'mdi-star',
+          active: false,
+          title: 'Administration',
+          permissions: [],
+          items: Object.values(models).map((recordInfo) => ({
+            title: capitalizeString(recordInfo.pluralName),
+            to: '/admin/' + recordInfo.pluralType,
+            roles: ['ADMIN'],
+            permissions: [],
+          })),
+        },
+      ]
     },
   },
 

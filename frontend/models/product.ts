@@ -3,6 +3,7 @@ import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 
 export const Product = <RecordInfo<'product'>>{
   type: 'product',
+  pluralType: 'products',
   name: 'Product',
   pluralName: 'Products',
   icon: 'mdi-dots-grid',

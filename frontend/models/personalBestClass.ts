@@ -3,6 +3,7 @@ import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 
 export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
   type: 'personalBestClass',
+  pluralType: 'personalBestClasses',
   name: 'Personal Best Type',
   pluralName: 'Personal Best Types',
   icon: 'mdi-content-copy',

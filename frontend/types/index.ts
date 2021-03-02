@@ -3,6 +3,7 @@ import { InputTypes, MainTypes, FilterByField } from '~/types/schema'
 export type RecordInfo<T extends keyof MainTypes> = {
   // name of the type
   type: T
+  pluralType: string
   name: string
   pluralName: string
   // route that shareUrl and enterItem should be based off
