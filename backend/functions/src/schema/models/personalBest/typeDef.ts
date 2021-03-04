@@ -10,11 +10,10 @@ import {
   generateIdField,
   generateCreatedAtField,
   generateUpdatedAtField,
-  generateCreatedByField,
   generateTypenameField,
   generateJoinableField,
   generateIntegerField,
-  generateDateField,
+  generateUnixTimestampField,
 } from "../../helpers/typeDef";
 
 export default new JomqlObjectType(<ObjectTypeDefinition>{
@@ -59,7 +58,7 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       service: Product,
       allowNull: true,
     }),
-    happened_on: generateDateField({
+    happened_on: generateUnixTimestampField({
       allowNull: false,
     }),
     time_elapsed: generateIntegerField({

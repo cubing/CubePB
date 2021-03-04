@@ -2,18 +2,12 @@ import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 
 export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
-  type: 'personalBestClass',
-  pluralType: 'personalBestClasses',
+  typename: 'personalBestClass',
+  pluralTypename: 'personalBestClasses',
   name: 'Personal Best Type',
   pluralName: 'Personal Best Types',
   icon: 'mdi-content-copy',
   renderItem: (item) => item.name,
-  options: {
-    sortBy: ['created_at'],
-    sortDesc: [true],
-  },
-  hasSearch: true,
-  filters: [],
   fields: {
     id: {
       text: 'ID',
@@ -39,6 +33,39 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
       component: TimeagoColumn,
     },
   },
+
+  paginationOptions: {
+    sortOptions: {
+      sortBy: ['created_at'],
+      sortDesc: [true],
+    },
+    hasSearch: true,
+    filters: [],
+    headers: [
+      {
+        field: 'name',
+        sortable: true,
+      },
+      {
+        field: 'set_size',
+        sortable: false,
+        width: '100px',
+      },
+
+      {
+        field: 'created_at',
+        width: '150px',
+        sortable: true,
+      },
+      {
+        field: 'updated_at',
+        width: '150px',
+        sortable: true,
+      },
+    ],
+    downloadOptions: {},
+  },
+
   addOptions: {
     fields: ['name', 'description', 'set_size'],
   },
@@ -50,27 +77,6 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
   },
   deleteOptions: {},
   shareOptions: undefined,
-  headers: [
-    {
-      field: 'name',
-      sortable: true,
-    },
-    {
-      field: 'set_size',
-      sortable: false,
-      width: '100px',
-    },
 
-    {
-      field: 'created_at',
-      width: '150px',
-      sortable: true,
-    },
-    {
-      field: 'updated_at',
-      width: '150px',
-      sortable: true,
-    },
-  ],
   expandTypes: [],
 }

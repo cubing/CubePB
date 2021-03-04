@@ -21,9 +21,8 @@
 </template>
 
 <script>
-import sharedService from '~/services/shared'
 import { executeJomql } from '~/services/jomql'
-import { capitalizeString } from '~/services/common'
+import { capitalizeString, handleError } from '~/services/common'
 
 export default {
   props: {
@@ -51,8 +50,8 @@ export default {
         : this.selectedItem
     },
 
-    capitalizedType() {
-      return capitalizeString(this.recordInfo.type)
+    capitalizedTypename() {
+      return capitalizeString(this.recordInfo.typename)
     },
   },
 
@@ -62,7 +61,7 @@ export default {
       try {
         const data = await executeJomql(this, {
           [this.recordInfo.deleteOptions.operationName ??
-          'delete' + this.capitalizedType]: {
+          'delete' + this.capitalizedTypename]: {
             id: true,
             __args: {
               id: this.selectedItem.id,
@@ -71,13 +70,13 @@ export default {
         })
 
         this.$notifier.showSnackbar({
-          message: this.capitalizedType + ' Deleted',
+          message: this.capitalizedTypename + ' Deleted',
           variant: 'success',
         })
 
         this.$emit('handleSubmit', data)
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.deleteRecord = false
     },

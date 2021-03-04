@@ -1,4 +1,3 @@
-import sharedService from '~/services/shared'
 import { executeJomql, executeJomqlSubscription } from '~/services/jomql'
 import { unsubscribeChannels } from '~/services/pusher'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
@@ -8,6 +7,9 @@ import {
   generateTimeAgoString,
   capitalizeString,
   isObject,
+  getCurrentDate,
+  downloadCSV,
+  handleError,
 } from '~/services/common'
 
 export default {
@@ -45,7 +47,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    /** raw filters that do not need to be in recordInfo.filters. appended directly to the filterBy params. also applied to addRecordDialog
+    /** raw filters must also be in recordInfo.filters. appended directly to the filterBy params. also applied to addRecordDialog
     {
       field: string;
       operator: string;
@@ -90,12 +92,6 @@ export default {
       filterOptions: {},
 
       dialogs: {
-        /*         viewRecord: false,
-        addRecord: false,
-        editRecord: false,
-        deleteRecord: false,
-        shareRecord: false, */
-
         editRecord: false,
         selectedItem: null,
         editMode: 'view',
@@ -151,12 +147,12 @@ export default {
   computed: {
     childInterfaceComponent() {
       return this.expandTypeObject
-        ? this.expandTypeObject.recordInfo.interfaceComponent ||
-            CrudRecordInterface
+        ? this.expandTypeObject.recordInfo.paginationOptions
+            .interfaceComponent || CrudRecordInterface
         : null
     },
     capitalizedType() {
-      return capitalizeString(this.recordInfo.type)
+      return capitalizeString(this.recordInfo.typename)
     },
     visibleFiltersArray() {
       return this.filterInputsArray.filter(
@@ -170,7 +166,7 @@ export default {
     },
 
     headers() {
-      return this.recordInfo.headers
+      return this.recordInfo.paginationOptions.headers
         .filter((headerInfo) => !this.hiddenHeaders.includes(headerInfo.field))
         .map((headerInfo) => {
           const fieldInfo = this.recordInfo.fields[headerInfo.field]
@@ -193,7 +189,7 @@ export default {
           sortable: false,
           value: null,
           width: '110px',
-          ...this.recordInfo.headerActionOptions,
+          ...this.recordInfo.paginationOptions.headerActionOptions,
         })
     },
 
@@ -214,7 +210,7 @@ export default {
 
       return [
         {
-          field: this.recordInfo.type.toLowerCase() + '.id',
+          field: this.recordInfo.typename.toLowerCase() + '.id',
           operator: 'eq',
           value: this.expandedItems[0].id,
         },
@@ -225,7 +221,7 @@ export default {
       if (!this.expandedItems.length) return []
 
       // is there an excludeFilters array on the expandTypeObject? if so, use that
-      return [this.recordInfo.type.toLowerCase() + '.id'].concat(
+      return [this.recordInfo.typename.toLowerCase() + '.id'].concat(
         this.expandTypeObject.excludeFilters ?? []
       )
     },
@@ -235,7 +231,10 @@ export default {
     },
 
     hasFilters() {
-      return this.recordInfo.filters.length > 0 || this.recordInfo.hasSearch
+      return (
+        this.recordInfo.paginationOptions.filters.length > 0 ||
+        this.recordInfo.paginationOptions.hasSearch
+      )
     },
   },
 
@@ -288,7 +287,7 @@ export default {
       inputObject.loading = true
       try {
         const results = await executeJomql(this, {
-          [`get${capitalizeString(inputObject.fieldInfo.type)}Paginator`]: {
+          [`get${capitalizeString(inputObject.fieldInfo.typename)}Paginator`]: {
             edges: {
               node: {
                 id: true,
@@ -304,7 +303,7 @@ export default {
 
         inputObject.options = results.edges.map((edge) => edge.node)
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       inputObject.loading = false
     },
@@ -337,8 +336,8 @@ export default {
     },
 
     handleRowClick(item) {
-      if (this.recordInfo.handleRowClick)
-        this.recordInfo.handleRowClick(this, item)
+      if (this.recordInfo.paginationOptions.handleRowClick)
+        this.recordInfo.paginationOptions.handleRowClick(this, item)
     },
 
     getTableRowData(headerItem, item) {
@@ -352,20 +351,35 @@ export default {
         // fetch data
         const results = await this.getRecords(false)
 
-        const data = results.edges.map((ele) => ele.node)
+        const data = results.edges
+          .map((ele) => ele.node)
+          .map((item) => {
+            const returnItem = {}
+            this.headers.forEach((headerObject) => {
+              if (headerObject.value) {
+                returnItem[headerObject.value] = this.getTableRowData(
+                  headerObject,
+                  item
+                )
+              }
+            })
+            return returnItem
+          })
+
+        console.log(data)
 
         if (data.length < 1) {
-          throw sharedService.generateError('No results to export')
+          throw new Error('No results to export')
         }
 
         // download as CSV
-        sharedService.downloadCSV(
+        downloadCSV(
           this,
           data,
-          'Export' + this.capitalizedType + sharedService.getCurrentDate()
+          'Export' + this.capitalizedType + getCurrentDate()
         )
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.exportData = false
     },
@@ -448,6 +462,10 @@ export default {
         : {
             first: 100, // first 100 rows only
           }
+
+      // create a map field -> serializeFn for fast serialization
+      const serializeMap = new Map()
+
       const data = await executeJomql(this, {
         ['get' + this.capitalizedType + 'Paginator']: {
           paginatorInfo: {
@@ -457,7 +475,7 @@ export default {
           },
           edges: {
             node: collapseObject(
-              this.recordInfo.headers.reduce(
+              this.recordInfo.paginationOptions.headers.reduce(
                 (total, headerInfo) => {
                   const fieldInfo = this.recordInfo.fields[headerInfo.field]
 
@@ -466,11 +484,19 @@ export default {
                     throw new Error('Unknown field: ' + headerInfo.field)
 
                   total[fieldInfo.mainField ?? headerInfo.field] = true
+                  serializeMap.set(
+                    fieldInfo.mainField ?? headerInfo.field,
+                    fieldInfo.serialize
+                  )
 
                   // if fieldInfo.requiredFields, those fields must also be requested
                   if (fieldInfo.requiredFields) {
                     fieldInfo.requiredFields.forEach((field) => {
                       total[field] = true
+                      // assuming the field is valid
+                      serializeMap[field] = this.recordInfo.fields[
+                        field
+                      ].serialize
                     })
                   }
                   return total
@@ -487,10 +513,21 @@ export default {
             filterBy: [
               this.filters.concat(this.lockedFilters).reduce((total, ele) => {
                 if (!total[ele.field]) total[ele.field] = {}
-                // assuming this value has been parsed already
-                // however, still need to parse '__null' to null
-                total[ele.field][ele.operator] =
-                  ele.value === '__null' ? null : ele.value
+
+                // check if there is a parser on the fieldInfo
+                const fieldInfo = this.recordInfo.fields[ele.field]
+
+                // field unknown, abort
+                if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
+
+                // parse '__null' to null first
+                const value = ele.value === '__null' ? null : ele.value
+
+                // apply parseValue function, if any
+                total[ele.field][ele.operator] = fieldInfo.parseValue
+                  ? fieldInfo.parseValue(value)
+                  : value
+
                 return total
               }, {}),
             ],
@@ -498,6 +535,18 @@ export default {
             ...(this.groupBy && { groupBy: this.groupBy }),
           },
         },
+      })
+
+      // remove any undefined serializeMap elements
+      serializeMap.forEach((val, key) => {
+        if (val === undefined) serializeMap.delete(key)
+      })
+
+      // apply serialization to results
+      data.edges.forEach((ele) => {
+        serializeMap.forEach((serialzeFn, field) => {
+          ele.node[field] = serialzeFn(ele.node[field])
+        })
       })
 
       return data
@@ -510,9 +559,11 @@ export default {
 
         this.records = results.edges.map((ele) => ele.node)
 
+        // serialize any fields if necessary
+
         this.nextPaginatorInfo = results.paginatorInfo
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.loadData = false
     },
@@ -521,7 +572,7 @@ export default {
       const channelName = await executeJomqlSubscription(
         this,
         {
-          [this.recordInfo.type + 'ListUpdated']: {
+          [this.recordInfo.typename + 'ListUpdated']: {
             id: true,
             __args: {},
           },
@@ -567,7 +618,7 @@ export default {
               if (matchingInputObject.value) {
                 executeJomql(this, {
                   [`get${capitalizeString(
-                    matchingInputObject.fieldInfo.type
+                    matchingInputObject.fieldInfo.typename
                   )}`]: {
                     id: true,
                     name: true,
@@ -617,31 +668,33 @@ export default {
       }
 
       if (initFilters) {
-        this.filterInputsArray = this.recordInfo.filters.map((ele) => {
-          const fieldInfo = this.recordInfo.fields[ele.field]
+        this.filterInputsArray = this.recordInfo.paginationOptions.filters.map(
+          (ele) => {
+            const fieldInfo = this.recordInfo.fields[ele.field]
 
-          // field unknown, abort
-          if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
+            // field unknown, abort
+            if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
 
-          const filterObject = {
-            field: ele.field,
-            fieldInfo,
-            title: ele.title,
-            operator: ele.operator,
-            options: [],
-            value: null,
-            loading: false,
-            search: null,
-            focused: false,
+            const filterObject = {
+              field: ele.field,
+              fieldInfo,
+              title: ele.title,
+              operator: ele.operator,
+              options: [],
+              value: null,
+              loading: false,
+              search: null,
+              focused: false,
+            }
+
+            fieldInfo.getOptions &&
+              fieldInfo
+                .getOptions(this)
+                .then((res) => (filterObject.options = res))
+
+            return filterObject
           }
-
-          fieldInfo.getOptions &&
-            fieldInfo
-              .getOptions(this)
-              .then((res) => (filterObject.options = res))
-
-          return filterObject
-        })
+        )
 
         // clears the searchInput
         this.searchInput = ''
@@ -653,10 +706,10 @@ export default {
       if (resetSort) {
         this.options.initialLoad = true
         // populate sort/page options
-        if (this.recordInfo.options?.sortBy) {
-          this.options.sortBy = this.recordInfo.options.sortBy
-          this.options.sortDesc = this.recordInfo.options.sortDesc
-        }
+        this.options.sortBy =
+          this.recordInfo.paginationOptions.sortOptions?.sortBy ?? []
+        this.options.sortDesc =
+          this.recordInfo.paginationOptions.sortOptions?.sortDesc ?? []
       }
 
       // sets all of the filter values to null, searchInput to '' and also emits changes to parent

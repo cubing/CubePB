@@ -2,8 +2,8 @@ import { InputTypes, MainTypes, FilterByField } from '~/types/schema'
 
 export type RecordInfo<T extends keyof MainTypes> = {
   // name of the type
-  type: T
-  pluralType: string
+  typename: T
+  pluralTypename: string
   name: string
   pluralName: string
   // route that shareUrl and enterItem should be based off
@@ -11,23 +11,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
   icon?: string
   // how to render the item as a string
   renderItem?: (item) => string
-  options: {
-    // default sortBy/Desc for the interface
-    sortBy: `get${Capitalize<T>}Paginator` extends keyof InputTypes
-      ? InputTypes[`get${Capitalize<T>}Paginator`]['sortBy']
-      : []
-    sortDesc: boolean[]
-  }
-  // does the interface have a search bar?
-  hasSearch: `get${Capitalize<T>}Paginator` extends keyof InputTypes
-    ? 'search' extends keyof InputTypes[`get${Capitalize<T>}Paginator`]
-      ? boolean
-      : false
-    : false
-  // all of the possible usable filters
-  filters: `${T}FilterByObject` extends keyof InputTypes
-    ? RecordFilter<InputTypes[`${T}FilterByObject`]>[]
-    : []
+
   // all of the "known" fields of the type. could be nested types (not included in type hints)
   fields?: {
     [K in keyof MainTypes[T]['Type']]?: {
@@ -51,17 +35,60 @@ export type RecordInfo<T extends keyof MainTypes> = {
         | 'select' // standard select
       inputRules?: any[]
       getOptions?: (that) => Promise<any[]>
-      type?: string
+      typename?: string
 
       // is the field hidden? if yes, won't fetch it for edit fields
       hidden?: boolean
       // is the field nullable? if so, we will add some text saying that to the input
       optional?: boolean
       default?: (that) => unknown
-      serialize?: (val: unknown) => unknown // fetching from API
-      parseValue?: (val: unknown) => unknown // submitting to API
+      // fetching from API, in editRecordInterface (when editing/viewing)
+      serialize?: (val: unknown) => unknown
+      // submitting to API, in filterBy and create/update functions
+      parseValue?: (val: unknown) => unknown
+      // for crudRecordPage. parsing the query params
+      parseQueryValue?: (val: string) => unknown
       component?: any // component for rendering the field in table, if not using renderFn
     }
+  }
+
+  // options related to viewing multiple, if possible
+  paginationOptions?: {
+    sortOptions?: {
+      // default sortBy/Desc for the interface
+      sortBy: `get${Capitalize<T>}Paginator` extends keyof InputTypes
+        ? InputTypes[`get${Capitalize<T>}Paginator`]['sortBy']
+        : []
+      sortDesc: boolean[]
+    }
+    // does the interface have a search bar?
+    hasSearch: `get${Capitalize<T>}Paginator` extends keyof InputTypes
+      ? 'search' extends keyof InputTypes[`get${Capitalize<T>}Paginator`]
+        ? boolean
+        : false
+      : false
+    // all of the possible usable filters
+    filters: `${T}FilterByObject` extends keyof InputTypes
+      ? RecordFilter<InputTypes[`${T}FilterByObject`]>[]
+      : []
+
+    // the headers of the table
+    headers: {
+      field: keyof MainTypes[T]['Type']
+      width?: string
+      sortable: boolean
+      align?: string
+    }[]
+    // special options for overriding the action header element
+    headerActionOptions?: {
+      text?: string
+      width?: string
+    }
+    handleRowClick?: (that, item) => void
+    // custom component
+    interfaceComponent?: any
+    // can the results be downloaded?
+    downloadOptions?: {}
   }
 
   addOptions?: {
@@ -107,19 +134,6 @@ export type RecordInfo<T extends keyof MainTypes> = {
 
   enterOptions?: {}
 
-  // the headers of the table
-  headers: {
-    field: keyof MainTypes[T]['Type']
-    width?: string
-    sortable: boolean
-    align?: string
-  }[]
-  headerActionOptions?: {
-    text?: string
-    width?: string
-  }
-  handleRowClick?: (that, item) => void
-  interfaceComponent?: any
   expandTypes?: {
     recordInfo: RecordInfo<any>
     // name for the expandType, otherwise recordInfo.name will be used
@@ -142,7 +156,7 @@ type FilterObject = {
   value: any
 }
 
-export type RecordFilter<T> = {
+type RecordFilter<T> = {
   field: keyof T
   operator: keyof FilterByField<any>
 }

@@ -1,9 +1,6 @@
 import { PaginatedService } from "../../core/services";
-import { generateUserRoleGuard } from "../../helpers/permissions";
-import { userRoleKenum } from "../../enums";
 import { permissionsCheck } from "../../helpers/permissions";
 import * as Resolver from "../../helpers/resolver";
-import * as errorHelper from "../../helpers/error";
 import * as sqlHelper from "../../helpers/sql";
 import { ServiceFunctionInputs } from "../../../types";
 import { JomqlBaseError } from "jomql";
@@ -29,6 +26,11 @@ export class PersonalBestService extends PaginatedService {
     id: {},
     created_at: {},
     score: {},
+    "event.name": {},
+    "pb_class.name": {},
+    set_size: {},
+    time_elapsed: {},
+    happened_on: {},
   };
 
   searchFieldsMap = {
@@ -208,7 +210,7 @@ export class PersonalBestService extends PaginatedService {
       fieldPath,
       options: {
         onConflict: {
-          columns: ["pb_class", "event", "set_size"],
+          columns: ["pb_class", "event", "set_size", "created_by"],
           action: "merge",
         },
       },

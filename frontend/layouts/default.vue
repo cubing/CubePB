@@ -43,6 +43,23 @@
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
         </v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+      <v-list v-if="user" dense>
+        <v-list-item
+          v-for="(item, i) in userItems"
+          :key="i"
+          :to="item.to"
+          router
+          exact
+        >
+          <v-list-item-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title" />
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item
           v-if="user"
           key="-1"
@@ -85,92 +102,6 @@
           </template>
         </v-list-group>
       </v-list>
-      <template v-slot:append>
-        <client-only>
-          <template v-if="user">
-            <v-menu
-              :close-on-content-click="true"
-              :max-width="300"
-              offset-x
-              top
-            >
-              <template v-slot:activator="{ on }">
-                <v-list-item key="-2" v-on="on">
-                  <v-list-item-avatar>
-                    <v-img v-if="user.avatar" :src="user.avatar" />
-                    <v-icon v-else>mdi-account</v-icon>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title>{{ user.name }}</v-list-item-title>
-                    <v-list-item-subtitle>{{
-                      user.email
-                    }}</v-list-item-subtitle>
-                    <v-list-item-subtitle
-                      >Role: {{ user.role }}</v-list-item-subtitle
-                    >
-                  </v-list-item-content>
-                </v-list-item>
-              </template>
-
-              <v-card>
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-avatar>
-                      <v-img v-if="user.avatar" :src="user.avatar" />
-                      <v-icon v-else>mdi-account</v-icon>
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ user.name }}</v-list-item-title>
-                      <v-list-item-subtitle>{{
-                        user.email
-                      }}</v-list-item-subtitle>
-                      <v-list-item-subtitle
-                        >Role: {{ user.role }}</v-list-item-subtitle
-                      >
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-
-                <v-divider></v-divider>
-
-                <v-list dense>
-                  <v-list-item
-                    v-for="(item, i) in accountItems"
-                    :key="i"
-                    :to="item.to"
-                    exact
-                    nuxt
-                  >
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-divider></v-divider>
-                  <v-list-item @click="logout()">
-                    <v-list-item-content>
-                      <v-list-item-title>Logout</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-menu>
-          </template>
-
-          <div v-else>
-            <v-list-item @click="goToWcaAuth()">
-              <v-list-item-action>
-                <img
-                  src="~static/WCAlogo_notext.svg"
-                  alt=""
-                  style="width: 32px"
-                  class="pr-2"
-                />
-              </v-list-item-action>
-              <v-list-item-content>WCA Login</v-list-item-content>
-            </v-list-item>
-          </div>
-        </client-only>
-      </template>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
@@ -285,8 +216,12 @@
 import { mapGetters } from 'vuex'
 import Snackbar from '~/components/snackbar/snackbar'
 import { goToWcaAuth, handleLogout } from '~/services/auth'
-import sharedService from '~/services/shared'
-import { copyToClipboard, openLink, capitalizeString } from '~/services/common'
+import {
+  copyToClipboard,
+  openLink,
+  capitalizeString,
+  handleError,
+} from '~/services/common'
 import * as models from '~/models'
 
 export default {
@@ -305,13 +240,14 @@ export default {
           to: '/',
         },
       ],
-      navItems: [
+      userItems: [
         {
           icon: 'mdi-timer',
           title: 'My PBs',
           to: '/my-pbs',
-          loginRequired: true,
         },
+      ],
+      navItems: [
         {
           icon: 'mdi-account',
           title: 'Public Users',
@@ -357,8 +293,8 @@ export default {
           title: 'Administration',
           permissions: [],
           items: Object.values(models).map((recordInfo) => ({
-            title: capitalizeString(recordInfo.pluralName),
-            to: '/admin/' + recordInfo.pluralType,
+            title: capitalizeString(recordInfo.pluralTypename),
+            to: '/admin/' + recordInfo.pluralTypename,
             roles: ['ADMIN'],
             permissions: [],
           })),
@@ -397,7 +333,7 @@ export default {
 
         handleLogout(this)
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
     },
 

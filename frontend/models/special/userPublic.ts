@@ -1,33 +1,40 @@
-import { User, PersonalBest } from '..'
+import { User } from '..'
+import { PbPublic } from '.'
 
 export const UserPublic = {
   ...User,
   viewRecordRoute: '/user',
-  filters: [],
+
   editOptions: undefined,
+  paginationOptions: {
+    ...(!!User.paginationOptions && User.paginationOptions),
+    filters: [],
+    headers: [
+      {
+        field: 'name+avatar',
+        sortable: false,
+      },
+      {
+        field: 'wca_id',
+        width: '150px',
+        sortable: false,
+      },
+      {
+        field: 'country',
+        width: '100px',
+        sortable: false,
+      },
+    ],
+    downloadOptions: undefined,
+  },
   viewOptions: {
     fields: ['avatar', 'name', 'email', 'wca_id', 'country'],
   },
   deleteOptions: undefined,
-  headers: [
-    {
-      field: 'name+avatar',
-      sortable: false,
-    },
-    {
-      field: 'wca_id',
-      width: '150px',
-      sortable: false,
-    },
-    {
-      field: 'country',
-      width: '100px',
-      sortable: false,
-    },
-  ],
+
   expandTypes: [
     {
-      recordInfo: PersonalBest,
+      recordInfo: PbPublic,
       name: 'PBs',
       excludeFilters: ['created_by.id'],
       excludeHeaders: ['created_by.name+created_by.avatar'],

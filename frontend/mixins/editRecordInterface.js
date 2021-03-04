@@ -1,10 +1,10 @@
-import sharedService from '~/services/shared'
 import { executeJomql } from '~/services/jomql'
 import {
   collapseObject,
   getNestedProperty,
   capitalizeString,
   isObject,
+  handleError,
 } from '~/services/common'
 
 export default {
@@ -55,7 +55,7 @@ export default {
 
   computed: {
     capitalizedType() {
-      return capitalizeString(this.recordInfo.type)
+      return capitalizeString(this.recordInfo.typename)
     },
     title() {
       return (
@@ -121,7 +121,7 @@ export default {
       inputObject.loading = true
       try {
         const results = await executeJomql(this, {
-          [`get${capitalizeString(inputObject.fieldInfo.type)}Paginator`]: {
+          [`get${capitalizeString(inputObject.fieldInfo.typename)}Paginator`]: {
             edges: {
               node: {
                 id: true,
@@ -137,7 +137,7 @@ export default {
 
         inputObject.options = results.edges.map((edge) => edge.node)
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       inputObject.loading = false
     },
@@ -163,13 +163,13 @@ export default {
           if (
             (inputObject.fieldInfo.inputType === 'combobox' ||
               inputObject.fieldInfo.inputType === 'server-combobox') &&
-            inputObject.fieldInfo.type
+            inputObject.fieldInfo.typename
           ) {
             if (typeof inputObject.value === 'string') {
               // expecting either string or obj
               // create the item, get its id.
               const results = await executeJomql(this, {
-                ['create' + capitalizeString(inputObject.fieldInfo.type)]: {
+                ['create' + capitalizeString(inputObject.fieldInfo.typename)]: {
                   id: true,
                   name: true,
                   __args: {
@@ -237,7 +237,7 @@ export default {
 
         this.$emit('handleSubmit', data)
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.editRecord = false
     },
@@ -270,7 +270,6 @@ export default {
         })
 
         // serialize any fields if necessary
-
         this.inputsArray = fields.map((fieldKey) => {
           const fieldInfo = this.recordInfo.fields[fieldKey]
 
@@ -297,7 +296,7 @@ export default {
             inputObject.value = null // set this to null initially while the results load, to prevent console error
             if (fieldValue) {
               executeJomql(this, {
-                [`get${capitalizeString(fieldInfo.type)}`]: {
+                [`get${capitalizeString(fieldInfo.typename)}`]: {
                   id: true,
                   name: true,
                   __args: {
@@ -322,7 +321,7 @@ export default {
           return inputObject
         })
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.loadRecord = false
     },
@@ -386,7 +385,7 @@ export default {
             // only if readonly and value is truthy
             if (inputObject.readonly && inputObject.value) {
               executeJomql(this, {
-                [`get${capitalizeString(fieldInfo.type)}`]: {
+                [`get${capitalizeString(fieldInfo.typename)}`]: {
                   id: true,
                   name: true,
                   __args: {

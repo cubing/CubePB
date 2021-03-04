@@ -13,6 +13,7 @@
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.0.0",
     "axios": "^0.21.0",
+    "convert-array-to-csv": "^2.0.0",
     "core-js": "^3.6.5",
     "js-cookie": "^2.2.1",
     "nuxt": "^2.14.6",

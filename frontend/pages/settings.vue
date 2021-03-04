@@ -94,8 +94,8 @@
 
 <script>
 import { executeJomql } from '~/services/jomql'
-import sharedService from '~/services/shared'
 import { goToWcaAccountManagement, goToWcaAuth } from '~/services/auth'
+import { handleError } from '~/services/common'
 
 export default {
   components: {},
@@ -156,7 +156,7 @@ export default {
           variant: 'success',
         })
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.syncWcaData = false
     },
@@ -187,7 +187,7 @@ export default {
 
         this.inputsChanged = false
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.submitting = false
     },
@@ -208,7 +208,7 @@ export default {
 
         this.inputs = data
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.loadUser = false
     },

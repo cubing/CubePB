@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import sharedService from '~/services/shared'
 import { handleLogin } from '~/services/auth'
 import { executeJomql } from '~/services/jomql'
+import { handleError } from '~/services/common'
 
 export default {
   components: {},
@@ -41,9 +41,7 @@ export default {
       this.loading.verifying = true
       try {
         if (!this.$route.query.code) {
-          throw sharedService.generateError(
-            'Missing authorization code, please try again.'
-          )
+          throw new Error('Missing authorization code, please try again.')
         }
 
         const data = await executeJomql(this, {
@@ -71,8 +69,8 @@ export default {
 
         this.$router.push('/')
       } catch (err) {
-        sharedService.handleError(err, this.$root)
-        this.errorMessage = sharedService.sanitizeErrorMessage(err.message)
+        handleError(this, err)
+        this.errorMessage = err.message
       }
       this.loading.verifying = false
     },

@@ -5,51 +5,17 @@ import {
 } from '../services/dropdown'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
-import TimeElapsedColumn from '~/components/table/common/timeElapsedColumn.vue'
 import CreatedByColumn from '~/components/table/common/createdByColumn.vue'
 import { serializeTime } from '~/services/common'
 
 export const PersonalBest = <RecordInfo<'personalBest'>>{
-  type: 'personalBest',
-  pluralType: 'personalBests',
+  typename: 'personalBest',
+  pluralTypename: 'personalBests',
   name: 'Personal Best',
   pluralName: 'Personal Bests',
   // viewRecordRoute: '/pb',
   icon: 'mdi-timer',
   renderItem: (item) => item.name,
-  options: {
-    sortBy: ['created_at'],
-    sortDesc: [true],
-  },
-  hasSearch: false,
-  filters: [
-    {
-      field: 'event.id',
-      operator: 'eq',
-    },
-    {
-      field: 'pb_class.id',
-      operator: 'eq',
-    },
-    {
-      field: 'product.id',
-      operator: 'eq',
-    },
-    {
-      field: 'created_by.id',
-      operator: 'eq',
-    },
-    {
-      field: 'happened_on',
-      title: 'Happened After',
-      operator: 'gt',
-    },
-    {
-      field: 'happened_on',
-      title: 'Happened Before',
-      operator: 'lt',
-    },
-  ],
   fields: {
     id: {
       text: 'ID',
@@ -62,9 +28,9 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     'pb_class.id': {
       text: 'PB Type',
-      parseValue: (val) => Number(val),
+      parseQueryValue: (val) => Number(val),
       getOptions: getPersonalBestClasses,
-      type: 'personalBestClass',
+      typename: 'personalBestClass',
       inputType: 'select',
     },
     'pb_class.name': {
@@ -72,7 +38,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     'event.id': {
       text: 'Event',
-      parseValue: (val) => Number(val),
+      parseQueryValue: (val) => Number(val),
       getOptions: getEvents,
       optionsType: 'event',
       inputType: 'autocomplete',
@@ -89,7 +55,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     'product.id': {
       text: 'Cube',
       getOptions: getProducts,
-      type: 'product',
+      typename: 'product',
       inputType: 'server-combobox',
       optional: true,
     },
@@ -134,7 +100,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         // round to tens
         return (1000 * Math.floor(seconds * 100)) / 100
       },
-      component: TimeElapsedColumn,
     },
     attempts_succeeded: {
       text: 'Total Succeeded',
@@ -147,12 +112,20 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     happened_on: {
       text: 'Date Happened',
       inputType: 'datepicker',
+      // unix timestamp to YYYY-MM-DD
+      serialize: (val: number) =>
+        val && new Date(val * 1000).toISOString().substring(0, 10),
+      // YYYY-MM-DD to unix timestamp
+      parseValue: (val: string) => val && new Date(val).getTime() / 1000,
     },
     'created_by.id': {
       text: 'Created By',
       inputType: 'server-autocomplete',
-      type: 'user',
-      parseValue: (val) => Number(val),
+      typename: 'user',
+      parseQueryValue: (val) => Number(val),
+    },
+    'created_by.is_public': {
+      text: 'Created By - Public',
     },
     created_at: {
       text: 'Created At',
@@ -163,6 +136,91 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       component: TimeagoColumn,
     },
   },
+  paginationOptions: {
+    sortOptions: {
+      sortBy: ['created_at'],
+      sortDesc: [true],
+    },
+    hasSearch: false,
+
+    filters: [
+      {
+        field: 'event.id',
+        operator: 'eq',
+      },
+      {
+        field: 'pb_class.id',
+        operator: 'eq',
+      },
+      {
+        field: 'product.id',
+        operator: 'eq',
+      },
+      {
+        field: 'created_by.id',
+        operator: 'eq',
+      },
+      {
+        field: 'happened_on',
+        title: 'Happened After',
+        operator: 'gt',
+      },
+      {
+        field: 'happened_on',
+        title: 'Happened Before',
+        operator: 'lt',
+      },
+    ],
+
+    headers: [
+      {
+        field: 'event.name',
+        sortable: true,
+        width: '100px',
+      },
+      {
+        field: 'pb_class.name',
+        sortable: true,
+        width: '100px',
+      },
+      {
+        field: 'set_size',
+        sortable: true,
+        width: '125px',
+      },
+      {
+        field: 'time_elapsed',
+        sortable: true,
+        width: '125px',
+      },
+      {
+        field: 'attempts_succeeded',
+        sortable: false,
+        width: '150px',
+      },
+      {
+        field: 'attempts_total',
+        sortable: false,
+        width: '150px',
+      },
+      {
+        field: 'happened_on',
+        sortable: true,
+        width: '150px',
+      },
+      {
+        field: 'created_by.name+created_by.avatar',
+        sortable: false,
+        width: '200px',
+      },
+      {
+        field: 'score',
+        sortable: true,
+      },
+    ],
+    downloadOptions: {},
+  },
+
   addOptions: {
     fields: [
       'event.id',
@@ -192,51 +250,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   },
   deleteOptions: {},
   shareOptions: {},
-  headers: [
-    {
-      field: 'event.name',
-      sortable: false,
-      width: '75px',
-    },
-    {
-      field: 'pb_class.name',
-      sortable: true,
-      width: '100px',
-    },
-    {
-      field: 'set_size',
-      sortable: true,
-      width: '125px',
-    },
-    {
-      field: 'time_elapsed',
-      sortable: true,
-      width: '125px',
-    },
-    {
-      field: 'attempts_succeeded',
-      sortable: true,
-      width: '150px',
-    },
-    {
-      field: 'attempts_total',
-      sortable: true,
-      width: '150px',
-    },
-    {
-      field: 'happened_on',
-      sortable: true,
-      width: '150px',
-    },
-    {
-      field: 'created_by.name+created_by.avatar',
-      sortable: false,
-      width: '200px',
-    },
-    {
-      field: 'score',
-      sortable: true,
-    },
-  ],
+
   expandTypes: [],
 }

@@ -55,7 +55,12 @@
             </v-badge>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn icon :loading="loading.exportData" @click="exportData()">
+          <v-btn
+            v-if="recordInfo.paginationOptions.downloadOptions"
+            icon
+            :loading="loading.exportData"
+            @click="exportData()"
+          >
             <v-icon>mdi-download</v-icon>
           </v-btn>
           <v-btn icon @click="syncFilters() || reset()">
@@ -66,7 +71,7 @@
         <v-container v-if="showFilterInterface" fluid class="pb-0 mt-3">
           <v-row>
             <v-col
-              v-if="recordInfo.hasSearch"
+              v-if="recordInfo.paginationOptions.hasSearch"
               :key="-1"
               sm="12"
               lg="3"
@@ -113,6 +118,7 @@
                     autocomplete="off"
                     v-bind="attrs"
                     v-on="on"
+                    @change="filterChanged = true"
                   ></v-text-field>
                 </template>
                 <v-date-picker

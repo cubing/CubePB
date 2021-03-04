@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import sharedService from '~/services/shared'
 import { executeJomql } from '~/services/jomql'
+import { handleError } from '~/services/common'
 import columnMixin from '~/mixins/column'
 
 export default {
@@ -86,7 +86,7 @@ export default {
           this.item.score += value - originalVote
         }
       } catch (err) {
-        sharedService.handleError(err, this.$root)
+        handleError(this, err)
       }
       this.loading.submitVote = false
     },

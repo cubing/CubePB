@@ -17,7 +17,6 @@
             v-for="(item, i) in inputsArray"
             :key="i"
             cols="12"
-            xs="12"
             class="py-0"
           >
             <div
@@ -28,7 +27,6 @@
                 <v-img :src="item.value" contain></v-img>
               </v-avatar>
             </div>
-
             <v-textarea
               v-else-if="item.fieldInfo.inputType === 'textarea'"
               v-model="item.value"
@@ -78,6 +76,7 @@
                 v-model="item.value"
                 color="primary"
                 no-title
+                :readonly="item.readonly || mode === 'view'"
                 @input="item.focused = false"
               ></v-date-picker>
             </v-menu>

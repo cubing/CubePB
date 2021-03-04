@@ -153,8 +153,8 @@ export function generateStringField(
   });
 }
 
-// as UNIX timestamp
-export function generateDateTimeField(
+// DateTime as UNIX timestamp
+export function generateUnixTimestampField(
   params: {
     nowOnly?: boolean; // if the unix timestamp can only be set to now()
   } & GenerateFieldParams
@@ -184,7 +184,6 @@ export function generateDateTimeField(
       parseValue: nowOnly
         ? () => knex.fn.now()
         : (value: unknown) => {
-            console.log(value);
             if (typeof value !== "number") throw 1; // should never happen
             return new Date(value);
           },
@@ -426,7 +425,7 @@ export function generateEnumField(
  */
 
 export function generateCreatedAtField() {
-  return generateDateTimeField({
+  return generateUnixTimestampField({
     name: "created_at",
     description: "When the record was created",
     allowNull: false,
@@ -436,7 +435,7 @@ export function generateCreatedAtField() {
 }
 
 export function generateUpdatedAtField() {
-  return generateDateTimeField({
+  return generateUnixTimestampField({
     name: "updated_at",
     description: "When the record was last updated",
     allowNull: true,

@@ -5,27 +5,12 @@ import UserColumn from '~/components/table/common/userColumn.vue'
 import { getBooleanOptions, getUserRoles } from '~/services/dropdown'
 
 export const User = <RecordInfo<'user'>>{
-  type: 'user',
-  pluralType: 'users',
+  typename: 'user',
+  pluralTypename: 'users',
   name: 'User',
   pluralName: 'Users',
   icon: 'mdi-account',
   renderItem: (item) => item.email,
-  options: {
-    sortBy: ['created_at'],
-    sortDesc: [true],
-  },
-  hasSearch: true,
-  filters: [
-    {
-      field: 'role',
-      operator: 'eq',
-    },
-    {
-      field: 'is_public',
-      operator: 'eq',
-    },
-  ],
   fields: {
     id: {
       text: 'ID',
@@ -57,10 +42,17 @@ export const User = <RecordInfo<'user'>>{
       getOptions: getUserRoles,
       inputType: 'select',
     },
+    permissions: {
+      text: 'Permissions',
+      serialize: (val: string[]) => val && val.join(','),
+      parseValue: (val: string) =>
+        val ? val.split(',').filter((ele) => ele) : [],
+    },
     is_public: {
       text: 'Is Public',
       getOptions: getBooleanOptions,
-      parseValue: (val) => (typeof val === 'boolean' ? val : val === 'true'),
+      // parseValue: (val) => (typeof val === 'boolean' ? val : val === 'true'),
+      parseQueryValue: (val) => val === 'true',
       inputType: 'select',
     },
     created_at: {
@@ -72,15 +64,60 @@ export const User = <RecordInfo<'user'>>{
       component: TimeagoColumn,
     },
   },
+  paginationOptions: {
+    sortOptions: {
+      sortBy: ['created_at'],
+      sortDesc: [true],
+    },
+    hasSearch: true,
+    filters: [
+      {
+        field: 'role',
+        operator: 'eq',
+      },
+      {
+        field: 'is_public',
+        operator: 'eq',
+      },
+    ],
+    headers: [
+      {
+        field: 'name+avatar',
+        sortable: false,
+      },
+      {
+        field: 'email',
+        sortable: false,
+        width: '150px',
+      },
+      {
+        field: 'role',
+        sortable: true,
+        width: '150px',
+      },
+      {
+        field: 'created_at',
+        width: '150px',
+        sortable: true,
+      },
+      {
+        field: 'updated_at',
+        width: '150px',
+        sortable: true,
+      },
+    ],
+    downloadOptions: {},
+  },
+
   addOptions: undefined,
   editOptions: {
     fields: [
       'avatar',
       'name',
       'email',
-      'wca_id',
       'country',
       'role',
+      'permissions',
       'is_public',
     ],
   },
@@ -92,6 +129,7 @@ export const User = <RecordInfo<'user'>>{
       'wca_id',
       'country',
       'role',
+      'permissions',
       'is_public',
     ],
   },
@@ -100,32 +138,7 @@ export const User = <RecordInfo<'user'>>{
     route: '/user',
   },
   enterOptions: {},
-  headers: [
-    {
-      field: 'name+avatar',
-      sortable: false,
-    },
-    {
-      field: 'email',
-      sortable: false,
-      width: '150px',
-    },
-    {
-      field: 'role',
-      sortable: true,
-      width: '150px',
-    },
-    {
-      field: 'created_at',
-      width: '150px',
-      sortable: true,
-    },
-    {
-      field: 'updated_at',
-      width: '150px',
-      sortable: true,
-    },
-  ],
+
   expandTypes: [
     {
       recordInfo: PersonalBest,

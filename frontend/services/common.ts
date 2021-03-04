@@ -1,4 +1,5 @@
 import { format } from 'timeago.js'
+import { convertArrayToCSV } from 'convert-array-to-csv'
 
 type StringKeyObject = { [x: string]: any }
 
@@ -8,7 +9,7 @@ export function generateTimeAgoString(unixTimestamp: number | null) {
   return format(unixTimestamp * 1000)
 }
 
-export function capitalizeString(str) {
+export function capitalizeString(str: string): string {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
 }
 
@@ -103,4 +104,52 @@ export function serializeTime(ms: number): string {
 
 export function openLink(url: string): void {
   window.open(url)
+}
+
+// returns date in YYYY-MM-DD format
+export function getCurrentDate(): string {
+  return new Date().toISOString().substring(0, 10)
+}
+
+export function downloadCSV(
+  that,
+  dataArray: StringKeyObject[],
+  name = 'file'
+): void {
+  try {
+    that.$notifier.showSnackbar({
+      message: 'File download started',
+      variant: 'success',
+    })
+
+    const csvString = convertArrayToCSV(dataArray)
+
+    const link = document.createElement('a')
+    const blob = new Blob(['\uFEFF', csvString])
+    link.href = window.URL.createObjectURL(blob)
+    link.download = name + '.csv'
+    link.click()
+  } catch (err) {
+    handleError(that, err)
+  }
+}
+
+export function handleError(that, err) {
+  if (that) {
+    if (err.response && err.response.data.error.message) {
+      that.$notifier.showSnackbar({
+        message: err.response.data.error.message,
+        variant: 'error',
+      })
+      console.log(err.response.data.error)
+    } else {
+      that.$notifier.showSnackbar({
+        message: err.message,
+        variant: 'error',
+      })
+      console.log(err)
+    }
+  } else {
+    console.log(err)
+  }
 }

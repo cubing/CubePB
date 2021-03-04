@@ -1,8 +1,8 @@
 <template>
   <v-container fluid>
     <v-layout column justify-left align-left>
-      <v-flex xs12 sm8 md6>
-        <div class="pt-2">
+      <v-row>
+        <v-col cols="12">
           <component
             :is="interfaceComponent"
             :record-info="recordInfo"
@@ -16,16 +16,15 @@
             dense
             @filters-updated="handleFiltersUpdated"
           ></component>
-        </div>
-      </v-flex>
+        </v-col>
+      </v-row>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import sharedService from '~/services/shared'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
-import { isObject } from '~/services/common'
+import { isObject, capitalizeString } from '~/services/common'
 
 export default {
   props: {
@@ -60,11 +59,14 @@ export default {
   },
   computed: {
     interfaceComponent() {
-      return this.recordInfo.interfaceComponent || CrudRecordInterface
+      return (
+        this.recordInfo.paginationOptions.interfaceComponent ||
+        CrudRecordInterface
+      )
     },
 
-    capitalizedType() {
-      return sharedService.capitalizeString(this.recordInfo.type)
+    capitalizedTypename() {
+      return capitalizeString(this.recordInfo.typename)
     },
 
     // parses the query params and transforms into raw filterArray
@@ -75,7 +77,7 @@ export default {
           const decoded = decodeURIComponent(ele)
           const filterParts = decoded.split(' ')
           if (filterParts.length === 3) {
-            const filter = this.recordInfo.filters.find(
+            const filter = this.recordInfo.paginationOptions.filters.find(
               (filterObject) => filterObject.field === filterParts[0]
             )
 
@@ -86,8 +88,8 @@ export default {
             if (!fieldInfo) throw new Error('Unknown field: ' + filter.field)
 
             // if value === '_null' it is understood to be null.
-            const value = fieldInfo.parseValue
-              ? fieldInfo.parseValue(filterParts[2])
+            const value = fieldInfo.parseQueryValue
+              ? fieldInfo.parseQueryValue(filterParts[2])
               : filterParts[2]
             filterArray.push({
               field: filterParts[0],
