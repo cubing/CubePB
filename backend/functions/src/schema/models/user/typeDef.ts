@@ -1,6 +1,6 @@
 // import * as bcrypt from "bcryptjs";
 
-import { JomqlObjectType, lookupSymbol, ObjectTypeDefinition } from "jomql";
+import { JomqlObjectType, ObjectTypeDefinition } from "jomql";
 import { User } from "../../services";
 import {
   generateIdField,

@@ -297,6 +297,9 @@ export default {
             __args: {
               first: 20,
               search: inputObject.search,
+              filterBy: inputObject.fieldInfo.lookupFilters
+                ? inputObject.fieldInfo.lookupFilters(this)
+                : [],
             },
           },
         })
@@ -707,9 +710,9 @@ export default {
         this.options.initialLoad = true
         // populate sort/page options
         this.options.sortBy =
-          this.recordInfo.paginationOptions.sortOptions?.sortBy ?? []
+          this.recordInfo.paginationOptions.sortOptions?.sortBy.slice() ?? []
         this.options.sortDesc =
-          this.recordInfo.paginationOptions.sortOptions?.sortDesc ?? []
+          this.recordInfo.paginationOptions.sortOptions?.sortDesc.slice() ?? []
       }
 
       // sets all of the filter values to null, searchInput to '' and also emits changes to parent

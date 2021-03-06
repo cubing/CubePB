@@ -142,6 +142,7 @@
                 :prepend-icon="item.fieldInfo.icon"
                 clearable
                 filled
+                return-object
                 class="py-0"
                 @change="filterChanged = true"
               ></v-autocomplete>
@@ -162,6 +163,7 @@
                 filled
                 hide-no-data
                 cache-items
+                return-object
                 class="py-0"
                 @update:search-input="handleSearchUpdate(item)"
                 @blur="item.focused = false"

@@ -583,6 +583,13 @@ export function generatePaginatorPivotResolverObject(params: {
     ? currentService.typename.toLowerCase()
     : null;
 
+  // if filterByField, ensure that filterByField is a valid filterField on pivotService
+  if (filterByField && !pivotService.filterFieldsMap[filterByField]) {
+    throw new JomqlInitializationError({
+      message: `Filter Key '${filterByField}' does not exist on type '${pivotService.typename}'`,
+    });
+  }
+
   const sortByScalarDefinition: ScalarDefinition = {
     name: pivotService.typename + "SortByKey",
     types: Object.keys(pivotService.sortFieldsMap).map((ele) => `"${ele}"`),
@@ -756,21 +763,20 @@ export function generatePaginatorPivotResolverObject(params: {
       // parentValue.id should be requested (via requiredSqlFields)
       const parentItemId = parentValue.id;
 
+      // apply the filterByField as an arg to each filterObject
+      const filterObjectArray = validatedArgs.filterBy ?? [{}];
+      filterObjectArray.forEach((filterObject) => {
+        filterObject[filterByField] = { eq: parentItemId };
+      });
+      console.log(filterObjectArray);
+
       return pivotService.paginator.getRecord({
         req,
         fieldPath,
-        args: deepAssign(
-          { ...validatedArgs },
-          {
-            filterBy: {
-              [filterByField]: [
-                {
-                  value: parentItemId,
-                },
-              ],
-            },
-          }
-        ),
+        args: {
+          ...validatedArgs,
+          filterBy: filterObjectArray,
+        },
         query,
         data,
       });

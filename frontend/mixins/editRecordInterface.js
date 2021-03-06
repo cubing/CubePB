@@ -131,6 +131,9 @@ export default {
             __args: {
               first: 20,
               search: inputObject.search,
+              filterBy: inputObject.fieldInfo.lookupFilters
+                ? inputObject.fieldInfo.lookupFilters(this)
+                : [],
             },
           },
         })
@@ -190,6 +193,12 @@ export default {
             } else {
               value = inputObject.value.id
             }
+          } else if (
+            inputObject.fieldInfo.inputType === 'autocomplete' ||
+            inputObject.fieldInfo.inputType === 'server-autocomplete'
+          ) {
+            // as we are using return-object option, the entire object will be returned for autocompletes, unless it is null
+            value = inputObject.value ? inputObject.value.id : null
           } else {
             value = inputObject.value
           }

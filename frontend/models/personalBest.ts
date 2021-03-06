@@ -121,6 +121,15 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     'created_by.id': {
       text: 'Created By',
       inputType: 'server-autocomplete',
+      lookupFilters: (_that) => {
+        return [
+          {
+            is_public: {
+              eq: true,
+            },
+          },
+        ]
+      },
       typename: 'user',
       parseQueryValue: (val) => Number(val),
     },

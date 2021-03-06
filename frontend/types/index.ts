@@ -36,6 +36,8 @@ export type RecordInfo<T extends keyof MainTypes> = {
       inputRules?: any[]
       getOptions?: (that) => Promise<any[]>
       typename?: string
+      // filters that should be applied when looking up results (server-X input type)
+      lookupFilters?: (that) => any[]
 
       // is the field hidden? if yes, won't fetch it for edit fields
       hidden?: boolean

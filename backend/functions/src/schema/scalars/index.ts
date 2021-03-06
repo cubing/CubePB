@@ -17,7 +17,6 @@ export { number } from "./number"; // replacing the built-in number type to auto
 export { imageUrl } from "./imageUrl";
 export { unixTimestamp } from "./unixTimestamp";
 export { date } from "./date";
-export { jsonAsString } from "./jsonAsString";
 export { id } from "./id";
 export { regex } from "./regex";
 

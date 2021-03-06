@@ -132,6 +132,7 @@
               :readonly="item.readonly || mode === 'view'"
               :clearable="!item.readonly && mode !== 'view'"
               filled
+              return-object
               class="py-0"
             ></v-autocomplete>
             <v-autocomplete
@@ -151,6 +152,7 @@
               filled
               hide-no-data
               cache-items
+              return-object
               class="py-0"
               @update:search-input="handleSearchUpdate(item)"
               @blur="item.focused = false"
