@@ -62,8 +62,8 @@ export class PersonalBestService extends PaginatedService {
         args.filterBy.length > 0 &&
         args.filterBy.every((filterObject) => {
           return (
-            filterObject["created_by.is_public"].eq === true ||
-            filterObject["created_by.id"] === req.user?.id
+            filterObject["created_by.is_public"]?.eq === true ||
+            filterObject["created_by.id"]?.eq === req.user?.id
           );
         })
       ) {
