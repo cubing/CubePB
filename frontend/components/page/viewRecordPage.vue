@@ -16,7 +16,7 @@
     <v-layout justify-center align-center column d-block>
       <v-row>
         <v-col
-          sm="12"
+          cols="12"
           :md="isExpanded ? 4 : 6"
           class="text-center"
           :offset-md="isExpanded ? 0 : 3"

@@ -256,6 +256,7 @@
       :readonly="item.readonly || mode === 'view'"
       :clearable="!item.readonly && mode !== 'view'"
       filled
+      return-object
       class="py-0"
     ></v-autocomplete>
     <v-autocomplete
@@ -275,6 +276,7 @@
       filled
       hide-no-data
       cache-items
+      return-object
       class="py-0"
       @update:search-input="handleSearchUpdate(item)"
       @blur="item.focused = false"
@@ -358,7 +360,7 @@ export default {
       }, 500)
     },
 
-    removeFileByIndex(inputObject, index) {
+    /*     removeFileByIndex(inputObject, index) {
       if (inputObject.value) {
         inputObject.value.splice(index, 1)
       }
@@ -458,7 +460,7 @@ export default {
           variant: 'success',
         })
       })
-    },
+    }, */
 
     async loadSearchResults(inputObject) {
       inputObject.loading = true

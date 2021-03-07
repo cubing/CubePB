@@ -73,7 +73,7 @@
             <v-col
               v-if="recordInfo.paginationOptions.hasSearch"
               :key="-1"
-              sm="12"
+              cols="12"
               lg="3"
               class="py-0"
             >
@@ -90,7 +90,7 @@
             <v-col
               v-for="(item, i) in visibleFiltersArray"
               :key="i"
-              sm="12"
+              cols="12"
               lg="3"
               class="py-0"
             >
