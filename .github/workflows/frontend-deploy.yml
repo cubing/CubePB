@@ -25,8 +25,8 @@ jobs:
         env:
           API_URL: https://api.cubepb.com
           VER: "0.0.1"
-          WCA_AUTH_URL: https://staging.worldcubeassociation.org/oauth/authorize?client_id=example-application-id&redirect_uri=https%3A%2F%2Falpha.cubepb.com%2Fwca-redirect&response_type=code&scope=public+dob+email+manage_competitions
-          WCA_ACCOUNT_MANAGEMENT_URL: https://staging.worldcubeassociation.org/profile/edit
+          WCA_AUTH_URL: https://worldcubeassociation.org/oauth/authorize?client_id=6rfi-FvIwRXDlPiYzYEUlK5Jt8L6x7ucPZyM-aD8mu0&redirect_uri=https%3A%2F%2Falpha.cubepb.com%2Fwca-redirect&response_type=code&scope=public+dob+email+manage_competitions
+          WCA_ACCOUNT_MANAGEMENT_URL: https://worldcubeassociation.org/profile/edit
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
