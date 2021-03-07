@@ -56,7 +56,10 @@
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                   <v-menu
-                    v-if="recordInfo.expandTypes.length > 0"
+                    v-if="
+                      recordInfo.expandTypes &&
+                      recordInfo.expandTypes.length > 0
+                    "
                     right
                     offset-x
                   >
@@ -124,6 +127,7 @@
 
 <script>
 import EditRecordInterface from '~/components/interface/crud/editRecordInterface.vue'
+import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
 import { executeJomql } from '~/services/jomql'
 import { capitalizeString, isObject, handleError } from '~/services/common'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
@@ -131,12 +135,17 @@ import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface
 export default {
   components: {
     EditRecordInterface,
+    EditRecordDialog,
   },
 
   props: {
     recordInfo: {
       type: Object,
       required: true,
+    },
+    lookupParams: {
+      type: Object,
+      default: () => null,
     },
     head: {
       type: Object,
@@ -207,6 +216,7 @@ export default {
   methods: {
     handleSubmit() {
       this.loadRecord()
+      this.$emit('handle-submit')
     },
 
     toggleExpand(expandTypeObject) {
@@ -235,7 +245,7 @@ export default {
         const data = await executeJomql(this, {
           ['get' + this.capitalizedTypename]: {
             id: true,
-            __args: {
+            __args: this.lookupParams ?? {
               id: this.$route.query.id,
             },
           },

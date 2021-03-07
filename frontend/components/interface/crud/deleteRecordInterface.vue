@@ -47,7 +47,7 @@ export default {
     itemIdentifier() {
       return this.recordInfo.renderItem
         ? this.recordInfo.renderItem(this.selectedItem)
-        : this.selectedItem
+        : JSON.stringify(this.selectedItem, null, 2)
     },
 
     capitalizedTypename() {

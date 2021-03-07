@@ -17,13 +17,10 @@ export type RecordInfo<T extends keyof MainTypes> = {
     [K in keyof MainTypes[T]['Type']]?: {
       text?: string
       icon?: string
-
-      // if this field is a virtual field, must specify the mainField
-      mainField?: string
-      // if any additional fields, other than the main field, are required
-      requiredFields?: string[]
-
       inputType?:
+        | 'html'
+        | 'single-image'
+        | 'multiple-image'
         | 'avatar'
         | 'datepicker'
         | 'switch'
@@ -50,7 +47,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
       parseValue?: (val: unknown) => unknown
       // for crudRecordPage. parsing the query params
       parseQueryValue?: (val: string) => unknown
-      component?: any // component for rendering the field in table, if not using renderFn
+      component?: any // component for rendering the field in table
     }
   }
 

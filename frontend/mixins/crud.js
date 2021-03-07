@@ -1,6 +1,7 @@
 import { executeJomql, executeJomqlSubscription } from '~/services/jomql'
 import { unsubscribeChannels } from '~/services/pusher'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
+import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
 import {
   collapseObject,
   getNestedProperty,
@@ -13,7 +14,9 @@ import {
 } from '~/services/common'
 
 export default {
-  components: {},
+  components: {
+    EditRecordDialog,
+  },
 
   props: {
     // replacement title to override default one
@@ -178,7 +181,9 @@ export default {
             text: fieldInfo.text ?? headerInfo.field,
             align: headerInfo.align ?? 'left',
             sortable: headerInfo.sortable,
-            value: fieldInfo.mainField ?? headerInfo.field,
+            value: headerInfo.field.match(/\+/)
+              ? headerInfo.field.split(/\+/)[0]
+              : headerInfo.field,
             width: headerInfo.width ?? null,
             fieldInfo,
             // headerInfo,
@@ -486,21 +491,18 @@ export default {
                   if (!fieldInfo)
                     throw new Error('Unknown field: ' + headerInfo.field)
 
-                  total[fieldInfo.mainField ?? headerInfo.field] = true
-                  serializeMap.set(
-                    fieldInfo.mainField ?? headerInfo.field,
-                    fieldInfo.serialize
-                  )
-
-                  // if fieldInfo.requiredFields, those fields must also be requested
-                  if (fieldInfo.requiredFields) {
-                    fieldInfo.requiredFields.forEach((field) => {
+                  // if field has '+', add all of the fields
+                  if (headerInfo.field.match(/\+/)) {
+                    headerInfo.field.split(/\+/).forEach((field) => {
                       total[field] = true
-                      // assuming the field is valid
+                      // assuming all fields are valid
                       serializeMap[field] = this.recordInfo.fields[
                         field
                       ].serialize
                     })
+                  } else {
+                    total[headerInfo.field] = true
+                    serializeMap.set(headerInfo.field, fieldInfo.serialize)
                   }
                   return total
                 },

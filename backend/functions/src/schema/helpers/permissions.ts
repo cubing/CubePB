@@ -1,6 +1,5 @@
-import * as sqlHelper from "./sql";
 import { userRoleKenum, userPermissionEnum } from "../enums";
-import { BaseService } from "../core/services";
+import { BaseService, NormalService } from "../core/services";
 import * as errorHelper from "./error";
 import { ServiceFunctionInputs, AccessControlFunction } from "../../types";
 import { StringKeyObject } from "jomql";
@@ -11,24 +10,22 @@ export const userRoleToPermissionsMap = {
 };
 
 export function generateItemCreatedByUserGuard(
-  service: BaseService
+  service: NormalService
 ): AccessControlFunction {
-  return async function ({ req, args }) {
+  return async function ({ req, args, fieldPath }) {
     // args should be validated already
     const validatedArgs = <StringKeyObject>args;
     //check if logged in
     if (!req.user) return false;
 
     try {
-      const results = await sqlHelper.fetchTableRows({
-        select: [{ field: "created_by" }],
-        from: service.typename,
-        where: {
-          fields: [{ field: "id", value: validatedArgs.id }],
-        },
-      });
+      const itemRecord = await service.lookupRecord(
+        [{ field: "created_by" }],
+        validatedArgs.item ?? validatedArgs,
+        fieldPath
+      );
 
-      return results[0]?.created_by === req.user.id;
+      return itemRecord?.created_by === req.user.id;
     } catch (err) {
       return false;
     }

@@ -3,11 +3,14 @@ import {
   collapseObject,
   getNestedProperty,
   capitalizeString,
-  isObject,
   handleError,
 } from '~/services/common'
+import GenericInput from '~/components/input/genericInput.vue'
 
 export default {
+  components: {
+    GenericInput,
+  },
   props: {
     selectedItem: {
       type: Object,
@@ -97,60 +100,23 @@ export default {
       return inputObject.value
     },
 
-    handleSearchUpdate(inputObject) {
-      if (!inputObject.search || !inputObject.focused) return
-
-      // if inputObject is object and search === value.name, skip
-      if (
-        isObject(inputObject.value) &&
-        inputObject.search === inputObject.value.name
-      ) {
-        return
-      }
-
-      // cancel pending call, if any
-      clearTimeout(this._timerId)
-
-      // delay new call 500ms
-      this._timerId = setTimeout(() => {
-        this.loadSearchResults(inputObject)
-      }, 500)
-    },
-
-    async loadSearchResults(inputObject) {
-      inputObject.loading = true
-      try {
-        const results = await executeJomql(this, {
-          [`get${capitalizeString(inputObject.fieldInfo.typename)}Paginator`]: {
-            edges: {
-              node: {
-                id: true,
-                name: true,
-              },
-            },
-            __args: {
-              first: 20,
-              search: inputObject.search,
-              filterBy: inputObject.fieldInfo.lookupFilters
-                ? inputObject.fieldInfo.lookupFilters(this)
-                : [],
-            },
-          },
-        })
-
-        inputObject.options = results.edges.map((edge) => edge.node)
-      } catch (err) {
-        handleError(this, err)
-      }
-      inputObject.loading = false
-    },
-
     handleSubmit() {
       // if any comboboxes are focused, do nothing
       if (
         Array.isArray(this.$refs.combobox) &&
         this.$refs.combobox.some((ele) => ele.isFocused)
       ) {
+        return
+      }
+
+      // if any inputs are loading, hold
+      if (
+        this.inputsArray.some((inputObject) => inputObject.loading === true)
+      ) {
+        this.$notifier.showSnackbar({
+          message: 'Some inputs are not finished loading',
+          variant: 'error',
+        })
         return
       }
       this.submit()
@@ -382,7 +348,7 @@ export default {
             options: [],
             readonly,
             loading: false,
-            search: null,
+            input: null,
             focused: false,
           }
 

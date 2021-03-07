@@ -18,7 +18,8 @@
     "js-cookie": "^2.2.1",
     "nuxt": "^2.14.6",
     "pusher-js": "^7.0.1",
-    "timeago.js": "^4.0.2"
+    "timeago.js": "^4.0.2",
+    "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.6",

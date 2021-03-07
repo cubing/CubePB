@@ -20,8 +20,6 @@ export const User = <RecordInfo<'user'>>{
     },
     'name+avatar': {
       text: 'Name',
-      mainField: 'name',
-      requiredFields: ['avatar'],
       component: UserColumn,
     },
     email: {
@@ -134,9 +132,7 @@ export const User = <RecordInfo<'user'>>{
     ],
   },
   deleteOptions: {},
-  shareOptions: {
-    route: '/user',
-  },
+  shareOptions: {},
   enterOptions: {},
 
   expandTypes: [

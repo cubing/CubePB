@@ -5,7 +5,7 @@ import {
 } from '../services/dropdown'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
-import CreatedByColumn from '~/components/table/common/createdByColumn.vue'
+import UserColumn from '~/components/table/common/userColumn.vue'
 import { serializeTime } from '~/services/common'
 
 export const PersonalBest = <RecordInfo<'personalBest'>>{
@@ -22,9 +22,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     'created_by.name+created_by.avatar': {
       text: 'Created By',
-      mainField: 'created_by.name',
-      requiredFields: ['created_by.avatar'],
-      component: CreatedByColumn,
+      component: UserColumn,
     },
     'pb_class.id': {
       text: 'PB Type',

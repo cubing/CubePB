@@ -7,10 +7,6 @@
       fixed
       app
     >
-      <nuxt-link to="/">
-        <v-img :src="require('../static/cubepb-trimmed.png')" class="ma-2" />
-      </nuxt-link>
-      <v-divider></v-divider>
       <v-list dense>
         <v-list-item
           v-for="(item, i) in items"
@@ -60,58 +56,20 @@
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
         </v-list-item>
-        <v-list-item
-          v-if="user"
-          key="-1"
-          :to="currentUserProfileRoute"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>mdi-card-account-details</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>My Profile</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
       </v-list>
       <v-divider></v-divider>
-      <v-list v-if="isAdmin" dense>
-        <v-list-group
-          v-for="item in adminItems"
-          :key="item.title"
-          v-model="item.active"
-          :prepend-icon="item.action"
-          no-action
-        >
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
-            </v-list-item-content>
-          </template>
-          <template v-for="child in item.items">
-            <v-list-item
-              v-if="canSee(child.roles, child.permissions)"
-              :key="child.title"
-              :to="child.to"
-            >
-              <v-list-item-content>
-                <v-list-item-title v-text="child.title"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </template>
-        </v-list-group>
-      </v-list>
+      <AdminNavRoutes v-if="isAdmin"></AdminNavRoutes>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-img
-        v-if="!drawer"
-        :src="require('../static/cubepb-trimmed.png')"
-        max-height="48"
-        max-width="130"
-        contain
-      />
+      <nuxt-link to="/">
+        <v-img
+          :src="require('../static/cubepb-trimmed.png')"
+          max-height="48"
+          max-width="130"
+          contain
+        />
+      </nuxt-link>
       <v-spacer />
       <template v-if="user">
         <v-menu :close-on-content-click="true" :max-width="300" offset-y bottom>
@@ -145,11 +103,6 @@
             <v-divider></v-divider>
 
             <v-list dense>
-              <v-list-item :key="-1" :to="currentUserProfileRoute" exact nuxt>
-                <v-list-item-content>
-                  <v-list-item-title>My Profile</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
               <v-list-item
                 v-for="(item, i) in accountItems"
                 :key="i"
@@ -216,21 +169,17 @@
 import { mapGetters } from 'vuex'
 import Snackbar from '~/components/snackbar/snackbar'
 import { goToWcaAuth, handleLogout } from '~/services/auth'
-import {
-  copyToClipboard,
-  openLink,
-  capitalizeString,
-  handleError,
-} from '~/services/common'
-import * as models from '~/models'
+import { copyToClipboard, openLink, handleError } from '~/services/common'
+import AdminNavRoutes from '~/components/navigation/adminNavRoutes.vue'
 
 export default {
   components: {
     Snackbar,
+    AdminNavRoutes,
   },
   data() {
     return {
-      clipped: false,
+      clipped: true,
       drawer: true,
       fixed: true,
       items: [
@@ -245,6 +194,11 @@ export default {
           icon: 'mdi-timer',
           title: 'My PBs',
           to: '/my-pbs',
+        },
+        {
+          icon: 'mdi-card-account-details',
+          title: 'My Profile',
+          to: '/my-profile',
         },
       ],
       navItems: [
@@ -261,7 +215,10 @@ export default {
           loginRequired: false,
         },
       ],
-      accountItems: [{ title: 'Settings', to: '/settings', exact: false }],
+      accountItems: [
+        { title: 'My Profile', to: '/my-profile', exact: false },
+        { title: 'Settings', to: '/settings', exact: false },
+      ],
       miniVariant: false,
     }
   },
@@ -276,30 +233,8 @@ export default {
         (item) => this.$store.getters['auth/user'] || !item.loginRequired
       )
     },
-
-    currentUserProfileRoute() {
-      return this.$store.getters['auth/user']
-        ? '/user?id=' + this.$store.getters['auth/user'].id
-        : null
-    },
     isAdmin() {
       return this.$store.getters['auth/user']?.role === 'ADMIN'
-    },
-    adminItems() {
-      return [
-        {
-          action: 'mdi-star',
-          active: false,
-          title: 'Administration',
-          permissions: [],
-          items: Object.values(models).map((recordInfo) => ({
-            title: capitalizeString(recordInfo.pluralTypename),
-            to: '/admin/' + recordInfo.pluralTypename,
-            roles: ['ADMIN'],
-            permissions: [],
-          })),
-        },
-      ]
     },
   },
 
