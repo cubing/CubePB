@@ -39,6 +39,8 @@
           (item.fieldInfo.optional ? ' (optional)' : '')
         "
         multiple
+        :hint="item.fieldInfo.hint"
+        persistent-hint
         :clearable="false"
         @change="handleMultipleFileInputChange(item)"
       >
@@ -84,6 +86,8 @@
           (item.fieldInfo.optional ? ' (optional)' : '')
         "
         :loading="item.loading"
+        :hint="item.fieldInfo.hint"
+        persistent-hint
         @click:append="handleSingleFileInputClear(item)"
         @change="handleSingleFileInputChange(item)"
       >
@@ -128,6 +132,8 @@
           (item.fieldInfo.text || item.field) +
           (item.fieldInfo.optional ? ' (optional)' : '')
         "
+        :hint="item.fieldInfo.hint"
+        persistent-hint
         :loading="item.loading"
         @click:append="handleSingleFileInputClear(item)"
         @change="handleSingleFileInputChange(item)"
@@ -162,6 +168,8 @@
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
       :readonly="item.readonly || mode === 'view'"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
     ></v-textarea>
     <v-switch
       v-else-if="item.fieldInfo.inputType === 'switch'"
@@ -171,6 +179,8 @@
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
       :readonly="item.readonly || mode === 'view'"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
     ></v-switch>
     <v-menu
       v-else-if="item.fieldInfo.inputType === 'datepicker'"
@@ -190,6 +200,8 @@
           "
           :readonly="item.readonly || mode === 'view'"
           :clearable="!item.readonly && mode !== 'view'"
+          :hint="item.fieldInfo.hint"
+          persistent-hint
           filled
           autocomplete="off"
           v-bind="attrs"
@@ -217,6 +229,8 @@
       "
       :readonly="item.readonly || mode === 'view'"
       :clearable="!item.readonly && mode !== 'view'"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
       filled
       class="py-0"
     ></v-combobox>
@@ -235,6 +249,8 @@
       "
       :readonly="item.readonly || mode === 'view'"
       :clearable="!item.readonly && mode !== 'view'"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
       filled
       hide-no-data
       cache-items
@@ -255,6 +271,8 @@
       "
       :readonly="item.readonly || mode === 'view'"
       :clearable="!item.readonly && mode !== 'view'"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
       filled
       return-object
       class="py-0"
@@ -273,6 +291,8 @@
       "
       :readonly="item.readonly || mode === 'view'"
       :clearable="!item.readonly && mode !== 'view'"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
       filled
       hide-no-data
       cache-items
@@ -293,6 +313,8 @@
       "
       :readonly="item.readonly || mode === 'view'"
       :clearable="!item.readonly && mode !== 'view'"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
       item-text="name"
       item-value="id"
       class="py-0"
@@ -306,6 +328,8 @@
       "
       :readonly="item.readonly || mode === 'view'"
       :rules="item.fieldInfo.inputRules"
+      :hint="item.fieldInfo.hint"
+      persistent-hint
       filled
       dense
       class="py-0"

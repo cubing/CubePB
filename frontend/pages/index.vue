@@ -20,7 +20,7 @@
               >
               to let us know your feedback or to contribute. Please also check
               out our official
-              <a href="https://discord.gg/zg3GafZF" target="_blank"
+              <a href="https://discord.gg/syZfxBpT" target="_blank"
                 >Discord server</a
               >.
             </p>

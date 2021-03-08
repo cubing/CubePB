@@ -28,7 +28,7 @@ export const UserPublic = {
     downloadOptions: undefined,
   },
   viewOptions: {
-    fields: ['avatar', 'name', 'email', 'wca_id', 'country'],
+    fields: ['avatar', 'name', 'wca_id', 'country'],
   },
   deleteOptions: undefined,
 

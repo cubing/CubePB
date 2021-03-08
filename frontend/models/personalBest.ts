@@ -46,6 +46,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     set_size: {
       text: 'Sample Size',
+      hint:
+        '# of attempts in your PB. For Single, this is always 1. For Avg5, this would be 5.',
     },
     score: {
       text: 'Score',

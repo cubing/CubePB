@@ -185,7 +185,8 @@ export function generateUnixTimestampField(
         ? () => knex.fn.now()
         : (value: unknown) => {
             if (typeof value !== "number") throw 1; // should never happen
-            return new Date(value);
+            // assuming the timestamp is being sent in seconds
+            return new Date(value * 1000);
           },
       ...sqlOptions,
     },

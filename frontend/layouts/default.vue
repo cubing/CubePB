@@ -148,7 +148,7 @@
       <v-icon
         small
         class="mr-2"
-        @click="openLink('https://discord.gg/zg3GafZF')"
+        @click="openLink('https://discord.gg/syZfxBpT')"
         >mdi-discord</v-icon
       >
       <v-icon

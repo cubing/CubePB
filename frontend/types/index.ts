@@ -16,6 +16,8 @@ export type RecordInfo<T extends keyof MainTypes> = {
   fields?: {
     [K in keyof MainTypes[T]['Type']]?: {
       text?: string
+      // hint field for helping the user to fill out the field
+      hint?: string
       icon?: string
       inputType?:
         | 'html'
