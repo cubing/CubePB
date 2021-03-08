@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Cookie from 'js-cookie'
-import { pusher } from './pusher'
+// import { pusher } from './pusher'
 import { Root, GetQuery, GetResponse } from '~/types/schema'
 
 const prodResource = axios.create({
@@ -27,7 +27,7 @@ export async function executeJomql<Key extends keyof Root>(
   return data.data
 }
 
-export async function executeJomqlSubscription(_that, query, callbackFn) {
+/* export async function executeJomqlSubscription(_that, query, callbackFn) {
   // fetches the idToken directly from the cookies, if available
   const idToken = Cookie.get('auth-token')
 
@@ -46,4 +46,4 @@ export async function executeJomqlSubscription(_that, query, callbackFn) {
   channel.bind('subscription-data', callbackFn)
 
   return data.data.channel_name
-}
+} */
