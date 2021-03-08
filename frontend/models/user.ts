@@ -2,7 +2,7 @@ import { PersonalBest } from '.'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
-import { getBooleanOptions, getUserRoles } from '~/services/dropdown'
+import { getUserRoles } from '~/services/dropdown'
 
 export const User = <RecordInfo<'user'>>{
   typename: 'user',

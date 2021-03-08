@@ -11,14 +11,14 @@ import * as models from '~/models'
 import { capitalizeString } from '~/services/common'
 
 export default {
-  // middleware: ['router-auth'],
+  middleware: ['router-auth'],
   components: {
     CrudRecordPage,
   },
 
   computed: {
     currentModel() {
-      return models[capitalizeString(this.$route.params.type)]
+      return models[capitalizeString(this.$route.query.type)]
     },
   },
 }

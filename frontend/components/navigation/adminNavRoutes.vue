@@ -15,7 +15,7 @@
           </v-list-item-content>
         </template>
         <template v-for="child in item.items">
-          <v-list-item :key="child.title" :to="child.to">
+          <v-list-item :key="child.title" :to="child.to" exact>
             <v-list-item-content>
               <v-list-item-title v-text="child.title"></v-list-item-title>
             </v-list-item-content>
@@ -41,7 +41,7 @@ export default {
           permissions: [],
           items: Object.values(models).map((recordInfo) => ({
             title: capitalizeString(recordInfo.pluralTypename),
-            to: '/admin/' + recordInfo.typename,
+            to: '/admin?type=' + recordInfo.typename,
           })),
         },
       ]
