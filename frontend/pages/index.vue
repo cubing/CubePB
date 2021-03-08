@@ -6,18 +6,28 @@
           <img src="../static/cubepb-trimmed.png" alt="" style="width: 50%" />
         </div>
         <v-card>
-          <v-card-title class="headline"> Welcome to CubePB.com </v-card-title>
+          <v-card-title class="headline">
+            Welcome to the New CubePB.com
+          </v-card-title>
           <v-card-text>
             <p>
               CubePB.com is a website for tracking and showcasing your personal
-              bests in speedcubing events. It is an open-sourced project, please
-              feel free to check out our
+              bests in speedcubing events. The website has been newly re-written
+              from the ground up as an open-source project. Feel free to check
+              out our
               <a href="https://github.com/cubing/CubePB" target="_blank"
                 >Github repository</a
-              >. Please also check out our official
+              >
+              to let us know your feedback or to contribute. Please also check
+              out our official
               <a href="https://discord.gg/zg3GafZF" target="_blank"
                 >Discord server</a
               >.
+            </p>
+            <p>
+              If you saved your PBs on the previous version of CubePB, the data
+              is unfortunately not recoverable because the user login system has
+              been changed to WCA login, and you will need to re-enter your PBs.
             </p>
             <p>
               CubePB.com is made possible with support from
