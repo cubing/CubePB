@@ -27,7 +27,7 @@ export async function executeJomql<Key extends keyof Root>(
   return data.data
 }
 
-/* export async function executeJomqlSubscription(_that, query, callbackFn) {
+export async function executeJomqlSubscription(_that, query, _callbackFn) {
   // fetches the idToken directly from the cookies, if available
   const idToken = Cookie.get('auth-token')
 
@@ -41,9 +41,9 @@ export async function executeJomql<Key extends keyof Root>(
 
   const { data } = await prodResource.post('/jomql', query, request)
 
-  const channel = pusher.subscribe(data.data.channel_name)
+  // const channel = pusher.subscribe(data.data.channel_name)
 
-  channel.bind('subscription-data', callbackFn)
+  // channel.bind('subscription-data', callbackFn)
 
   return data.data.channel_name
-} */
+}

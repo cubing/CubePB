@@ -48,10 +48,8 @@ export const User = <RecordInfo<'user'>>{
     },
     is_public: {
       text: 'Is Public',
-      getOptions: getBooleanOptions,
-      // parseValue: (val) => (typeof val === 'boolean' ? val : val === 'true'),
       parseQueryValue: (val) => val === 'true',
-      inputType: 'select',
+      inputType: 'switch',
     },
     created_at: {
       text: 'Created At',
