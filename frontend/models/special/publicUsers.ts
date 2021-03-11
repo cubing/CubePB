@@ -1,7 +1,7 @@
 import { User } from '..'
-import { PbPublic } from '.'
+import { PublicPbs } from '.'
 
-export const UserPublic = {
+export const PublicUsers = {
   ...User,
   viewRecordRoute: '/user',
 
@@ -34,9 +34,9 @@ export const UserPublic = {
 
   expandTypes: [
     {
-      recordInfo: PbPublic,
+      recordInfo: PublicPbs,
       name: 'PBs',
-      excludeFilters: ['created_by.id'],
+      excludeFilters: ['created_by.id', 'is_current'],
       excludeHeaders: ['created_by.name+created_by.avatar'],
       lockedFilters: (_that, item) => {
         return [
@@ -47,6 +47,11 @@ export const UserPublic = {
           },
           {
             field: 'created_by.is_public',
+            operator: 'eq',
+            value: true,
+          },
+          {
+            field: 'is_current',
             operator: 'eq',
             value: true,
           },

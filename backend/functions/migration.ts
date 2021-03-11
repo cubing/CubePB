@@ -23,7 +23,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.increments();
       table.string("name").notNullable();
       table.string("code").notNullable().unique();
-      table.integer("max_attempts").notNullable().defaultTo(1);
+      table.string("score_method").notNullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
@@ -50,11 +50,13 @@ export async function up(knex: Knex): Promise<void[]> {
       table.integer("event").notNullable();
       table.integer("set_size").notNullable();
       table.integer("score").notNullable();
-      table.integer("attempts_succeeded").notNullable();
-      table.integer("attempts_total").notNullable();
+      table.integer("attempts_succeeded").nullable();
+      table.integer("attempts_total").nullable();
       table.integer("product").nullable();
       table.dateTime("happened_on").notNullable();
-      table.integer("time_elapsed").notNullable();
+      table.integer("time_elapsed").nullable();
+      table.integer("moves_count").nullable();
+      table.boolean("is_current").notNullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();

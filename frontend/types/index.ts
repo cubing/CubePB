@@ -12,6 +12,9 @@ export type RecordInfo<T extends keyof MainTypes> = {
   // how to render the item as a string
   renderItem?: (item) => string
 
+  // fields that must always be requested when fetching the specific item and multiple items, along with the id field. could be for certain rendering purposes
+  requiredFields?: string[]
+
   // all of the "known" fields of the type. could be nested types (not included in type hints)
   fields?: {
     [K in keyof MainTypes[T]['Type']]?: {
@@ -55,13 +58,6 @@ export type RecordInfo<T extends keyof MainTypes> = {
 
   // options related to viewing multiple, if possible
   paginationOptions?: {
-    sortOptions?: {
-      // default sortBy/Desc for the interface
-      sortBy: `get${Capitalize<T>}Paginator` extends keyof InputTypes
-        ? InputTypes[`get${Capitalize<T>}Paginator`]['sortBy']
-        : []
-      sortDesc: boolean[]
-    }
     // does the interface have a search bar?
     hasSearch: `get${Capitalize<T>}Paginator` extends keyof InputTypes
       ? 'search' extends keyof InputTypes[`get${Capitalize<T>}Paginator`]
@@ -147,6 +143,12 @@ export type RecordInfo<T extends keyof MainTypes> = {
     excludeFilters?: string[]
     // initial filters that should be loaded into the nested component
     initialFilters?: FilterObject[]
+
+    // initial sort options that should be applied to nested component
+    initialSortOptions?: {
+      sortBy: string[]
+      sortDesc: boolean[]
+    }
   }[]
 }
 

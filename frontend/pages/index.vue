@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-layout column justify-center align-center>
-      <v-flex xs12 sm8 md6>
+      <v-flex xs12 sm8 md6 style="max-width: 600px">
         <div class="text-center">
           <img src="../static/cubepb-trimmed.png" alt="" style="width: 50%" />
         </div>

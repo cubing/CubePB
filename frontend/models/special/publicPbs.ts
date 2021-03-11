@@ -1,18 +1,18 @@
-import { PersonalBest } from '..'
+import { MyPbs } from '.'
 
-const MyPbs = <any>{
-  ...PersonalBest,
-  viewRecordRoute: '/pb',
-  paginationOptions: {
-    ...(!!PersonalBest.paginationOptions && PersonalBest.paginationOptions),
-    downloadOptions: undefined,
-  },
+// MyPbs except no delete or add
+
+const PublicPbs = <any>{
+  ...MyPbs,
+  deleteOptions: undefined,
+  addOptions: undefined,
+  expandTypes: undefined,
 }
 
-MyPbs.expandTypes = [
+PublicPbs.expandTypes = [
   {
     recordInfo: {
-      ...(<any>MyPbs),
+      ...(<any>PublicPbs),
     },
     name: 'PB History',
     lockedFilters: (_that, item) => {
@@ -45,4 +45,5 @@ MyPbs.expandTypes = [
     },
   },
 ]
-export { MyPbs }
+
+export { PublicPbs }

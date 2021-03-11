@@ -21,6 +21,26 @@ export async function copyToClipboard(that, content) {
   })
 }
 
+export function serializeNestedProperty(
+  obj: StringKeyObject,
+  path: string,
+  serializeFn: (value) => unknown
+): void {
+  const pathArray = path.split(/\./)
+  const finalField = pathArray.pop()
+  // if no final field, must be a malformed path
+  if (!finalField) return
+  let currentValue = obj
+  for (const prop of pathArray) {
+    // if not object, end early
+    if (!(currentValue && typeof currentValue === 'object')) {
+      return
+    }
+    currentValue = currentValue[prop]
+  }
+  currentValue[finalField] = serializeFn(currentValue[finalField])
+}
+
 export function getNestedProperty(obj: StringKeyObject, path: string) {
   const pathArray = path.split(/\./)
   let currentValue = obj
@@ -32,6 +52,26 @@ export function getNestedProperty(obj: StringKeyObject, path: string) {
     currentValue = currentValue[prop]
   }
   return currentValue
+}
+
+export function setNestedProperty(
+  obj: StringKeyObject,
+  path: string,
+  value: unknown
+): void {
+  const pathArray = path.split(/\./)
+  const finalField = pathArray.pop()
+  // if no final field, must be a malformed path
+  if (!finalField) return
+  let currentValue = obj
+  for (const prop of pathArray) {
+    // if not object, end early
+    if (!(currentValue && typeof currentValue === 'object')) {
+      return
+    }
+    currentValue = currentValue[prop]
+  }
+  currentValue[finalField] = value
 }
 
 export function isObject(ele: unknown): ele is StringKeyObject {
@@ -81,7 +121,8 @@ export function collapseObjectArray(objArray: StringKeyObject[]) {
   return objArray.map((obj) => collapseObject(obj))
 }
 
-export function serializeTime(ms: number): string {
+export function serializeTime(ms: number | null): string | null {
+  if (!ms) return null
   let totalCs = Number(ms) / 10
 
   const minutes = Math.floor(totalCs / (60 * 100))

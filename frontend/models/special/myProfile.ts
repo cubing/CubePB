@@ -1,7 +1,7 @@
-import { UserPublic } from '.'
+import { PublicUsers } from '.'
 
 export const MyProfile = {
-  ...UserPublic,
+  ...PublicUsers,
   editOptions: {
     fields: ['is_public'],
   },

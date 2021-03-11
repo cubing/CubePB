@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.string("avatar").nullable();
       table.string("country").nullable();
       table.boolean("is_public").notNullable().defaultTo(true);
-      table.integer("role").notNullable().defaultTo(1);
+      table.integer("role").notNullable().defaultTo(2);
       table.json("permissions").nullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
@@ -23,6 +23,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.increments();
       table.string("name").notNullable();
       table.string("code").notNullable().unique();
+      table.string("score_method").notNullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
@@ -38,6 +39,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.increments();
       table.string("name").notNullable();
       table.text("description").nullable();
+      table.integer("set_size").nullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
@@ -48,16 +50,17 @@ export async function up(knex: Knex): Promise<void[]> {
       table.integer("event").notNullable();
       table.integer("set_size").notNullable();
       table.integer("score").notNullable();
-      table.integer("attempts_succeeded").notNullable().defaultTo(1);
-      table.integer("attempts_total").notNullable().defaultTo(1);
+      table.integer("attempts_succeeded").nullable();
+      table.integer("attempts_total").nullable();
       table.integer("product").nullable();
-      table.date("happened_on").notNullable();
-      table.integer("time_elapsed").notNullable();
-      table.boolean("show_ms").notNullable().defaultTo(false);
+      table.dateTime("happened_on").notNullable();
+      table.integer("time_elapsed").nullable();
+      table.integer("moves_count").nullable();
+      table.boolean("is_current").notNullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
-      table.unique(["pb_class", "event", "set_size"]);
+      // table.unique(["pb_class", "event", "set_size", "created_by"]);
     }),
   ]);
 }

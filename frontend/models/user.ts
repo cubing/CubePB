@@ -61,10 +61,6 @@ export const User = <RecordInfo<'user'>>{
     },
   },
   paginationOptions: {
-    sortOptions: {
-      sortBy: ['created_at'],
-      sortDesc: [true],
-    },
     hasSearch: true,
     filters: [
       {

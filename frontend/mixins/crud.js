@@ -11,6 +11,7 @@ import {
   getCurrentDate,
   downloadCSV,
   handleError,
+  serializeNestedProperty,
 } from '~/services/common'
 
 export default {
@@ -39,16 +40,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    /** raw filters that must also be in recordInfo.filters
-    {
-      field: string;
-      operator: string;
-      value: any;
-    }
-    */
-    filters: {
-      type: Array,
-      default: () => [],
+    pageOptions: {
+      type: Object,
+      default: null,
     },
     /** raw filters must also be in recordInfo.filters. appended directly to the filterBy params. also applied to addRecordDialog
     {
@@ -66,10 +60,6 @@ export default {
     hiddenFilters: {
       type: Array,
       default: () => [],
-    },
-    // search term
-    search: {
-      type: String,
     },
     groupBy: {
       type: Array,
@@ -141,13 +131,20 @@ export default {
 
       // expandable
       expandedItems: [],
-      additionalSubFilters: [],
-      subSearchInput: '',
+      subPageOptions: null,
       expandTypeObject: null,
     }
   },
 
   computed: {
+    filters() {
+      return this.pageOptions?.filters ?? []
+    },
+
+    search() {
+      return this.pageOptions?.search
+    },
+
     childInterfaceComponent() {
       return this.expandTypeObject
         ? this.expandTypeObject.recordInfo.paginationOptions
@@ -244,10 +241,23 @@ export default {
   },
 
   watch: {
-    // this triggers when filters get updated on parent element
-    filters() {
+    // this triggers when pageOptions get updated on parent element
+    pageOptions() {
       this.syncFilters()
-      this.reset()
+      this.reset({
+        resetCursor: true,
+      })
+      // also going to un-expand any expanded items
+      this.expandedItems.pop()
+    },
+    // this should trigger mainly when switching routes on admin pages
+    recordInfo() {
+      this.reset({
+        resetSubscription: true,
+        initFilters: true,
+        resetSort: true,
+        resetCursor: true,
+      })
       // also going to un-expand any expanded items
       this.expandedItems.pop()
     },
@@ -256,7 +266,18 @@ export default {
       this.reset({
         resetSubscription: true,
         resetFilters: true,
+        resetCursor: true,
       })
+    },
+
+    // triggers when itemsPerPage changes
+    'options.itemsPerPage'() {
+      this.reset()
+    },
+    // triggers when page changes
+    'options.page'() {
+      this.handleUpdatePage()
+      this.reset()
     },
   },
 
@@ -317,17 +338,8 @@ export default {
     },
 
     // expanded
-    handleSubFiltersUpdated(searchInput, filterInputsArray) {
-      this.subSearchInput = searchInput
-
-      // parse filterInputsArray
-      this.additionalSubFilters = filterInputsArray
-        .filter((ele) => ele.value !== undefined && ele.value !== null)
-        .map((ele) => ({
-          field: ele.field,
-          operator: ele.operator,
-          value: isObject(ele.value) ? ele.value.id : ele.value,
-        }))
+    handleSubPageOptionsUpdated(pageOptions) {
+      this.subPageOptions = pageOptions
     },
 
     // expanded
@@ -338,9 +350,15 @@ export default {
       if (!props.isExpanded || !expandTypeObject)
         props.expand(!props.isExpanded)
 
-      // when item expanded, reset the filters
-      if (expandTypeObject)
-        this.additionalSubFilters = expandTypeObject.initialFilters ?? []
+      // when item expanded, reset the pageOptions
+      if (expandTypeObject) {
+        this.subPageOptions = {
+          search: null,
+          filters: expandTypeObject.initialFilters ?? [],
+          sortBy: expandTypeObject.initialSortOptions?.sortBy ?? [],
+          sortDesc: expandTypeObject.initialSortOptions?.sortDesc ?? [],
+        }
+      }
     },
 
     handleRowClick(item) {
@@ -374,8 +392,6 @@ export default {
             return returnItem
           })
 
-        console.log(data)
-
         if (data.length < 1) {
           throw new Error('No results to export')
         }
@@ -392,8 +408,25 @@ export default {
       this.loading.exportData = false
     },
 
-    updateFilters() {
-      this.$emit('filters-updated', this.searchInput, this.filterInputsArray)
+    updatePageOptions() {
+      this.$emit('pageOptions-updated', {
+        search: this.searchInput,
+        filters: this.filterInputsArray
+          .filter(
+            (filterObject) =>
+              filterObject.value !== null && filterObject.value !== undefined
+          )
+          .map((filterObject) => ({
+            field: filterObject.field,
+            operator: filterObject.operator,
+            // if object, must be from return-object. get the id
+            value: isObject(filterObject.value)
+              ? filterObject.value.id
+              : filterObject.value,
+          })),
+        sortBy: this.options.sortBy,
+        sortDesc: this.options.sortDesc,
+      })
       this.filterChanged = false
     },
 
@@ -417,25 +450,9 @@ export default {
         // this is here because update:options event triggers when loading the table for the first time
         options.initialLoad = false
       } else {
-        // defer the action to next tick, since we possibly need to wait for handlePageReset and handleUpdatePage to complete
-
-        this.$nextTick(this.reset)
+        // this triggers when the sortDesc/sortBy changes
+        this.updatePageOptions()
       }
-    },
-
-    handlePageReset() {
-      // reset pageOptions
-      this.previousPage = null
-      this.positivePageDelta = true
-
-      // reset paginatorInfos
-      this.nextPaginatorInfo = {
-        total: null,
-        startCursor: null,
-        endCursor: null,
-      }
-
-      this.currentPaginatorInfo = this.nextPaginatorInfo
     },
 
     handleUpdatePage() {
@@ -483,31 +500,37 @@ export default {
           },
           edges: {
             node: collapseObject(
-              this.recordInfo.paginationOptions.headers.reduce(
-                (total, headerInfo) => {
-                  const fieldInfo = this.recordInfo.fields[headerInfo.field]
+              this.recordInfo.paginationOptions.headers
+                .concat(
+                  (this.recordInfo.requiredFields ?? []).map((field) => ({
+                    field,
+                  }))
+                )
+                .reduce(
+                  (total, headerInfo) => {
+                    const fieldInfo = this.recordInfo.fields[headerInfo.field]
 
-                  // field unknown, abort
-                  if (!fieldInfo)
-                    throw new Error('Unknown field: ' + headerInfo.field)
+                    // field unknown, abort
+                    if (!fieldInfo)
+                      throw new Error('Unknown field: ' + headerInfo.field)
 
-                  // if field has '+', add all of the fields
-                  if (headerInfo.field.match(/\+/)) {
-                    headerInfo.field.split(/\+/).forEach((field) => {
-                      total[field] = true
-                      // assuming all fields are valid
-                      serializeMap[field] = this.recordInfo.fields[
-                        field
-                      ].serialize
-                    })
-                  } else {
-                    total[headerInfo.field] = true
-                    serializeMap.set(headerInfo.field, fieldInfo.serialize)
-                  }
-                  return total
-                },
-                { id: true } // always add id
-              )
+                    // if field has '+', add all of the fields
+                    if (headerInfo.field.match(/\+/)) {
+                      headerInfo.field.split(/\+/).forEach((field) => {
+                        total[field] = true
+                        // assuming all fields are valid
+                        serializeMap[field] = this.recordInfo.fields[
+                          field
+                        ].serialize
+                      })
+                    } else {
+                      total[headerInfo.field] = true
+                      serializeMap.set(headerInfo.field, fieldInfo.serialize)
+                    }
+                    return total
+                  },
+                  { id: true } // always add id
+                )
             ),
             cursor: true,
           },
@@ -550,7 +573,7 @@ export default {
       // apply serialization to results
       data.edges.forEach((ele) => {
         serializeMap.forEach((serialzeFn, field) => {
-          ele.node[field] = serialzeFn(ele.node[field])
+          serializeNestedProperty(ele.node, field, serialzeFn)
         })
       })
 
@@ -651,6 +674,9 @@ export default {
       // clears any input fields with no filterObject
       inputFieldsSet.forEach((ele) => (ele.value = null))
 
+      // also set searchInput, if any
+      if (this.search) this.searchInput = this.search
+
       this.filterChanged = false
     },
 
@@ -664,6 +690,7 @@ export default {
       initFilters = false,
       resetFilters = false,
       resetSort = false,
+      resetCursor = false,
       reloadData = true,
     } = {}) {
       if (reloadData) this.records = []
@@ -711,10 +738,27 @@ export default {
       if (resetSort) {
         this.options.initialLoad = true
         // populate sort/page options
-        this.options.sortBy =
-          this.recordInfo.paginationOptions.sortOptions?.sortBy.slice() ?? []
-        this.options.sortDesc =
-          this.recordInfo.paginationOptions.sortOptions?.sortDesc.slice() ?? []
+        this.options.sortBy = this.pageOptions
+          ? this.pageOptions.sortBy.slice()
+          : []
+        this.options.sortDesc = this.pageOptions
+          ? this.pageOptions.sortDesc.slice()
+          : []
+      }
+
+      if (resetCursor) {
+        // reset pageOptions
+        this.previousPage = null
+        this.positivePageDelta = true
+
+        // reset paginatorInfos
+        this.nextPaginatorInfo = {
+          total: null,
+          startCursor: null,
+          endCursor: null,
+        }
+
+        this.currentPaginatorInfo = this.nextPaginatorInfo
       }
 
       // sets all of the filter values to null, searchInput to '' and also emits changes to parent
@@ -724,9 +768,9 @@ export default {
         })
         // clears the searchInput
         this.searchInput = ''
-        this.updateFilters()
+        this.updatePageOptions()
 
-        // returning early because updateFilters will trigger reset
+        // returning early because updatePagOptions will trigger reset
         return
       }
 

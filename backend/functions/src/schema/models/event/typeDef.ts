@@ -7,8 +7,9 @@ import {
   generateCreatedByField,
   generateStringField,
   generateTypenameField,
-  generateIntegerField,
+  generateEnumField,
 } from "../../helpers/typeDef";
+import * as Scalars from "../../scalars";
 
 export default new JomqlObjectType(<ObjectTypeDefinition>{
   name: Event.typename,
@@ -23,10 +24,14 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
         unique: true,
       },
     }),
-    max_attempts: generateIntegerField({
+    /*     max_attempts: generateIntegerField({
       allowNull: false,
       defaultValue: 1,
       typeDefOptions: { addable: true, updateable: false },
+    }), */
+    score_method: generateEnumField({
+      scalarDefinition: Scalars.scoreMethod,
+      allowNull: false,
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),

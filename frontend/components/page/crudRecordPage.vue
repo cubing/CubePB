@@ -6,15 +6,14 @@
           <component
             :is="interfaceComponent"
             :record-info="recordInfo"
-            :search="$route.query.search"
-            :filters="filters"
+            :page-options="pageOptions"
             :locked-filters="lockedFilters"
             :hidden-filters="hiddenFilters"
             :hidden-headers="hiddenHeaders"
             :title="title"
             :icon="icon"
             dense
-            @filters-updated="handleFiltersUpdated"
+            @pageOptions-updated="handlePageOptionsUpdated"
           ></component>
         </v-col>
       </v-row>
@@ -24,7 +23,7 @@
 
 <script>
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
-import { isObject, capitalizeString } from '~/services/common'
+import { capitalizeString } from '~/services/common'
 
 export default {
   props: {
@@ -68,70 +67,45 @@ export default {
     capitalizedTypename() {
       return capitalizeString(this.recordInfo.typename)
     },
-
-    // parses the query params and transforms into raw filterArray
-    filters() {
-      const filterArray = []
-      if (this.$route.query.filters) {
-        this.$route.query.filters.split('&').forEach((ele) => {
-          const decoded = decodeURIComponent(ele)
-          const filterParts = decoded.split(' ')
-          if (filterParts.length === 3) {
-            const filter = this.recordInfo.paginationOptions.filters.find(
-              (filterObject) => filterObject.field === filterParts[0]
-            )
-
-            // check if there is a parser on the fieldInfo
-            const fieldInfo = this.recordInfo.fields[filter.field]
-
-            // field unknown, abort
-            if (!fieldInfo) throw new Error('Unknown field: ' + filter.field)
-
-            // if value === '_null' it is understood to be null.
-            const value = fieldInfo.parseQueryValue
-              ? fieldInfo.parseQueryValue(filterParts[2])
-              : filterParts[2]
-            filterArray.push({
-              field: filterParts[0],
-              operator: filterParts[1],
-              value,
-            })
-          }
-        })
-      }
-      return filterArray
+    pageOptions() {
+      return this.$route.query.pageOptions
+        ? JSON.parse(atob(decodeURIComponent(this.$route.query.pageOptions)))
+        : null
     },
   },
 
   methods: {
-    handleFiltersUpdated(searchInput, filterInputsArray) {
-      // build filter string
-
-      // if ele.value is null, it is excluded
-      // if ele.value is "__null", it is understood to be null
-      const filterString = filterInputsArray
-        .filter((ele) => ele.value !== undefined && ele.value !== null)
-        .map((ele) =>
-          encodeURIComponent(
-            `${ele.field} ${ele.operator} ${
-              isObject(ele.value) ? ele.value.id : ele.value
-            }`
-          )
-        )
-        .join('&')
-
+    /** 
+     * Page Options expected structure:
+       pageOptions: {
+        search: "foo",
+        filters: [
+          {
+            field: "field1",
+            operator: "eq",
+            value: 1
+          }
+        ],
+        sortBy: ["field1"],
+        sortDesc: [true]
+      }
+     */
+    handlePageOptionsUpdated(pageOptions) {
       const query = {
         ...this.$route.query,
-        search: searchInput,
-        filters: filterString,
       }
 
-      if (!searchInput) {
-        delete query.search
-      }
-
-      if (!filterString) {
-        delete query.filters
+      // check if any valid options
+      if (
+        pageOptions.search ||
+        pageOptions.filters.length ||
+        pageOptions.sortBy.length
+      ) {
+        query.pageOptions = encodeURIComponent(
+          btoa(JSON.stringify(pageOptions))
+        )
+      } else {
+        delete query.pageOptions
       }
 
       this.$router

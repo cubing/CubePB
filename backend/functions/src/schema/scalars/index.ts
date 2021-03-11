@@ -2,7 +2,7 @@ import {
   generateKenumScalarDefinition,
   generateEnumScalarDefinition,
 } from "../helpers/scalar";
-import { userRoleKenum, userPermissionEnum } from "../enums";
+import { userRoleKenum, userPermissionEnum, scoreMethodEnum } from "../enums";
 
 import { BaseScalars, JomqlScalarType } from "jomql";
 
@@ -27,4 +27,8 @@ export const userRole = new JomqlScalarType(
 
 export const userPermission = new JomqlScalarType(
   generateEnumScalarDefinition("userPermission", userPermissionEnum)
+);
+
+export const scoreMethod = new JomqlScalarType(
+  generateEnumScalarDefinition("scoreMethod", scoreMethodEnum)
 );

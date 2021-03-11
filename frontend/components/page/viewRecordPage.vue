@@ -22,7 +22,8 @@
           :offset-md="isExpanded ? 0 : 3"
         >
           <v-card class="elevation-12">
-            <EditRecordInterface
+            <component
+              :is="currentInterface"
               :selected-item="selectedItem"
               :record-info="recordInfo"
               mode="view"
@@ -87,7 +88,7 @@
                   </v-menu>
                 </v-toolbar>
               </template>
-            </EditRecordInterface>
+            </component>
           </v-card>
         </v-col>
         <v-col v-if="isExpanded" cols="12" md="8">
@@ -98,11 +99,10 @@
               :title="expandTypeObject.name"
               :hidden-headers="expandTypeObject.excludeHeaders"
               :locked-filters="lockedSubFilters"
-              :filters="additionalSubFilters"
+              :page-options="subPageOptions"
               :hidden-filters="hiddenSubFilters"
-              :search="$route.query.search"
               dense
-              @filters-updated="handleSubFiltersUpdated"
+              @pageOptions-updated="handleSubPageOptionsUpdated"
             >
               <template v-slot:header-action>
                 <v-btn icon @click="toggleExpand(null)">
@@ -129,12 +129,16 @@
 import EditRecordInterface from '~/components/interface/crud/editRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
 import { executeJomql } from '~/services/jomql'
-import { capitalizeString, isObject, handleError } from '~/services/common'
+import {
+  capitalizeString,
+  handleError,
+  collapseObject,
+  serializeNestedProperty,
+} from '~/services/common'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 
 export default {
   components: {
-    EditRecordInterface,
     EditRecordDialog,
   },
 
@@ -158,7 +162,7 @@ export default {
       selectedItem: null,
       isExpanded: false,
       expandTypeObject: null,
-      additionalSubFilters: [],
+      subPageOptions: null,
 
       dialogs: {
         editRecord: false,
@@ -172,6 +176,9 @@ export default {
   },
 
   computed: {
+    currentInterface() {
+      return this.recordInfo.viewOptions.component || EditRecordInterface
+    },
     hiddenSubFilters() {
       if (!this.isExpanded) return []
 
@@ -225,7 +232,16 @@ export default {
 
       // when item expanded, reset the filters
       if (expandTypeObject)
-        this.additionalSubFilters = expandTypeObject.initialFilters ?? []
+        this.subPageOptions = {
+          search: null,
+          filters: expandTypeObject.initialFilters ?? [],
+          sortBy: expandTypeObject.initialSortOptions?.sortBy ?? [],
+          sortDesc: expandTypeObject.initialSortOptions?.sortDesc ?? [],
+        }
+    },
+
+    handleSubPageOptionsUpdated(pageOptions) {
+      this.subPageOptions = pageOptions
     },
 
     openDialog(dialogName) {
@@ -244,12 +260,36 @@ export default {
       try {
         const data = await executeJomql(this, {
           ['get' + this.capitalizedTypename]: {
-            id: true,
+            ...collapseObject(
+              (this.recordInfo.requiredFields ?? []).reduce(
+                (total, item) => {
+                  total[item] = true
+                  return total
+                },
+                {
+                  id: true,
+                }
+              )
+            ),
             __args: this.lookupParams ?? {
               id: this.$route.query.id,
             },
           },
         })
+
+        // apply serialization to results
+        if (this.recordInfo.requiredfields) {
+          // check if there is a parser on the fieldInfo
+          this.recordInfo.requiredfields.forEach((field) => {
+            const fieldInfo = this.recordInfo.fields[field]
+
+            // field unknown, abort
+            if (!fieldInfo) throw new Error('Unknown field: ' + field)
+
+            if (fieldInfo.serialize)
+              serializeNestedProperty(data, field, fieldInfo.serialize)
+          })
+        }
 
         this.selectedItem = data
       } catch (err) {
@@ -257,20 +297,6 @@ export default {
         handleError(this, err)
       }
       this.loading.loadRecord = false
-    },
-
-    // expanded
-    handleSubFiltersUpdated(searchInput, filterInputsArray) {
-      this.subSearchInput = searchInput
-
-      // parse filterInputsArray
-      this.additionalSubFilters = filterInputsArray
-        .filter((ele) => ele.value !== undefined && ele.value !== null)
-        .map((ele) => ({
-          field: ele.field,
-          operator: ele.operator,
-          value: isObject(ele.value) ? ele.value.id : ele.value,
-        }))
     },
   },
 

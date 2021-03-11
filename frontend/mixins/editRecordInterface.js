@@ -4,6 +4,7 @@ import {
   getNestedProperty,
   capitalizeString,
   handleError,
+  isObject,
 } from '~/services/common'
 import GenericInput from '~/components/input/genericInput.vue'
 
@@ -100,6 +101,12 @@ export default {
       return inputObject.value
     },
 
+    getInputObject(key) {
+      const inputObject = this.inputsArray.find((ele) => ele.field === key)
+      if (!inputObject) throw new Error(`Input key not found: '${key}'`)
+      return inputObject
+    },
+
     handleSubmit() {
       // if any comboboxes are focused, do nothing
       if (
@@ -161,10 +168,15 @@ export default {
             }
           } else if (
             inputObject.fieldInfo.inputType === 'autocomplete' ||
-            inputObject.fieldInfo.inputType === 'server-autocomplete'
+            inputObject.fieldInfo.inputType === 'server-autocomplete' ||
+            inputObject.fieldInfo.inputType === 'select'
           ) {
-            // as we are using return-object option, the entire object will be returned for autocompletes, unless it is null
-            value = inputObject.value ? inputObject.value.id : null
+            // as we are using return-object option, the entire object will be returned for autocompletes/selects, unless it is null or a number
+            value = isObject(inputObject.value)
+              ? inputObject.value.id
+              : Number.isNaN(inputObject.value)
+              ? null
+              : inputObject.value
           } else {
             value = inputObject.value
           }
@@ -370,18 +382,17 @@ export default {
               })
                 .then((res) => {
                   inputObject.options = [res]
+                  inputObject.value = res
                 })
                 .catch((e) => e)
             }
           }
 
-          // if it's readonly there's no point in adding the other options
-          if (!inputObject.readonly) {
-            fieldInfo.getOptions &&
-              fieldInfo
-                .getOptions(this)
-                .then((res) => inputObject.options.push(...res))
-          }
+          // add the other options, if any
+          fieldInfo.getOptions &&
+            fieldInfo.getOptions(this).then((res) => {
+              inputObject.options.push(...res)
+            })
 
           return inputObject
         })

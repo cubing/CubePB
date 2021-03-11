@@ -7,15 +7,16 @@ import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
 import { serializeTime } from '~/services/common'
+import EditPersonalBestInterface from '~/components/interface/crud/special/editPersonalBestInterface.vue'
 
 export const PersonalBest = <RecordInfo<'personalBest'>>{
   typename: 'personalBest',
   pluralTypename: 'personalBests',
   name: 'Personal Best',
   pluralName: 'Personal Bests',
-  // viewRecordRoute: '/pb',
   icon: 'mdi-timer',
   renderItem: (item) => item.name,
+  requiredFields: ['event.id', 'pb_class.id', 'set_size', 'created_by.id'],
   fields: {
     id: {
       text: 'ID',
@@ -46,8 +47,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     set_size: {
       text: 'Sample Size',
-      hint:
-        '# of attempts in your PB. For Single, this is always 1. For Avg5, this would be 5.',
+      hint: '# of attempts in your PB. For Avg5, this would be 5.',
     },
     score: {
       text: 'Score',
@@ -70,16 +70,20 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     time_elapsed: {
       text: 'Time',
+      hint: 'Skip this for FMC',
       inputRules: [
         (value) => {
           const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
           return (
-            regEx.test(value) || 'Invalid Time Format, must be like 1234:56.78'
+            !value ||
+            regEx.test(value) ||
+            'Invalid Time Format, must be like 1234:56.78'
           )
         },
       ],
       serialize: serializeTime,
       parseValue: (value) => {
+        if (!value) return null
         if (typeof value !== 'string') throw new Error('Invalid value')
         const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
         if (!regEx.test(value)) throw new Error('Invalid value')
@@ -100,6 +104,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         // round to tens
         return (1000 * Math.floor(seconds * 100)) / 100
       },
+    },
+    moves_count: {
+      text: 'Move Count',
+      hint: 'For FMC only',
     },
     attempts_succeeded: {
       text: 'Total Succeeded',
@@ -136,6 +144,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     'created_by.is_public': {
       text: 'Created By - Public',
     },
+    is_current: {
+      text: 'Is Current PB',
+      inputType: 'switch',
+      parseQueryValue: (val) => val === 'true',
+    },
     created_at: {
       text: 'Created At',
       component: TimeagoColumn,
@@ -146,10 +159,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
   },
   paginationOptions: {
-    sortOptions: {
-      sortBy: ['created_at'],
-      sortDesc: [true],
-    },
     hasSearch: false,
 
     filters: [
@@ -179,8 +188,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         title: 'Happened Before',
         operator: 'lt',
       },
+      {
+        field: 'is_current',
+        operator: 'eq',
+      },
     ],
-
     headers: [
       {
         field: 'event.name',
@@ -196,21 +208,31 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         field: 'set_size',
         sortable: true,
         width: '125px',
+        align: 'right',
       },
       {
         field: 'time_elapsed',
         sortable: true,
         width: '125px',
+        align: 'right',
+      },
+      {
+        field: 'moves_count',
+        sortable: false,
+        width: '125px',
+        align: 'right',
       },
       {
         field: 'attempts_succeeded',
         sortable: false,
         width: '150px',
+        align: 'right',
       },
       {
         field: 'attempts_total',
         sortable: false,
         width: '150px',
+        align: 'right',
       },
       {
         field: 'happened_on',
@@ -225,6 +247,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       {
         field: 'score',
         sortable: true,
+        align: 'right',
       },
     ],
     downloadOptions: {},
@@ -236,11 +259,13 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'pb_class.id',
       'set_size',
       'time_elapsed',
+      'moves_count',
       'happened_on',
       'attempts_succeeded',
       'attempts_total',
       'product.id',
     ],
+    component: EditPersonalBestInterface,
   },
   editOptions: undefined,
   viewOptions: {
@@ -249,6 +274,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'pb_class.id',
       'set_size',
       'time_elapsed',
+      'moves_count',
       'happened_on',
       'attempts_succeeded',
       'attempts_total',
@@ -256,9 +282,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'score',
       'created_by.name',
     ],
+    component: EditPersonalBestInterface,
   },
   deleteOptions: {},
   shareOptions: {},
-
-  expandTypes: [],
 }

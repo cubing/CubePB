@@ -1,4 +1,4 @@
 export { MyPbs } from './myPbs'
-export { PbPublic } from './pbPublic'
-export { UserPublic } from './userPublic'
+export { PublicPbs } from './publicPbs'
+export { PublicUsers } from './publicUsers'
 export { MyProfile } from './myProfile'

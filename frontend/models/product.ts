@@ -25,10 +25,6 @@ export const Product = <RecordInfo<'product'>>{
     },
   },
   paginationOptions: {
-    sortOptions: {
-      sortBy: ['created_at'],
-      sortDesc: [true],
-    },
     hasSearch: true,
     filters: [],
     headers: [

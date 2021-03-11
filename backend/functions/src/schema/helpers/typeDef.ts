@@ -581,7 +581,7 @@ export function generatePaginatorPivotResolverObject(params: {
   const { name, pivotService, currentService } = params;
 
   const filterByField = currentService
-    ? currentService.typename.toLowerCase()
+    ? currentService.typename.toLowerCase() + ".id"
     : null;
 
   // if filterByField, ensure that filterByField is a valid filterField on pivotService

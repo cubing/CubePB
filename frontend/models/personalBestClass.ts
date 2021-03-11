@@ -22,6 +22,7 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
     },
     set_size: {
       text: 'Sample Size',
+      parseValue: (val) => val || null, // truthy or null
       optional: true,
     },
     created_at: {
@@ -35,10 +36,6 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
   },
 
   paginationOptions: {
-    sortOptions: {
-      sortBy: ['created_at'],
-      sortDesc: [true],
-    },
     hasSearch: true,
     filters: [],
     headers: [

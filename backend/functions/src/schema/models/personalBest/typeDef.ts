@@ -14,6 +14,7 @@ import {
   generateJoinableField,
   generateIntegerField,
   generateUnixTimestampField,
+  generateBooleanField,
 } from "../../helpers/typeDef";
 
 export default new JomqlObjectType(<ObjectTypeDefinition>{
@@ -47,11 +48,11 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       typeDefOptions: { addable: false, updateable: false },
     }),
     attempts_succeeded: generateIntegerField({
-      allowNull: false,
+      allowNull: true,
       description: "The number of successful attempts",
     }),
     attempts_total: generateIntegerField({
-      allowNull: false,
+      allowNull: true,
       description: "The total number of attempts",
     }),
     product: generateJoinableField({
@@ -62,8 +63,16 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       allowNull: false,
     }),
     time_elapsed: generateIntegerField({
-      allowNull: false,
+      allowNull: true,
       description: "The amount of ms time elapsed for the pb attempt",
+    }),
+    moves_count: generateIntegerField({
+      allowNull: true,
+      description: "The amount of moves used in the pb attempt",
+    }),
+    is_current: generateBooleanField({
+      allowNull: false,
+      typeDefOptions: { addable: false, updateable: false },
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),

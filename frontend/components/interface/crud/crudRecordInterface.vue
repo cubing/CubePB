@@ -13,9 +13,6 @@
       :expanded.sync="expandedItems"
       :show-expand="hasNested"
       :single-expand="hasNested"
-      @update:sort-by="handlePageReset"
-      @update:sort-desc="handlePageReset"
-      @update:page="handleUpdatePage"
       @update:options="handleUpdateOptions"
     >
       <template v-slot:top>
@@ -178,6 +175,7 @@
                 :label="item.title || item.fieldInfo.text || item.field"
                 :prepend-icon="item.fieldInfo.icon"
                 clearable
+                return-object
                 item-text="name"
                 item-value="id"
                 class="py-0"
@@ -196,7 +194,7 @@
           </v-row>
           <v-toolbar v-if="filterChanged" dense flat color="transparent">
             <v-spacer></v-spacer>
-            <v-btn color="primary" class="mb-2" @click="updateFilters()">
+            <v-btn color="primary" class="mb-2" @click="updatePageOptions()">
               <v-icon left>mdi-filter</v-icon>
               Update Filters
             </v-btn>
@@ -261,7 +259,11 @@
               <v-icon>mdi-chevron-up</v-icon>
             </v-btn>
           </td>
-          <td v-for="(headerItem, i) in headers" :key="i">
+          <td
+            v-for="(headerItem, i) in headers"
+            :key="i"
+            :class="headerItem.align ? 'text-' + headerItem.align : null"
+          >
             <div v-if="headerItem.value === null">
               <nuxt-link
                 v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
@@ -317,12 +319,11 @@
             :title="expandTypeObject.name"
             :hidden-headers="expandTypeObject.excludeHeaders"
             :locked-filters="lockedSubFilters"
-            :filters="additionalSubFilters"
+            :page-options="subPageOptions"
             :hidden-filters="hiddenSubFilters"
-            :search="subSearchInput"
             is-child-component
             :dense="dense"
-            @filters-updated="handleSubFiltersUpdated"
+            @pageOptions-updated="handleSubPageOptionsUpdated"
           ></component>
         </td>
       </template>

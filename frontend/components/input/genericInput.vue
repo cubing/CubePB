@@ -113,9 +113,7 @@
     <div
       v-else-if="item.fieldInfo.inputType === 'avatar'"
       class="pb-4"
-      :class="
-        item.readonly || mode === 'view' ? 'text-center' : 'd-flex text-left'
-      "
+      :class="isReadonly ? 'text-center' : 'd-flex text-left'"
     >
       <v-avatar size="64">
         <v-img v-if="item.value" :src="item.value"></v-img>
@@ -167,9 +165,13 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
+      :readonly="isReadonly"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       :hint="item.fieldInfo.hint"
       persistent-hint
+      @click:append="item.value = null"
     ></v-textarea>
     <v-switch
       v-else-if="item.fieldInfo.inputType === 'switch'"
@@ -178,9 +180,13 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
+      :readonly="isReadonly"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       :hint="item.fieldInfo.hint"
       persistent-hint
+      @click:append="item.value = null"
     ></v-switch>
     <v-menu
       v-else-if="item.fieldInfo.inputType === 'datepicker'"
@@ -198,21 +204,24 @@
             (item.fieldInfo.text || item.field) +
             (item.fieldInfo.optional ? ' (optional)' : '')
           "
-          :readonly="item.readonly || mode === 'view'"
-          :clearable="!item.readonly && mode !== 'view'"
+          :readonly="isReadonly"
+          :append-icon="
+            item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+          "
           :hint="item.fieldInfo.hint"
           persistent-hint
           filled
           autocomplete="off"
           v-bind="attrs"
           v-on="on"
+          @click:append="item.value = null"
         ></v-text-field>
       </template>
       <v-date-picker
         v-model="item.value"
         color="primary"
         no-title
-        :readonly="item.readonly || mode === 'view'"
+        :readonly="isReadonly"
         @input="item.focused = false"
       ></v-date-picker>
     </v-menu>
@@ -227,12 +236,15 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
-      :clearable="!item.readonly && mode !== 'view'"
+      :readonly="isReadonly"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       :hint="item.fieldInfo.hint"
       persistent-hint
       filled
       class="py-0"
+      @click:append="item.value = null"
     ></v-combobox>
     <v-combobox
       v-else-if="item.fieldInfo.inputType === 'server-combobox'"
@@ -247,8 +259,10 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
-      :clearable="!item.readonly && mode !== 'view'"
+      :readonly="isReadonly"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       :hint="item.fieldInfo.hint"
       persistent-hint
       filled
@@ -258,6 +272,7 @@
       @update:search-input="handleSearchUpdate(item)"
       @blur="item.focused = false"
       @focus="item.focused = true"
+      @click:append="item.value = null"
     ></v-combobox>
     <v-autocomplete
       v-else-if="item.fieldInfo.inputType === 'autocomplete'"
@@ -269,13 +284,16 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
-      :clearable="!item.readonly && mode !== 'view'"
+      :readonly="isReadonly"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       :hint="item.fieldInfo.hint"
       persistent-hint
       filled
       return-object
       class="py-0"
+      @click:append="item.value = null"
     ></v-autocomplete>
     <v-autocomplete
       v-else-if="item.fieldInfo.inputType === 'server-autocomplete'"
@@ -289,8 +307,10 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
-      :clearable="!item.readonly && mode !== 'view'"
+      :readonly="isReadonly"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       :hint="item.fieldInfo.hint"
       persistent-hint
       filled
@@ -301,6 +321,7 @@
       @update:search-input="handleSearchUpdate(item)"
       @blur="item.focused = false"
       @focus="item.focused = true"
+      @click:append="item.value = null"
     ></v-autocomplete>
     <v-select
       v-else-if="item.fieldInfo.inputType === 'select'"
@@ -311,13 +332,17 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
-      :clearable="!item.readonly && mode !== 'view'"
+      :readonly="isReadonly"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       :hint="item.fieldInfo.hint"
       persistent-hint
+      return-object
       item-text="name"
       item-value="id"
       class="py-0"
+      @click:append="item.value = null"
     ></v-select>
     <v-text-field
       v-else
@@ -326,13 +351,17 @@
         (item.fieldInfo.text || item.field) +
         (item.fieldInfo.optional ? ' (optional)' : '')
       "
-      :readonly="item.readonly || mode === 'view'"
+      :readonly="isReadonly"
       :rules="item.fieldInfo.inputRules"
       :hint="item.fieldInfo.hint"
+      :append-icon="
+        item.value === null ? 'mdi-null' : isReadonly ? null : 'mdi-close'
+      "
       persistent-hint
       filled
       dense
       class="py-0"
+      @click:append="item.value = null"
     ></v-text-field>
   </div>
 </template>
@@ -361,6 +390,11 @@ export default {
       validator: (value) => {
         return ['add', 'edit', 'view', 'delete', 'share'].includes(value)
       },
+    },
+  },
+  computed: {
+    isReadonly() {
+      return this.item.readonly || this.mode === 'view'
     },
   },
   methods: {

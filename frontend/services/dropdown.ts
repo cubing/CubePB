@@ -21,6 +21,7 @@ export const getEvents = memoize(async function (that, _forceReload = false) {
         node: {
           id: true,
           name: true,
+          score_method: true,
         },
       },
       __args: {
@@ -60,6 +61,7 @@ export const getPersonalBestClasses = memoize(async function (
         node: {
           id: true,
           name: true,
+          set_size: true,
         },
       },
       __args: {
@@ -77,6 +79,19 @@ export const getUserRoles = memoize(async function (
 ) {
   const data = await executeJomql<'getUserRoleEnumPaginator'>(that, {
     getUserRoleEnumPaginator: {
+      values: true,
+    },
+  })
+
+  return data.values
+})
+
+export const getScoreMethods = memoize(async function (
+  that,
+  _forceReload = false
+) {
+  const data = await executeJomql<'getScoreMethodEnumPaginator'>(that, {
+    getScoreMethodEnumPaginator: {
       values: true,
     },
   })

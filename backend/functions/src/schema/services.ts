@@ -1,5 +1,5 @@
-import { userRoleKenum } from "./enums";
-import { KenumService } from "./core/services";
+import { userRoleKenum, scoreMethodEnum } from "./enums";
+import { KenumService, EnumService } from "./core/services";
 
 import { UserService } from "./models/user/service";
 import { AuthService } from "./models/auth/service";
@@ -16,3 +16,5 @@ export const PersonalBestClass = new PersonalBestClassService();
 export const PersonalBest = new PersonalBestService();
 
 export const UserRole = new KenumService("userRole", userRoleKenum);
+
+export const ScoreMethod = new EnumService("scoreMethod", scoreMethodEnum);
