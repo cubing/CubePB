@@ -108,12 +108,17 @@ export default {
     },
 
     handleSubmit() {
-      // if any comboboxes are focused, do nothing
+      // if any comboboxes, wait for 500 ms before doing submit to let the value sync
+      let sleep = false
       if (
-        Array.isArray(this.$refs.combobox) &&
-        this.$refs.combobox.some((ele) => ele.isFocused)
+        this.inputsArray.some((ele) => {
+          return (
+            ele.fieldInfo.inputType === 'combobox' ||
+            ele.fieldInfo.inputType === 'server-combobox'
+          )
+        })
       ) {
-        return
+        sleep = true
       }
 
       // if any inputs are loading, hold
@@ -126,7 +131,8 @@ export default {
         })
         return
       }
-      this.submit()
+
+      setTimeout(this.submit, sleep ? 500 : 0)
     },
 
     async submit() {

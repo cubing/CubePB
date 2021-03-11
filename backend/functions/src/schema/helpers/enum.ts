@@ -29,6 +29,10 @@ export abstract class Kenum {
     );
   }
 
+  public get parsed(): number {
+    return this.index;
+  }
+
   constructor(
     public readonly name: string,
     public readonly index: number,
@@ -56,6 +60,10 @@ export abstract class Enum {
         (this as any).prototype.constructor.name
       }`
     );
+  }
+
+  public get parsed(): string {
+    return this.name;
   }
 
   constructor(

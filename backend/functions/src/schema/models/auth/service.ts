@@ -7,6 +7,7 @@ import axios from "axios";
 import { ServiceFunctionInputs } from "../../../types";
 import * as sqlHelper from "../../helpers/sql";
 import * as Resolver from "../../helpers/resolver";
+import { userRoleKenum } from "../../enums";
 
 export class AuthService extends SimpleService {
   defaultTypename = "auth";
@@ -69,7 +70,7 @@ export class AuthService extends SimpleService {
 
     let userInfo;
 
-    //not found, create a new user
+    // not found, create a new user
     if (userResults.length < 1) {
       const addResults = await Resolver.createObjectType({
         typename: User.typename,
@@ -81,6 +82,7 @@ export class AuthService extends SimpleService {
           name: wcaData.me.name,
           avatar: wcaData.me.avatar.thumb_url,
           country: wcaData.me.country_iso2,
+          role: userRoleKenum.NORMAL.parsed,
           created_by: 0,
         },
         req,

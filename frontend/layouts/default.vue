@@ -275,7 +275,7 @@ export default {
     getBuildInfo() {
       return (
         'Build ' +
-        (process.env.VER ? process.env.VER + ' - ' : '') +
+        (process.env.VER ? process.env.VER.substring(0, 7) + ' - ' : '') +
         process.env.build_date
       )
     },
