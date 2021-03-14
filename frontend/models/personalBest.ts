@@ -128,6 +128,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     happened_on: {
       text: 'Date Happened',
       inputType: 'datepicker',
+      // default to today.
+      default: () => new Date().toISOString().substring(0, 10),
       // unix timestamp to YYYY-MM-DD
       serialize: (val: number) =>
         val && new Date(val * 1000).toISOString().substring(0, 10),
