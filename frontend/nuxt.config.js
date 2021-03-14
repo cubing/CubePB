@@ -31,6 +31,11 @@ export default {
         content:
           'CubePB.com is a website for storing and showcasing your personal bests in speedcubing-related events',
       },
+      {
+        property: 'og:image',
+        content:
+          'https://alpha.cubepb.com/_nuxt/img/cubepb-trimmed.e9a5160.png',
+      },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
