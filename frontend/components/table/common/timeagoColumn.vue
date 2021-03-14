@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { generateTimeAgoString } from '~/services/common'
+import { generateTimeAgoString } from '~/services/base'
 import columnMixin from '~/mixins/column'
 
 export default {

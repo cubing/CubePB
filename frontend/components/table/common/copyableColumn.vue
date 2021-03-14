@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { copyToClipboard } from '~/services/common'
+import { copyToClipboard } from '~/services/base'
 import columnMixin from '~/mixins/column'
 
 export default {

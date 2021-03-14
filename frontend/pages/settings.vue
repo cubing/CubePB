@@ -95,7 +95,7 @@
 <script>
 import { executeJomql } from '~/services/jomql'
 import { goToWcaAccountManagement, goToWcaAuth } from '~/services/auth'
-import { handleError } from '~/services/common'
+import { handleError } from '~/services/base'
 
 export default {
   components: {},

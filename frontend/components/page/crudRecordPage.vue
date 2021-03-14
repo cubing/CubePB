@@ -23,7 +23,7 @@
 
 <script>
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
-import { capitalizeString } from '~/services/common'
+import { capitalizeString } from '~/services/base'
 
 export default {
   props: {

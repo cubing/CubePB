@@ -10,7 +10,7 @@
 
 <script>
 import columnMixin from '~/mixins/column'
-import { getNestedProperty } from '~/services/common'
+import { getNestedProperty } from '~/services/base'
 
 export default {
   mixins: [columnMixin],

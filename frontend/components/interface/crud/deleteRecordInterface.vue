@@ -22,7 +22,7 @@
 
 <script>
 import { executeJomql } from '~/services/jomql'
-import { capitalizeString, handleError } from '~/services/common'
+import { capitalizeString, handleError } from '~/services/base'
 
 export default {
   props: {

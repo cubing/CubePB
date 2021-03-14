@@ -5,7 +5,7 @@ import {
   capitalizeString,
   handleError,
   isObject,
-} from '~/services/common'
+} from '~/services/base'
 import GenericInput from '~/components/input/genericInput.vue'
 
 export default {

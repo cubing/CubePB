@@ -17,7 +17,7 @@
 <script>
 import { handleLogin } from '~/services/auth'
 import { executeJomql } from '~/services/jomql'
-import { handleError } from '~/services/common'
+import { handleError } from '~/services/base'
 
 export default {
   components: {},

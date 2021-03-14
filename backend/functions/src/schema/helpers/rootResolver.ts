@@ -115,13 +115,9 @@ export function generateBaseRootResolvers(
 
             // if typeField is JomqlObjectTypeLookup, convert to JomqlInputTypeLookup
             if (typeField instanceof JomqlObjectTypeLookup) {
-              typeField = new JomqlInputTypeLookup(
-                "get" + capitalizeString(typeField.name)
-              );
+              typeField = new JomqlInputTypeLookup(typeField.name);
             } else if (typeField instanceof JomqlObjectType) {
-              typeField = new JomqlInputTypeLookup(
-                "get" + capitalizeString(typeField.definition.name)
-              );
+              typeField = new JomqlInputTypeLookup(typeField.definition.name);
             }
 
             if (typeDefField.updateable) {
@@ -192,13 +188,9 @@ export function generateBaseRootResolvers(
 
             // if typeField is JomqlObjectTypeLookup, convert to JomqlInputTypeLookup
             if (typeField instanceof JomqlObjectTypeLookup) {
-              typeField = new JomqlInputTypeLookup(
-                "get" + capitalizeString(typeField.name)
-              );
+              typeField = new JomqlInputTypeLookup(typeField.name);
             } else if (typeField instanceof JomqlObjectType) {
-              typeField = new JomqlInputTypeLookup(
-                "get" + capitalizeString(typeField.definition.name)
-              );
+              typeField = new JomqlInputTypeLookup(typeField.definition.name);
             }
 
             if (typeDefField.addable) {

@@ -1,4 +1,4 @@
-import { getNestedProperty } from '~/services/common'
+import { getNestedProperty } from '~/services/base'
 
 export default {
   props: {

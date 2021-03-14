@@ -169,7 +169,7 @@
 import { mapGetters } from 'vuex'
 import Snackbar from '~/components/snackbar/snackbar'
 import { goToWcaAuth, handleLogout } from '~/services/auth'
-import { copyToClipboard, openLink, handleError } from '~/services/common'
+import { copyToClipboard, openLink, handleError } from '~/services/base'
 import AdminNavRoutes from '~/components/navigation/adminNavRoutes.vue'
 
 export default {
@@ -275,8 +275,9 @@ export default {
     getBuildInfo() {
       return (
         'Build ' +
-        (process.env.VER ? process.env.VER.substring(0, 7) + ' - ' : '') +
-        process.env.build_date
+        (process.env.VER
+          ? process.env.VER.substring(0, 7)
+          : process.env.build_date)
       )
     },
   },

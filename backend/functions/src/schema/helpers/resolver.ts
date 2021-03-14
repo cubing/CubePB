@@ -3,7 +3,6 @@ import {
   generateJomqlResolverTree,
   processJomqlResolverTree,
   JomqlResolverNode,
-  JomqlQueryError,
   JomqlObjectType,
   objectTypeDefs,
   JomqlObjectTypeLookup,
@@ -29,7 +28,6 @@ import {
 
 import { isObject } from "../helpers/shared";
 import type { Request } from "express";
-import e = require("express");
 
 type CustomResolver = {
   resolver: CustomResolverFunction;
@@ -436,8 +434,13 @@ function generateSqlQuerySelectObject({
     const nested = nestedResolverNodeMap[field].nested;
     const sqlOptions = typeDef.sqlOptions;
     if (sqlOptions) {
-      // if nested with no resolver and no dataloader
-      if (nested && !typeDef.resolver && !typeDef.dataloader) {
+      // if nested with no resolver and no dataloader, AND joinable
+      if (
+        nested &&
+        !typeDef.resolver &&
+        !typeDef.dataloader &&
+        sqlOptions.joinInfo
+      ) {
         sqlSelectObjectArray.push(
           ...generateSqlQuerySelectObject({
             nestedResolverNodeMap: nested,

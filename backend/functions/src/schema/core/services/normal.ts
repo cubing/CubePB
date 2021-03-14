@@ -81,9 +81,7 @@ export class NormalService extends BaseService {
 
     this.typeDefLookup = new JomqlObjectTypeLookup(this.typename);
 
-    this.inputTypeDefLookup = new JomqlInputTypeLookup(
-      "get" + capitalizeString(this.typename)
-    );
+    this.inputTypeDefLookup = new JomqlInputTypeLookup(this.typename);
 
     process.nextTick(() => {
       const uniqueKeyMap = {};
@@ -102,7 +100,7 @@ export class NormalService extends BaseService {
       });
 
       this.inputTypeDef = new JomqlInputType({
-        name: "get" + capitalizeString(this.typename),
+        name: this.typename,
 
         fields: uniqueKeyMap,
         inputsValidator: (args, fieldPath) => {

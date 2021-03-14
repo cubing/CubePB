@@ -370,7 +370,7 @@
 import Draggable from 'vuedraggable'
 // file upload not supported in this project
 // import { uploadFile } from '~/services/file'
-import { capitalizeString, isObject, handleError } from '~/services/common'
+import { capitalizeString, isObject, handleError } from '~/services/base'
 import { executeJomql } from '~/services/jomql'
 
 export default {

@@ -6,7 +6,7 @@ import {
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
-import { serializeTime } from '~/services/common'
+import { serializeTime } from '~/services/base'
 import EditPersonalBestInterface from '~/components/interface/crud/special/editPersonalBestInterface.vue'
 
 export const PersonalBest = <RecordInfo<'personalBest'>>{

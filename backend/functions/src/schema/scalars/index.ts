@@ -19,6 +19,8 @@ export { unixTimestamp } from "./unixTimestamp";
 export { date } from "./date";
 export { id } from "./id";
 export { regex } from "./regex";
+export { json } from "./json";
+export { jsonString } from "./jsonString";
 
 // generated scalars
 export const userRole = new JomqlScalarType(

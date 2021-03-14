@@ -9,7 +9,7 @@ export function generateTimeAgoString(unixTimestamp: number | null) {
   return format(unixTimestamp * 1000)
 }
 
-export function capitalizeString(str: string): string {
+export function capitalizeString(str: string | undefined): string {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
 }
 
@@ -193,4 +193,13 @@ export function handleError(that, err) {
   } else {
     console.log(err)
   }
+}
+
+export function generateRoute(route: string, pageOptions?: any) {
+  return (
+    route +
+    (pageOptions
+      ? '?pageOptions=' + encodeURIComponent(btoa(JSON.stringify(pageOptions)))
+      : '')
+  )
 }

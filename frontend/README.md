@@ -1,20 +1,29 @@
-# reference_client
+# CubePB.com Frontend Client
 
-## Build Setup
+## Environment Variables
+
+Copy the `.env.example` file (recommended) to `.env`, or supply your own environment variables.
+
+## Serve Locally with Hot Reloading
 
 ```bash
+# set working directory
+$ cd frontend
+
 # install dependencies
 $ npm install
 
 # serve with hot reload at localhost:3000
 $ npm run dev
+```
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+## Generate and Serve Project
 
+```bash
 # generate static project
 $ npm run generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+## More Info
+
+This frontend uses the nuxt.js framework. For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).

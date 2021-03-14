@@ -12,7 +12,7 @@ import {
   downloadCSV,
   handleError,
   serializeNestedProperty,
-} from '~/services/common'
+} from '~/services/base'
 
 export default {
   components: {
@@ -242,6 +242,7 @@ export default {
 
   watch: {
     // this triggers when pageOptions get updated on parent element
+    // this also triggers when parent element switches to a different item
     pageOptions() {
       this.syncFilters()
       this.reset({
@@ -260,14 +261,6 @@ export default {
       })
       // also going to un-expand any expanded items
       this.expandedItems.pop()
-    },
-    // this triggers when parent element switches to a different item
-    lockedFilters() {
-      this.reset({
-        resetSubscription: true,
-        resetFilters: true,
-        resetCursor: true,
-      })
     },
 
     // triggers when itemsPerPage changes
@@ -738,10 +731,10 @@ export default {
       if (resetSort) {
         this.options.initialLoad = true
         // populate sort/page options
-        this.options.sortBy = this.pageOptions
+        this.options.sortBy = Array.isArray(this.pageOptions?.sortBy)
           ? this.pageOptions.sortBy.slice()
           : []
-        this.options.sortDesc = this.pageOptions
+        this.options.sortDesc = Array.isArray(this.pageOptions?.sortDesc)
           ? this.pageOptions.sortDesc.slice()
           : []
       }

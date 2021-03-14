@@ -134,7 +134,7 @@ import {
   handleError,
   collapseObject,
   serializeNestedProperty,
-} from '~/services/common'
+} from '~/services/base'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 
 export default {

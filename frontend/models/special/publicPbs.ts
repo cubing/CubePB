@@ -37,6 +37,11 @@ PublicPbs.expandTypes = [
           operator: 'eq',
           value: item.set_size,
         },
+        {
+          field: 'created_by.is_public',
+          operator: 'eq',
+          value: true,
+        },
       ]
     },
     initialSortOptions: {

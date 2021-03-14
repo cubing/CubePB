@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { capitalizeString } from '~/services/common'
+import { capitalizeString } from '~/services/base'
 import * as models from '~/models'
 
 export default {

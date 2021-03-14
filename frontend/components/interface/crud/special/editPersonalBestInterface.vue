@@ -42,7 +42,7 @@
 
 <script>
 import editRecordInterfaceMixin from '~/mixins/editRecordInterface'
-import { isObject } from '~/services/common'
+import { isObject } from '~/services/base'
 
 const scoreMethodHiddenFieldsMap = {
   STANDARD: ['moves_count', 'attempts_succeeded', 'attempts_total'],

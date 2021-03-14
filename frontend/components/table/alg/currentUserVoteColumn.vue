@@ -23,7 +23,7 @@
 
 <script>
 import { executeJomql } from '~/services/jomql'
-import { handleError } from '~/services/common'
+import { handleError } from '~/services/base'
 import columnMixin from '~/mixins/column'
 
 export default {

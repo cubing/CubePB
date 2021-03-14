@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { copyToClipboard } from '~/services/common'
+import { copyToClipboard } from '~/services/base'
 
 export default {
   props: {

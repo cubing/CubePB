@@ -13,6 +13,7 @@ import {
   JomqlObjectType,
   JomqlInputFieldType,
   ArrayOptions,
+  inputTypeDefs,
 } from "jomql";
 import { knex } from "../../utils/knex";
 import * as Resolver from "./resolver";
@@ -342,10 +343,10 @@ export function generateBooleanField(params: GenerateFieldParams) {
   });
 }
 
-// array of strings, stored in mysql as JSON
+// array of [type], stored in mysql as JSON
 export function generateArrayField(
   params: {
-    type: JomqlScalarType;
+    type: JomqlScalarType | JomqlObjectTypeLookup | JomqlObjectType;
     allowNullElement?: boolean;
   } & GenerateFieldParams
 ) {
@@ -374,6 +375,36 @@ export function generateArrayField(
     sqlOptions: {
       // necessary for inserting JSON into DB properly
       parseValue: (val) => JSON.stringify(val),
+      ...sqlOptions,
+    },
+    typeDefOptions: {
+      ...typeDefOptions,
+    },
+  });
+}
+
+// generic JSON field, stored as JSON, but input/output as stringified JSON
+export function generateJSONField(params: GenerateFieldParams) {
+  const {
+    name,
+    description,
+    allowNull = true,
+    hidden,
+    sqlDefinition,
+    sqlOptions,
+    typeDefOptions,
+  } = params;
+  return generateStandardField({
+    name,
+    description,
+    allowNull,
+    hidden,
+    sqlType: "json",
+    type: Scalars.jsonString,
+    sqlDefinition,
+    sqlOptions: {
+      // necessary for inserting JSON into DB properly -- already stringified
+      // parseValue: (val) => JSON.stringify(val),
       ...sqlOptions,
     },
     typeDefOptions: {
@@ -418,6 +449,61 @@ export function generateEnumField(
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
+  });
+}
+
+export function generateKeyValueArray(
+  params: {
+    valueType?: JomqlScalarType;
+    allowNullValue?: boolean;
+    allowNull?: boolean;
+  } = {}
+) {
+  const {
+    valueType = Scalars.string,
+    allowNullValue = false,
+    allowNull = true,
+  } = params;
+  // generate the input type if not exists
+  if (!inputTypeDefs.has("keyValueObject")) {
+    new JomqlInputType({
+      name: "keyValueObject",
+      description: "Object Input with key and value properties",
+      fields: {
+        key: new JomqlInputFieldType({
+          type: Scalars.string,
+          required: true,
+        }),
+        value: new JomqlInputFieldType({
+          type: valueType,
+          required: !allowNullValue,
+        }),
+      },
+    });
+  }
+
+  // generate the object type if not exists
+  if (!objectTypeDefs.has("keyValueObject")) {
+    new JomqlObjectType({
+      name: "keyValueObject",
+      description: "Object with key and value properties",
+      fields: {
+        key: {
+          type: Scalars.string,
+          allowNull: false,
+        },
+        value: {
+          type: valueType,
+          allowNull: allowNullValue,
+        },
+      },
+    });
+  }
+
+  return generateArrayField({
+    allowNull,
+    allowNullElement: false,
+    type: new JomqlObjectTypeLookup("keyValueObject"),
   });
 }
 
@@ -797,7 +883,7 @@ export function generatePaginatorPivotResolverObject(params: {
       required: true,
       type: new JomqlInputType(
         {
-          name: "get" + capitalizeString(pivotService.paginator.typename),
+          name: pivotService.paginator.typename,
           fields: {
             first: new JomqlInputFieldType({
               type: Scalars.number,

@@ -8,7 +8,7 @@
 <script>
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
 import * as models from '~/models'
-import { capitalizeString } from '~/services/common'
+import { capitalizeString } from '~/services/base'
 
 export default {
   middleware: ['router-auth'],
