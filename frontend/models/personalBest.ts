@@ -6,6 +6,7 @@ import {
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
+import EventColumn from '~/components/table/common/eventColumn.vue'
 import { serializeTime } from '~/services/base'
 import EditPersonalBestInterface from '~/components/interface/crud/special/editPersonalBestInterface.vue'
 
@@ -44,6 +45,13 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     'event.name': {
       text: 'Event',
+    },
+    'event.code': {
+      text: 'Event Code',
+    },
+    'event.name+event.code': {
+      text: 'Event',
+      component: EventColumn,
     },
     set_size: {
       text: 'Sample Size',
@@ -195,9 +203,9 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     ],
     headers: [
       {
-        field: 'event.name',
+        field: 'event.name+event.code',
         sortable: true,
-        width: '100px',
+        width: '200px',
       },
       {
         field: 'pb_class.name',

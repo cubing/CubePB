@@ -35,37 +35,4 @@ export async function seed(knex: Knex): Promise<void> {
       created_by: 2,
     },
   ]);
-
-  await knex("event").insert([
-    {
-      name: "3x3x3",
-      code: "333",
-      score_method: "STANDARD",
-      created_by: 1,
-    },
-    {
-      name: "FMC",
-      code: "fmc",
-      score_method: "FMC",
-      created_by: 1,
-    },
-    {
-      name: "3MBLD",
-      code: "3mbld",
-      score_method: "MBLD",
-      created_by: 1,
-    },
-  ]);
-
-  await knex("personalBestClass").insert([
-    {
-      name: "Single",
-      set_size: 1,
-      created_by: 1,
-    },
-    {
-      name: "Average",
-      created_by: 1,
-    },
-  ]);
 }

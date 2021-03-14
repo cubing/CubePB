@@ -70,7 +70,7 @@ export default {
         })
 
         this.$notifier.showSnackbar({
-          message: this.capitalizedTypename + ' Deleted',
+          message: this.recordInfo.name + ' Deleted',
           variant: 'success',
         })
 

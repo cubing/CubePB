@@ -1,4 +1,4 @@
-# CubePB.com Frontend Client
+# CubePB Frontend Client
 
 ## Environment Variables
 
@@ -18,6 +18,8 @@ $ npm run dev
 ```
 
 ## Generate and Serve Project
+
+This step is generally not needed unless you are planning on deploying the project to a website.
 
 ```bash
 # generate static project

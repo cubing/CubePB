@@ -1,7 +1,6 @@
 import { PaginatedService } from "../../core/services";
 
-import { generateUserRoleGuard } from "../../helpers/permissions";
-import { userRoleKenum } from "../../enums";
+import { generateItemCreatedByUserGuard } from "../../helpers/permissions";
 
 export class UserService extends PaginatedService {
   defaultTypename = "user";
@@ -40,10 +39,13 @@ export class UserService extends PaginatedService {
 
       return false;
     },
-    get: async ({ args, fieldPath }) => {
+    get: async ({ req, args, fieldPath }) => {
       // check the user to see if is_public === true
       const result = await this.lookupRecord(
         [
+          {
+            field: "created_by",
+          },
           {
             field: "is_public",
           },
@@ -51,7 +53,11 @@ export class UserService extends PaginatedService {
         args,
         fieldPath
       );
-      return result.is_public === true;
+
+      // OR if the user created the item
+      return result.is_public === true || result.created_by === req.user?.id;
     },
+    // allowed to update if user created the item
+    update: generateItemCreatedByUserGuard(this),
   };
 }

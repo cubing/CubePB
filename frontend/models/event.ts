@@ -1,6 +1,7 @@
 import { getScoreMethods } from '~/services/dropdown'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
+import EventColumn from '~/components/table/common/eventColumn.vue'
 
 export const Event = <RecordInfo<'event'>>{
   typename: 'event',
@@ -15,6 +16,10 @@ export const Event = <RecordInfo<'event'>>{
     },
     name: {
       text: 'Name',
+    },
+    'name+code': {
+      text: 'Name',
+      component: EventColumn,
     },
     code: {
       text: 'Code',
@@ -38,7 +43,7 @@ export const Event = <RecordInfo<'event'>>{
     filters: [],
     headers: [
       {
-        field: 'name',
+        field: 'name+code',
         sortable: true,
       },
       {

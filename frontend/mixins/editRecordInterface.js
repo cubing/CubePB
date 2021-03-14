@@ -223,7 +223,7 @@ export default {
 
         this.$notifier.showSnackbar({
           message:
-            this.capitalizedType +
+            this.recordInfo.name +
             (this.mode === 'add' ? ' Added' : ' Updated'),
           variant: 'success',
         })
