@@ -10,7 +10,7 @@ export default {
     apiUrl: process.env.API_URL,
     wcaAuthUrl: process.env.WCA_AUTH_URL,
     wcaAccountManagementUrl: process.env.WCA_ACCOUNT_MANAGEMENT_URL,
-    build_date: new Date().toDateString(),
+    buildDate: new Date().toDateString(),
   },
 
   // Target (https://go.nuxtjs.dev/config-target)
@@ -19,7 +19,6 @@ export default {
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
     titleTemplate: (titleChunk) => {
-      // If undefined or blank then we don't need the hyphen
       return titleChunk ? `${titleChunk} - CubePB.com` : 'CubePB.com'
     },
     meta: [

@@ -1,6 +1,6 @@
 <template>
   <div v-if="currentItem">
-    <v-avatar size="24" class="mr-1">
+    <v-avatar size="24">
       <span class="cubing-icon" :class="'event-' + currentItem.code"></span>
     </v-avatar>
     {{ currentItem.name }}

@@ -252,12 +252,12 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       {
         field: 'created_by.name+created_by.avatar',
         sortable: false,
-        width: '200px',
       },
       {
         field: 'score',
         sortable: true,
         align: 'right',
+        width: '200px',
       },
     ],
     downloadOptions: {},
