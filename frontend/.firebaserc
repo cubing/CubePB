@@ -10,6 +10,9 @@
         ],
         "cubepb-65c9e-alpha-client": [
           "cubepb-65c9e-alpha-client"
+        ],
+        "cubepb-65c9e-client": [
+          "cubepb-65c9e-client"
         ]
       }
     }

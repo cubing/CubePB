@@ -30,7 +30,7 @@ jobs:
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: "deploy --only hosting:cubepb-65c9e-client"
+          args: "deploy --only hosting:cubepb-65c9e-alpha-client"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_PATH: ./frontend

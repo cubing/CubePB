@@ -5,6 +5,12 @@
       "public": "dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "trailingSlash": false
+    },
+    {
+      "target": "cubepb-65c9e-client",
+      "public": "dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "trailingSlash": false
     }
   ]
 }
