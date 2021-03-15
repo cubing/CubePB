@@ -1,6 +1,4 @@
 import { PaginatedService } from "../../core/services";
-import { generateUserRoleGuard } from "../../helpers/permissions";
-import { userRoleKenum } from "../../enums";
 
 export class EventService extends PaginatedService {
   defaultTypename = "event";
