@@ -41,7 +41,7 @@
           <v-card-actions>
             <v-btn text block @click="goToWcaAccountManagement()">
               <img
-                src="../static/WCAlogo_notext.svg"
+                src="../static/wcalogo2020.svg"
                 alt=""
                 style="width: 32px"
                 class="pr-2"

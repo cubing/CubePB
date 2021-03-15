@@ -126,7 +126,7 @@
       </template>
       <v-btn v-else text @click="goToWcaAuth()">
         <img
-          src="../static/WCAlogo_notext.svg"
+          src="../static/wcalogo2020.svg"
           alt=""
           style="width: 32px"
           class="pr-2"
