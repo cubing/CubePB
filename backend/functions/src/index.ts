@@ -12,7 +12,11 @@ import { CustomSchemaGenerator } from "./helpers/schema";
 
 const app = express();
 
-const allowedOrigins = ["https://alpha.cubepb.com", "http://localhost:3000"];
+const allowedOrigins = [
+  "https://cubepb.com",
+  "https://alpha.cubepb.com",
+  "http://localhost:3000",
+];
 
 // extract the user ID from all requests.
 app.use(async function (req, res, next) {
