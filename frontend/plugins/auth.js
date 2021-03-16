@@ -28,6 +28,7 @@ export default (context) => {
         .catch(() => {
           // if fetching the current user failed, make sure the user is logged out
           store.commit('auth/unsetUser')
+          resolve()
         })
     } else {
       resolve()
