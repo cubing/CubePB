@@ -75,7 +75,7 @@
                         v-for="(item, i) in recordInfo.expandTypes"
                         :key="i"
                         dense
-                        @click="toggleExpand(item)"
+                        @click="toggleExpand(i)"
                       >
                         <v-list-item-icon>
                           <v-icon>{{ item.recordInfo.icon }}</v-icon>
@@ -160,7 +160,6 @@ export default {
   data() {
     return {
       selectedItem: null,
-      isExpanded: false,
       expandTypeObject: null,
       subPageOptions: null,
 
@@ -176,6 +175,9 @@ export default {
   },
 
   computed: {
+    isExpanded() {
+      return !!this.expandTypeObject
+    },
     currentInterface() {
       return this.recordInfo.viewOptions.component || EditRecordInterface
     },
@@ -215,9 +217,20 @@ export default {
     },
   },
 
+  watch: {
+    '$route.query.expand'(val) {
+      this.setExpandTypeObject(val)
+    },
+  },
+
   mounted() {
     // must independently verify existence of item
-    this.loadRecord()
+    this.loadRecord().then(() => {
+      // if expand query param set, set the initial expandTypeObject
+      if (this.$route.query.expand) {
+        this.setExpandTypeObject(this.$route.query.expand)
+      }
+    })
   },
 
   methods: {
@@ -226,18 +239,49 @@ export default {
       this.$emit('handle-submit')
     },
 
-    toggleExpand(expandTypeObject) {
-      this.isExpanded = !!expandTypeObject
-      this.expandTypeObject = expandTypeObject
+    toggleExpand(index) {
+      const query = {
+        ...this.$route.query,
+      }
 
-      // when item expanded, reset the filters
-      if (expandTypeObject)
+      if (index !== null) {
+        query.expand = index
+      } else {
+        delete query.expand
+      }
+
+      // push to route
+      this.$router
+        .replace({
+          path: this.$route.path,
+          query,
+        })
+        .catch((e) => e)
+    },
+
+    setExpandTypeObject(index) {
+      // if index is undefined, unset it
+      if (index === undefined) {
+        this.expandTypeObject = null
+        return
+      }
+
+      if (
+        Array.isArray(this.recordInfo.expandTypes) &&
+        this.recordInfo.expandTypes[index]
+      ) {
+        const expandTypeObject = this.recordInfo.expandTypes[index]
+
+        this.expandTypeObject = expandTypeObject
+
+        // when item expanded, reset the filters
         this.subPageOptions = {
           search: null,
           filters: expandTypeObject.initialFilters ?? [],
           sortBy: expandTypeObject.initialSortOptions?.sortBy ?? [],
           sortDesc: expandTypeObject.initialSortOptions?.sortDesc ?? [],
         }
+      }
     },
 
     handleSubPageOptionsUpdated(pageOptions) {

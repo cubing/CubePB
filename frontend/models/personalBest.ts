@@ -96,12 +96,12 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
         if (!regEx.test(value)) throw new Error('Invalid value')
 
-        // convert string to number of ms. // 18.15
-        const parts = value.split('.') // 15
+        // convert string to number of ms.
+        const parts = value.split('.')
 
         let ms = 0
 
-        ms += Number(parts[parts.length - 1]) * 10 // 15*10 = 150
+        ms += Number(parts[parts.length - 1]) * 10
 
         const firstParts = parts[0].split(':')
 
