@@ -4,7 +4,7 @@ export default (context) => {
   const { store } = context
 
   return new Promise((resolve) => {
-    if (store.getters['auth/token'] && !store.getters['auth/user']) {
+    if (store.getters['auth/getToken']() && !store.getters['auth/user']) {
       // fetch the user info
       executeJomql(null, {
         getCurrentUser: {

@@ -12,7 +12,6 @@ import type {
   SqlWhereFieldObject,
 } from "../../types";
 import { JomqlBaseError, JomqlObjectType, objectTypeDefs } from "jomql";
-import e = require("express");
 
 export type JoinsMap = {
   [x: string]: string[];
@@ -524,7 +523,7 @@ function processWhereObject(
         ele,
         previousJoins,
         params,
-        subIndexString + "_" + whereObjectIndex
+        subIndexString + "_" + subIndex
       );
       if (res.whereStatement) statements.push("(" + res.whereStatement + ")");
       joinStatement += res.joinStatement;

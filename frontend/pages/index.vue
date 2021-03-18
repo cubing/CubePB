@@ -18,11 +18,12 @@
               <a href="https://github.com/cubing/CubePB" target="_blank"
                 >Github repository</a
               >
-              to let us know your feedback or to contribute. Please also check
-              out our official
+              to let us know your feedback, report bugs, or to contribute.
+              Please also check out our official
               <a href="https://discord.gg/syZfxBpT" target="_blank"
                 >Discord server</a
-              >.
+              >. If you would prefer to email, our email is
+              <a>hello@cubepb.com</a>.
             </p>
             <p>
               If you saved your PBs on the previous version of CubePB, the data

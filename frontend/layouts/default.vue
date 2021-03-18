@@ -157,6 +157,13 @@
         @click="openLink('https://github.com/cubing/CubePB')"
         >mdi-github</v-icon
       >
+      <v-icon
+        small
+        class="mr-2"
+        title="hello@cubepb.com"
+        @click="copyToClipboard('hello@cubepb.com')"
+        >mdi-email</v-icon
+      >
       <v-btn small text @click="toggleTheme()"
         >Dark Mode: {{ $vuetify.theme.dark ? 'On' : 'Off' }}</v-btn
       >
@@ -169,7 +176,12 @@
 import { mapGetters } from 'vuex'
 import Snackbar from '~/components/snackbar/snackbar'
 import { goToWcaAuth, handleLogout } from '~/services/auth'
-import { copyToClipboard, openLink, handleError } from '~/services/base'
+import {
+  copyToClipboard,
+  openLink,
+  handleError,
+  generateRoute,
+} from '~/services/base'
 import AdminNavRoutes from '~/components/navigation/adminNavRoutes.vue'
 
 export default {
@@ -211,7 +223,10 @@ export default {
         {
           icon: 'mdi-star',
           title: 'Public PBs',
-          to: '/public-pbs',
+          to: generateRoute('/public-pbs', {
+            sortBy: ['happened_on'],
+            sortDesc: [true],
+          }),
           loginRequired: false,
         },
       ],
@@ -239,6 +254,9 @@ export default {
   },
 
   methods: {
+    copyToClipboard(content) {
+      return copyToClipboard(this, content)
+    },
     goToWcaAuth,
     openLink,
 
@@ -257,8 +275,9 @@ export default {
       )
     },
     copyIdTokenToClipboard() {
-      if (this.$store.getters['auth/token']) {
-        copyToClipboard(this, this.$store.getters['auth/token'])
+      const authToken = this.$store.getters['auth/getToken']()
+      if (authToken) {
+        copyToClipboard(this, authToken)
       }
     },
 

@@ -97,6 +97,9 @@ export default {
         exportData: false,
       },
 
+      // has the recordInfo been changed?
+      recordInfoChanged: false,
+
       records: [],
 
       options: {
@@ -109,6 +112,10 @@ export default {
         mustSort: true,
         initialLoad: true,
       },
+
+      tableOptionsUpdatedTrigger: null,
+
+      processedUpdateSort: false,
 
       previousPage: null,
       positivePageDelta: true,
@@ -241,36 +248,34 @@ export default {
   },
 
   watch: {
-    // this triggers when pageOptions get updated on parent element
-    // this also triggers when parent element switches to a different item
-    pageOptions() {
-      this.syncFilters()
-      this.reset({
-        resetCursor: true,
-      })
-      // also going to un-expand any expanded items
-      this.expandedItems.pop()
-    },
     // this should trigger mainly when switching routes on admin pages
     recordInfo() {
+      this.recordInfoChanged = true
       this.reset({
         resetSubscription: true,
         initFilters: true,
         resetSort: true,
         resetCursor: true,
+        resetExpanded: true,
       })
-      // also going to un-expand any expanded items
-      this.expandedItems.pop()
     },
 
-    // triggers when itemsPerPage changes
-    'options.itemsPerPage'() {
-      this.reset()
-    },
-    // triggers when page changes
-    'options.page'() {
-      this.handleUpdatePage()
-      this.reset()
+    // this triggers when pageOptions get updated on parent element
+    // this also triggers when parent element switches to a different item
+    pageOptions() {
+      // if this was triggered due to a recordInfo change, do nothing and revert recordInfoChange on next tick
+      if (this.recordInfoChanged) {
+        this.$nextTick(() => {
+          this.recordInfoChanged = false
+        })
+        return
+      }
+
+      this.syncFilters()
+      this.reset({
+        resetCursor: true,
+        resetExpanded: true,
+      })
     },
   },
 
@@ -289,6 +294,27 @@ export default {
 
   methods: {
     generateTimeAgoString,
+    setTableOptionsUpdatedTrigger(trigger) {
+      this.tableOptionsUpdatedTrigger = trigger
+    },
+
+    handleTableOptionsUpdated() {
+      this.$nextTick(() => {
+        switch (this.tableOptionsUpdatedTrigger) {
+          case 'sort':
+            this.updatePageOptions() // this will trigger reset via the watcher
+            break
+          case 'itemsPerPage':
+            this.reset()
+            break
+          case 'page':
+            this.handleUpdatePage()
+            this.reset()
+            break
+        }
+        this.tableOptionsUpdatedTrigger = null
+      })
+    },
 
     handleSearchUpdate(inputObject) {
       if (!inputObject.search || !inputObject.focused) return
@@ -436,16 +462,6 @@ export default {
     openEditDialog(mode, selectedItem) {
       this.dialogs.editMode = mode
       this.openDialog('editRecord', selectedItem)
-    },
-
-    handleUpdateOptions(options) {
-      if (options.initialLoad) {
-        // this is here because update:options event triggers when loading the table for the first time
-        options.initialLoad = false
-      } else {
-        // this triggers when the sortDesc/sortBy changes
-        this.updatePageOptions()
-      }
     },
 
     handleUpdatePage() {
@@ -684,9 +700,12 @@ export default {
       resetFilters = false,
       resetSort = false,
       resetCursor = false,
+      resetExpanded = false,
       reloadData = true,
     } = {}) {
-      if (reloadData) this.records = []
+      let actuallyReloadData = reloadData
+
+      if (actuallyReloadData) this.records = []
 
       if (resetSubscription) {
         if (this.useSubscription) this.subscribeEvents()
@@ -728,6 +747,10 @@ export default {
         this.syncFilters(true)
       }
 
+      if (resetExpanded) {
+        this.expandedItems.pop()
+      }
+
       if (resetSort) {
         this.options.initialLoad = true
         // populate sort/page options
@@ -752,6 +775,11 @@ export default {
         }
 
         this.currentPaginatorInfo = this.nextPaginatorInfo
+
+        if (this.options.page !== 1) {
+          this.options.page = 1
+          actuallyReloadData = false
+        }
       }
 
       // sets all of the filter values to null, searchInput to '' and also emits changes to parent
@@ -763,11 +791,11 @@ export default {
         this.searchInput = ''
         this.updatePageOptions()
 
-        // returning early because updatePagOptions will trigger reset
-        return
+        // dont actually reload data because updatePagOptions will trigger reset
+        actuallyReloadData = false
       }
 
-      if (reloadData) {
+      if (actuallyReloadData) {
         this.loadData()
       }
     },

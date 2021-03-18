@@ -36,7 +36,7 @@ export const getters = {
     return state.user
   },
 
-  token() {
+  getToken: () => () => {
     return Cookie.get('auth-token')
   },
 }

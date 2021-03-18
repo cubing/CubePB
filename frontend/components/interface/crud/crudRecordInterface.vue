@@ -13,7 +13,11 @@
       :expanded.sync="expandedItems"
       :show-expand="hasNested"
       :single-expand="hasNested"
-      @update:options="handleUpdateOptions"
+      @update:options="handleTableOptionsUpdated"
+      @update:sort-by="setTableOptionsUpdatedTrigger('sort')"
+      @update:sort-desc="setTableOptionsUpdatedTrigger('sort')"
+      @update:items-per-page="setTableOptionsUpdatedTrigger('itemsPerPage')"
+      @update:page="setTableOptionsUpdatedTrigger('page')"
     >
       <template v-slot:top>
         <v-toolbar flat color="accent">
