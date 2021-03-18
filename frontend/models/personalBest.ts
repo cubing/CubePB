@@ -110,7 +110,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
           seconds += Number(firstParts[0])
         }
         // round to tens
-        return (1000 * Math.floor(seconds * 100)) / 100
+        return (1000 * Math.round(seconds * 100)) / 100
       },
     },
     moves_count: {
