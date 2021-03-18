@@ -202,6 +202,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         field: 'is_current',
         operator: 'eq',
       },
+      {
+        field: 'set_size',
+        operator: 'eq',
+      },
     ],
     headers: [
       {
