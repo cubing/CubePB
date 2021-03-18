@@ -96,21 +96,22 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
         if (!regEx.test(value)) throw new Error('Invalid value')
 
-        // convert string to number of cs.
-        const parts = value.split('.')
-        let seconds = 0
+        // convert string to number of ms. // 18.15
+        const parts = value.split('.') // 15
 
-        seconds += Number(parts[parts.length - 1]) / 100
+        let ms = 0
+
+        ms += Number(parts[parts.length - 1]) * 10 // 15*10 = 150
 
         const firstParts = parts[0].split(':')
 
         if (firstParts.length > 1) {
-          seconds += Number(firstParts[0]) * 60 + Number(firstParts[1])
+          ms += (Number(firstParts[0]) * 60 + Number(firstParts[1])) * 1000
         } else {
-          seconds += Number(firstParts[0])
+          ms += Number(firstParts[0]) * 1000
         }
         // round to tens
-        return (1000 * Math.round(seconds * 100)) / 100
+        return 10 * Math.floor(ms / 10)
       },
     },
     moves_count: {
@@ -181,6 +182,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         operator: 'eq',
       },
       {
+        field: 'set_size',
+        operator: 'eq',
+      },
+      {
         field: 'product.id',
         operator: 'eq',
       },
@@ -200,10 +205,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       },
       {
         field: 'is_current',
-        operator: 'eq',
-      },
-      {
-        field: 'set_size',
         operator: 'eq',
       },
     ],
