@@ -17,9 +17,14 @@
       app
       color="primary"
     >
-      A newer version of this page is available. Refresh this page to load it.
+      A newer version of this page is available.
       <template v-slot:action="{ attrs }">
-        <v-btn color="success" v-bind="attrs" @click="reloadPage()">
+        <v-btn
+          color="success"
+          class="black--text"
+          v-bind="attrs"
+          @click="reloadPage()"
+        >
           Refresh
         </v-btn>
         <v-btn color="pink" text v-bind="attrs" @click="open = false">
@@ -54,7 +59,7 @@ export default {
       this.latestVersion = res
       if (this.currentVersion !== this.latestVersion) {
         // only open the snackbar if not DEV
-        if (this.currentVersion !== 'DEV') {
+        if (this.currentVersion !== 'bar') {
           this.open = true
         }
         this.hasNewerVersion = true
