@@ -3,8 +3,9 @@
     <a @click="copyIdTokenToClipboard()">{{ getBuildInfo() }}</a>
     <v-icon
       v-if="hasNewerVersion"
-      title="A newer version of this site is available. Reload to see it."
+      title="A newer version of this site is available. Click to reload."
       color="pink"
+      @click="reloadPage()"
       >mdi-sync-alert</v-icon
     >
     <v-snackbar
@@ -18,6 +19,9 @@
     >
       A newer version of this page is available. Refresh this page to load it.
       <template v-slot:action="{ attrs }">
+        <v-btn color="success" v-bind="attrs" @click="reloadPage()">
+          Refresh
+        </v-btn>
         <v-btn color="pink" text v-bind="attrs" @click="open = false">
           Close
         </v-btn>
@@ -34,19 +38,23 @@ export default {
   data() {
     return {
       open: false,
+      currentVersion: null,
       latestVersion: null,
       hasNewerVersion: false,
     }
   },
 
   mounted() {
+    this.currentVersion = process.env.VER
+      ? process.env.VER.split('/').pop()
+      : 'DEV'
     executeJomql(this, {
       getRepositoryLatestVersion: true,
     }).then((res) => {
       this.latestVersion = res
-      if (process.env.VER !== this.latestVersion) {
+      if (this.currentVersion !== this.latestVersion) {
         // only open the snackbar if not DEV
-        if (process.env.VER !== 'DEV') {
+        if (this.currentVersion !== 'DEV') {
           this.open = true
         }
         this.hasNewerVersion = true
@@ -55,6 +63,9 @@ export default {
   },
 
   methods: {
+    reloadPage() {
+      location.reload()
+    },
     copyIdTokenToClipboard() {
       const authToken = this.$store.getters['auth/getToken']()
       if (authToken) {
@@ -62,12 +73,7 @@ export default {
       }
     },
     getBuildInfo() {
-      return (
-        'Build ' +
-        (process.env.VER
-          ? process.env.VER.substring(0, 7)
-          : process.env.buildDate)
-      )
+      return 'Build ' + (this.currentVersion ?? process.env.buildDate)
     },
   },
 }
