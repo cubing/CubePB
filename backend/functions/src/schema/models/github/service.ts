@@ -51,6 +51,7 @@ query {
           edges {
             node {
               id
+              tagName
               name
               descriptionHTML
               isLatest
@@ -94,7 +95,7 @@ query {
     organization(login: "${env.github.organization}") {
       repository(name: "${env.github.repository}") {
         latestRelease {
-          name
+          tagName
         }
       }
     }
@@ -102,7 +103,7 @@ query {
 }
     `);
 
-      return response.viewer.organization.repository.latestRelease.name;
+      return response.viewer.organization.repository.latestRelease.tagName;
     } catch (err) {
       throw new JomqlBaseError({
         message:
