@@ -23,6 +23,7 @@ import Event from "./models/event/rootResolver";
 import Product from "./models/product/rootResolver";
 import PersonalBestClass from "./models/personalBestClass/rootResolver";
 import PersonalBest from "./models/personalBest/rootResolver";
+import Github from "./models/github/rootResolver";
 
 allServices.User.setRootResolvers(User);
 allServices.Auth.setRootResolvers(Auth);
@@ -30,3 +31,4 @@ allServices.Event.setRootResolvers(Event);
 allServices.Product.setRootResolvers(Product);
 allServices.PersonalBestClass.setRootResolvers(PersonalBestClass);
 allServices.PersonalBest.setRootResolvers(PersonalBest);
+allServices.Github.setRootResolvers(Github);

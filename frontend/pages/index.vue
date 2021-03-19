@@ -39,25 +39,19 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="mt-3">
-          <v-card-title class="headline"> Release History </v-card-title>
-          <v-card-text>
-            <div class="release">
-              <span class="headline">Version 0.0.1 (07 Mar 2021)</span>
-              <ul>
-                <li>First public release</li>
-              </ul>
-            </div>
-          </v-card-text>
-        </v-card>
+        <ReleaseHistory class="mt-3" />
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import ReleaseHistory from '~/components/common/releaseHistory.vue'
+
 export default {
-  components: {},
+  components: {
+    ReleaseHistory,
+  },
 
   methods: {},
   head() {
@@ -75,9 +69,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.release {
-  margin-bottom: 16px;
-}
-</style>

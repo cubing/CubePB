@@ -131,6 +131,8 @@ export default {
         })
         return
       }
+      // set editRecord loading to true to prevent clicking multiple times
+      this.loading.editRecord = true
 
       setTimeout(this.submit, sleep ? 500 : 0)
     },

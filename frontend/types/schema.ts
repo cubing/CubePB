@@ -1,7 +1,14 @@
 // Query builder (Typescript version >= 4.1.3 required)
-/* const queryResult = executeJomql({
+const queryResult = executeJomql({
   // Start typing here to get hints
-}); */
+  getUser: {
+    id: true,
+    name: true,
+    __args: {
+      id: 1,
+    },
+  },
+})
 
 export function executeJomql<Key extends keyof Root>(
   query: GetQuery<Key>

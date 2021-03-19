@@ -8,7 +8,8 @@ on:
         default: "warning"
       tags:
         description: "Test scenario tags"
-
+  release:
+    types: [published]
 jobs:
   deploy:
     name: Deploy
@@ -24,7 +25,7 @@ jobs:
         run: npm run generate
         env:
           API_URL: https://api.cubepb.com
-          VER: ${{ github.sha }}
+          VER: ${{ github.ref }}
           WCA_AUTH_URL: https://worldcubeassociation.org/oauth/authorize?client_id=6rfi-FvIwRXDlPiYzYEUlK5Jt8L6x7ucPZyM-aD8mu0&redirect_uri=https%3A%2F%2Falpha.cubepb.com%2Fwca-redirect&response_type=code&scope=public+dob+email+manage_competitions
           WCA_ACCOUNT_MANAGEMENT_URL: https://worldcubeassociation.org/profile/edit
       - name: Deploy to Firebase

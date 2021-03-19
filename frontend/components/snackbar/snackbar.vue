@@ -1,9 +1,16 @@
 <template>
   <v-snackbar v-model="open" :timeout="3000" :color="variant">
     <span :style="{ color: textColor }">{{ message }}</span>
-    <v-btn :style="{ color: textColor }" text @click="open = false"
-      >Close</v-btn
-    >
+    <template v-slot:action="{ attrs }">
+      <v-btn
+        text
+        v-bind="attrs"
+        :style="{ color: textColor }"
+        @click="open = false"
+      >
+        Close
+      </v-btn>
+    </template>
   </v-snackbar>
 </template>
 

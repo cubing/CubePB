@@ -138,7 +138,7 @@
       <nuxt />
     </v-main>
     <v-footer :absolute="!fixed" app>
-      <a @click="copyIdTokenToClipboard()">{{ getBuildInfo() }}</a>
+      <VersionCheckText />
       <span>&nbsp;&copy; {{ new Date().getFullYear() }}</span>
       <span class="pl-2"
         >CubePB is made possible by
@@ -174,7 +174,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Snackbar from '~/components/snackbar/snackbar'
+import Snackbar from '~/components/snackbar/snackbar.vue'
+import VersionCheckText from '~/components/common/versionCheckText.vue'
 import { goToWcaAuth, handleLogout } from '~/services/auth'
 import {
   copyToClipboard,
@@ -187,6 +188,7 @@ import AdminNavRoutes from '~/components/navigation/adminNavRoutes.vue'
 export default {
   components: {
     Snackbar,
+    VersionCheckText,
     AdminNavRoutes,
   },
   data() {
@@ -210,7 +212,7 @@ export default {
         {
           icon: 'mdi-card-account-details',
           title: 'My Profile',
-          to: '/my-profile',
+          to: '/my-profile?expand=0',
         },
       ],
       navItems: [
@@ -274,12 +276,6 @@ export default {
         )
       )
     },
-    copyIdTokenToClipboard() {
-      const authToken = this.$store.getters['auth/getToken']()
-      if (authToken) {
-        copyToClipboard(this, authToken)
-      }
-    },
 
     logout() {
       try {
@@ -289,15 +285,6 @@ export default {
       } catch (err) {
         handleError(this, err)
       }
-    },
-
-    getBuildInfo() {
-      return (
-        'Build ' +
-        (process.env.VER
-          ? process.env.VER.substring(0, 7)
-          : process.env.buildDate)
-      )
     },
   },
 }
