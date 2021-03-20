@@ -98,7 +98,6 @@ export type ObjectTypeDefSqlOptions = {
   getter?: (value: string) => string;
   setter?: (value: string) => string;
   parseValue?: (value: unknown) => unknown; // performed before inserts/updates
-  joinHidden?: boolean;
   sqlDefinition?: SqlDefinition;
 };
 

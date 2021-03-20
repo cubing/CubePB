@@ -59,7 +59,7 @@ export default {
       this.latestVersion = res
       if (this.currentVersion !== this.latestVersion) {
         // only open the snackbar if not DEV
-        if (this.currentVersion !== 'bar') {
+        if (this.currentVersion !== 'DEV') {
           this.open = true
         }
         this.hasNewerVersion = true

@@ -1,9 +1,16 @@
 import { PaginatedService } from "../../core/services";
+import { userRoleKenum } from "../../enums";
 
 import { generateItemCreatedByUserGuard } from "../../helpers/permissions";
 
 export class UserService extends PaginatedService {
   defaultTypename = "user";
+
+  presets = {
+    default: {
+      id: true,
+    },
+  };
 
   filterFieldsMap = {
     id: {},
@@ -25,7 +32,18 @@ export class UserService extends PaginatedService {
   };
 
   accessControl = {
-    getMultiple: ({ args }) => {
+    getMultiple: ({ req, args, query }) => {
+      // if role, permissions, all_permissions, or email field requested, must be ADMIN
+      if (
+        query &&
+        Object.keys(query).some((field) =>
+          ["role", "permissions", "all_permissions", "email"].includes(field)
+        ) &&
+        req.user?.role !== userRoleKenum.ADMIN
+      ) {
+        return false;
+      }
+
       // every args.filterBy array member MUST have is_public: true
       if (
         Array.isArray(args.filterBy) &&
@@ -39,7 +57,17 @@ export class UserService extends PaginatedService {
 
       return false;
     },
-    get: async ({ req, args, fieldPath }) => {
+    get: async ({ req, args, fieldPath, query }) => {
+      // if role, permissions, all_permissions, or email field requested, must be ADMIN
+      if (
+        query &&
+        Object.keys(query).some((field) =>
+          ["role", "permissions", "all_permissions", "email"].includes(field)
+        ) &&
+        req.user?.role !== userRoleKenum.ADMIN
+      ) {
+        return false;
+      }
       // check the user to see if is_public === true
       const result = await this.lookupRecord(
         [

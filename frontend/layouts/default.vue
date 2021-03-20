@@ -140,7 +140,7 @@
     <v-footer :absolute="!fixed" app>
       <VersionCheckText />
       <span>&nbsp;&copy; {{ new Date().getFullYear() }}</span>
-      <span class="pl-2"
+      <span class="pl-2 hidden-sm-and-down"
         >CubePB is made possible by
         <a @click="openLink('https://thecubicle.com')">TheCubicle.com</a></span
       >

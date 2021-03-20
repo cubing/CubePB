@@ -22,7 +22,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     id: {
       text: 'ID',
     },
-    'created_by.name+created_by.avatar': {
+    'created_by.name+created_by.avatar+created_by.id': {
       text: 'Created By',
       component: UserColumn,
     },
@@ -255,7 +255,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         width: '150px',
       },
       {
-        field: 'created_by.name+created_by.avatar',
+        field: 'created_by.name+created_by.avatar+created_by.id',
         sortable: false,
       },
       {

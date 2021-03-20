@@ -105,7 +105,7 @@ export async function createObjectType({
     });
   }
 
-  // assemble the mysql fields
+  // assemble the sql fields
   const sqlFields = {};
 
   // handle the custom setters
@@ -119,7 +119,7 @@ export async function createObjectType({
       });
     }
 
-    // if it is a mysql field, add to mysqlFields
+    // if it is a sql field, add to sqlFields
     if (typeDef.definition.fields[field].sqlOptions) {
       sqlFields[field] = addFields[field];
     }
@@ -136,7 +136,7 @@ export async function createObjectType({
 
   let addedResults;
 
-  // do the mysql fields first, if any
+  // do the sql fields first, if any
   if (Object.keys(sqlFields).length > 0) {
     addedResults = await insertTableRow(
       typename,
@@ -183,7 +183,7 @@ export async function updateObjectType({
     });
   }
 
-  //assemble the mysql fields
+  //assemble the sql fields
   const sqlFields = {};
 
   //handle the custom setters
@@ -197,7 +197,7 @@ export async function updateObjectType({
       });
     }
 
-    // if it is a mysql field, add to mysqlFields
+    // if it is a sql field, add to sqlFields
     if (typeDef.definition.fields[field].sqlOptions) {
       sqlFields[field] = updateFields[field];
     }
@@ -212,7 +212,7 @@ export async function updateObjectType({
     }
   }
 
-  // do the mysql first, if any fields
+  // do the sql first, if any fields
   if (Object.keys(sqlFields).length > 0) {
     await updateTableRow(
       typename,
@@ -279,7 +279,7 @@ export async function deleteObjectType({
     }
   }
 
-  // do the mysql first
+  // do the sql first
   if (hasSqlFields)
     await removeTableRow(
       typename,
@@ -344,25 +344,6 @@ export async function getObjectType({
     // should never end up in here without a nested query
     nestedResolverNodeMap: jomqlResolverTree.nested!,
     fieldPath,
-  });
-
-  const requiredSqlFields: Set<string> = new Set();
-
-  for (const field in typeDef.definition.fields) {
-    const sqlFields = typeDef.definition.fields[field].requiredSqlFields;
-
-    if (sqlFields) {
-      sqlFields.forEach((field) => requiredSqlFields.add(field));
-    }
-  }
-
-  // ensure any requiredSqlFields are in validatedSqlSelectArray
-  requiredSqlFields.forEach((field) => {
-    if (!validatedSqlSelectArray.find((ele) => ele.field === field)) {
-      validatedSqlSelectArray.push({
-        field,
-      });
-    }
   });
 
   const sqlQuery = {
@@ -449,8 +430,8 @@ function generateSqlQuerySelectObject({
           })
         );
       } else {
-        // if not root level AND joinHidden, throw error
-        if (parentFields.length && sqlOptions.joinHidden) {
+        // if not root level AND nestHidden, throw error
+        if (parentFields.length && typeDef.nestHidden) {
           throw new JomqlBaseError({
             message: `Requested field not allowed to be accessed directly in an nested context`,
             fieldPath: fieldPath.concat(parentPlusCurrentField),
@@ -469,6 +450,23 @@ function generateSqlQuerySelectObject({
             });
           }
         }
+      }
+    } else {
+      // if no sqlOptions, still check if field is nestHidden
+      if (parentFields.length && typeDef.nestHidden) {
+        throw new JomqlBaseError({
+          message: `Requested field not allowed to be accessed directly in an nested context`,
+          fieldPath: fieldPath.concat(parentPlusCurrentField),
+        });
+      }
+
+      // also check to see if it has any requiredSqlFields
+      if (typeDef.requiredSqlFields) {
+        typeDef.requiredSqlFields.forEach((field) => {
+          sqlSelectObjectArray.push({
+            field: parentFields.concat(field).join("."),
+          });
+        });
       }
     }
   }

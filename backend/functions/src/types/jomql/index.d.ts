@@ -7,7 +7,6 @@ import type {
 declare global {
   namespace Jomql {
     interface ObjectTypeDefinitionField {
-      // mysqlOptions?: ObjectTypeDefsqlOptions;
       sqlOptions?: ObjectTypeDefSqlOptions;
       addable?: boolean;
       updateable?: boolean;
@@ -17,6 +16,7 @@ declare global {
       updater?: CustomResolverFunction;
       // sql field dependencies that need to be resolved in order to process the resolver
       requiredSqlFields?: string[];
+      nestHidden?: boolean;
     }
   }
 }

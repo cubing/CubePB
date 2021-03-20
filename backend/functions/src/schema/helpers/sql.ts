@@ -203,7 +203,7 @@ export async function insertTableRow(
   options?: InsertTableRowOptions
 ) {
   try {
-    // check if there is a mysql setter on the field
+    // check if there is a sql setter on the field
     const currentTypeDef = objectTypeDefs.get(table);
     if (!currentTypeDef) {
       throw new Error(`TypeDef for ${table} not found`);
@@ -260,7 +260,7 @@ export async function updateTableRow(
     const previousJoins: JoinsMap = {};
     const params = {};
 
-    // check if there is a mysql setter on the field
+    // check if there is a sql setter on the field
     const currentTypeDef = objectTypeDefs.get(table);
     if (!currentTypeDef) {
       throw new Error(`TypeDef for ${table} not found`);

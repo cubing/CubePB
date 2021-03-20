@@ -32,6 +32,7 @@ type GenerateFieldParams = {
   description?: string;
   allowNull: boolean;
   hidden?: boolean;
+  nestHidden?: boolean;
   defaultValue?: unknown;
   sqlDefinition?: Partial<SqlDefinition>;
   sqlOptions?: Partial<ObjectTypeDefSqlOptions>;
@@ -56,6 +57,7 @@ export function generateStandardField(
     allowNull,
     arrayOptions,
     hidden = false,
+    nestHidden = false,
     defaultValue,
     sqlType,
     type,
@@ -80,6 +82,7 @@ export function generateStandardField(
         }
       : undefined,
     hidden,
+    nestHidden,
     addable: true, // default addable and updateable
     updateable: true,
     ...typeDefOptions,
@@ -105,6 +108,7 @@ export function generateGenericScalarField(
     arrayOptions,
     defaultValue,
     hidden,
+    nestHidden,
     type,
     sqlDefinition,
     sqlOptions,
@@ -117,6 +121,7 @@ export function generateGenericScalarField(
     arrayOptions,
     defaultValue,
     hidden,
+    nestHidden,
     type: type ?? Scalars.string,
     sqlDefinition,
     sqlOptions,
@@ -135,6 +140,7 @@ export function generateStringField(
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     type,
     sqlDefinition,
     sqlOptions,
@@ -146,6 +152,7 @@ export function generateStringField(
     allowNull,
     defaultValue,
     hidden,
+    nestHidden,
     sqlType: "string",
     type: type ?? Scalars.string,
     sqlDefinition,
@@ -166,6 +173,7 @@ export function generateUnixTimestampField(
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -177,6 +185,7 @@ export function generateUnixTimestampField(
     allowNull,
     defaultValue,
     hidden,
+    nestHidden,
     sqlType: "dateTime",
     type: Scalars.unixTimestamp,
     sqlDefinition,
@@ -202,6 +211,7 @@ export function generateDateField(params: GenerateFieldParams) {
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -212,6 +222,7 @@ export function generateDateField(params: GenerateFieldParams) {
     allowNull,
     defaultValue,
     hidden,
+    nestHidden,
     sqlType: "date",
     type: Scalars.date,
     sqlDefinition,
@@ -226,6 +237,7 @@ export function generateTextField(params: GenerateFieldParams) {
     description,
     allowNull = true,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -235,6 +247,7 @@ export function generateTextField(params: GenerateFieldParams) {
     description,
     allowNull: allowNull,
     hidden,
+    nestHidden,
     sqlType: "text",
     type: Scalars.string,
     sqlDefinition,
@@ -250,6 +263,7 @@ export function generateIntegerField(params: GenerateFieldParams) {
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -260,6 +274,7 @@ export function generateIntegerField(params: GenerateFieldParams) {
     allowNull,
     defaultValue,
     hidden,
+    nestHidden,
     sqlType: "integer",
     type: Scalars.number,
     sqlDefinition,
@@ -275,6 +290,7 @@ export function generateFloatField(params: GenerateFieldParams) {
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -285,6 +301,7 @@ export function generateFloatField(params: GenerateFieldParams) {
     allowNull,
     defaultValue,
     hidden,
+    nestHidden,
     sqlType: "float",
     type: Scalars.number,
     sqlDefinition,
@@ -300,6 +317,7 @@ export function generateDecimalField(params: GenerateFieldParams) {
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -310,6 +328,7 @@ export function generateDecimalField(params: GenerateFieldParams) {
     allowNull,
     defaultValue,
     hidden,
+    nestHidden,
     sqlType: "decimal",
     type: Scalars.number,
     sqlDefinition,
@@ -325,6 +344,7 @@ export function generateBooleanField(params: GenerateFieldParams) {
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -335,6 +355,7 @@ export function generateBooleanField(params: GenerateFieldParams) {
     allowNull,
     defaultValue,
     hidden,
+    nestHidden,
     sqlType: "boolean",
     type: Scalars.boolean,
     sqlDefinition,
@@ -343,7 +364,7 @@ export function generateBooleanField(params: GenerateFieldParams) {
   });
 }
 
-// array of [type], stored in mysql as JSON
+// array of [type], stored in DB as JSON
 export function generateArrayField(
   params: {
     type: JomqlScalarType | JomqlObjectTypeLookup | JomqlObjectType;
@@ -356,6 +377,7 @@ export function generateArrayField(
     allowNull = true,
     allowNullElement = false,
     hidden,
+    nestHidden,
     type,
     sqlDefinition,
     sqlOptions,
@@ -369,6 +391,7 @@ export function generateArrayField(
     },
     allowNull,
     hidden,
+    nestHidden,
     sqlType: "json",
     type,
     sqlDefinition,
@@ -390,6 +413,7 @@ export function generateJSONField(params: GenerateFieldParams) {
     description,
     allowNull = true,
     hidden,
+    nestHidden,
     sqlDefinition,
     sqlOptions,
     typeDefOptions,
@@ -399,6 +423,7 @@ export function generateJSONField(params: GenerateFieldParams) {
     description,
     allowNull,
     hidden,
+    nestHidden,
     sqlType: "json",
     type: Scalars.jsonString,
     sqlDefinition,
@@ -426,6 +451,7 @@ export function generateEnumField(
     allowNull = true,
     defaultValue,
     hidden,
+    nestHidden,
     scalarDefinition,
     sqlDefinition,
     sqlOptions,
@@ -444,6 +470,7 @@ export function generateEnumField(
         ? scalarDefinition.definition.parseValue(defaultValue)
         : defaultValue,
     hidden,
+    nestHidden,
     sqlType: isKenum ? "integer" : "string",
     type: scalarDefinition,
     sqlDefinition,

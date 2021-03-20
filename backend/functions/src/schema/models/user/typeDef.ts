@@ -25,14 +25,12 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     ...generateTypenameField(User),
     provider: generateStringField({
       allowNull: false,
-      sqlOptions: { joinHidden: true },
       typeDefOptions: { addable: true, updateable: false },
       sqlDefinition: { unique: "compositeIndex" },
       hidden: true,
     }),
     provider_id: generateStringField({
       allowNull: false,
-      sqlOptions: { joinHidden: true },
       typeDefOptions: { addable: true, updateable: false },
       sqlDefinition: { unique: "compositeIndex" },
       hidden: true,
@@ -44,6 +42,7 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     email: generateStringField({
       allowNull: false,
       sqlDefinition: { unique: true },
+      nestHidden: true,
     }),
     name: generateStringField({
       allowNull: false,
@@ -62,13 +61,13 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       scalarDefinition: Scalars.userRole,
       allowNull: false,
       defaultValue: "NONE",
-      sqlOptions: { joinHidden: true },
       isKenum: true,
+      nestHidden: true,
     }),
     permissions: generateArrayField({
       allowNull: true,
       type: Scalars.userPermission,
-      sqlOptions: { joinHidden: true },
+      nestHidden: true,
     }),
     all_permissions: {
       type: Scalars.userPermission,
@@ -77,6 +76,7 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       },
       requiredSqlFields: ["role", "permissions"],
       allowNull: false,
+      nestHidden: true,
       async resolver({ parentValue }) {
         const role = parentValue.role;
         const permissions = parentValue.permissions;
