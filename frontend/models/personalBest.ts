@@ -296,6 +296,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'product.id',
       'score',
       'created_by.name',
+      'is_current',
     ],
     component: EditPersonalBestInterface,
   },

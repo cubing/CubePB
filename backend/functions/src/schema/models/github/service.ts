@@ -103,7 +103,7 @@ query {
 }
     `);
 
-      return response.viewer.organization.repository.latestRelease.tagName;
+      return response.viewer.organization.repository.latestRelease?.tagName;
     } catch (err) {
       throw new JomqlBaseError({
         message:

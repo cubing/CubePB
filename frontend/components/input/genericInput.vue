@@ -344,6 +344,76 @@
       class="py-0"
       @click:append="item.value = null"
     ></v-select>
+    <div
+      v-else-if="item.fieldInfo.inputType === 'key-value-array'"
+      class="accent rounded-sm mb-4"
+    >
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <div class="subtitle-1">
+              {{
+                (item.fieldInfo.text || item.field) +
+                (item.fieldInfo.optional ? ' (optional)' : '')
+              }}
+              <v-btn v-if="!isReadonly" icon @click="addRow()">
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+              <v-spacer></v-spacer>
+            </div>
+          </v-col>
+        </v-row>
+        <div v-if="item.value.length > 0">
+          <v-row v-for="(subItem, i) in item.value" :key="i">
+            <v-col cols="6" class="py-0">
+              <v-text-field
+                v-model="subItem.key"
+                label="Key"
+                :readonly="isReadonly"
+                :rules="item.fieldInfo.inputRules"
+                :hint="item.fieldInfo.hint"
+                :append-icon="
+                  subItem.key === null
+                    ? 'mdi-null'
+                    : isReadonly
+                    ? null
+                    : 'mdi-close'
+                "
+                persistent-hint
+                filled
+                dense
+                class="py-0"
+                @click:append="subItem.key = null"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6" class="py-0">
+              <v-text-field
+                v-model="subItem.value"
+                label="Value"
+                :readonly="isReadonly"
+                :rules="item.fieldInfo.inputRules"
+                :hint="item.fieldInfo.hint"
+                :append-icon="
+                  subItem.value === null
+                    ? 'mdi-null'
+                    : isReadonly
+                    ? null
+                    : 'mdi-close'
+                "
+                :append-outer-icon="isReadonly ? null : 'mdi-close'"
+                persistent-hint
+                filled
+                dense
+                class="py-0"
+                @click:append="subItem.value = null"
+                @click:append-outer="removeRow(i)"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </div>
+        <div v-else>No elements</div>
+      </v-container>
+    </div>
     <v-text-field
       v-else
       v-model="item.value"
@@ -368,7 +438,6 @@
 
 <script>
 import Draggable from 'vuedraggable'
-// file upload not supported in this project
 // import { uploadFile } from '~/services/file'
 import { capitalizeString, isObject, handleError } from '~/services/base'
 import { executeJomql } from '~/services/jomql'
@@ -392,12 +461,24 @@ export default {
       },
     },
   },
+
   computed: {
     isReadonly() {
       return this.item.readonly || this.mode === 'view'
     },
   },
   methods: {
+    addRow() {
+      this.item.value.push({
+        key: null,
+        value: null,
+      })
+    },
+
+    removeRow(index) {
+      this.item.value.splice(index, 1)
+    },
+
     handleSearchUpdate(inputObject) {
       if (!inputObject.input || !inputObject.focused) return
 
@@ -418,7 +499,7 @@ export default {
       }, 500)
     },
 
-    /*     removeFileByIndex(inputObject, index) {
+    removeFileByIndex(inputObject, index) {
       if (inputObject.value) {
         inputObject.value.splice(index, 1)
       }
@@ -450,7 +531,7 @@ export default {
       }
     },
 
-    handleMultipleFileInputChange(inputObject) {
+    /*     handleMultipleFileInputChange(inputObject) {
       this.$set(inputObject, 'loading', true)
 
       // inputObject.input expected to be array

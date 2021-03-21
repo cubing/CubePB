@@ -1,14 +1,7 @@
 // Query builder (Typescript version >= 4.1.3 required)
-const queryResult = executeJomql({
+/* const queryResult = executeJomql({
   // Start typing here to get hints
-  getUser: {
-    id: true,
-    name: true,
-    __args: {
-      id: 1,
-    },
-  },
-})
+}); */
 
 export function executeJomql<Key extends keyof Root>(
   query: GetQuery<Key>
@@ -89,6 +82,8 @@ export type FilterByField<T> = {
   /**Date YYYY-MM-DD*/ date: string
   /**ID Field*/ id: number
   /**Regex Field*/ regex: RegExp
+  /**Valid JSON*/ json: unknown
+  /**Valid JSON as a string*/ jsonString: string
   /**Enum stored as a separate key value*/ userRole: 'NORMAL' | 'NONE' | 'ADMIN'
   /**Enum stored as is*/ userPermission:
     | 'A_A'
@@ -99,6 +94,7 @@ export type FilterByField<T> = {
     | 'user_create'
     | 'user_delete'
     | 'personalBest_create'
+    | 'product_create'
   /**Enum stored as is*/ scoreMethod: 'STANDARD' | 'FMC' | 'MBLD'
   userSortByKey: 'id' | 'created_at' | 'updated_at'
   userGroupByKey: undefined
@@ -117,10 +113,11 @@ export type FilterByField<T> = {
     | 'set_size'
     | 'time_elapsed'
     | 'happened_on'
+    | 'is_current'
   personalBestGroupByKey: undefined
 }
 /**All Input types*/ export type InputTypes = {
-  getUser: { id?: Scalars['id'] }
+  user: { id?: Scalars['id'] }
   'userFilterByField/id': FilterByField<Scalars['id']>
   'userFilterByField/created_by.id': FilterByField<Scalars['id']>
   'userFilterByField/created_by.name': FilterByField<Scalars['string']>
@@ -135,7 +132,7 @@ export type FilterByField<T> = {
     name?: InputTypes['userFilterByField/name']
     is_public?: InputTypes['userFilterByField/is_public']
   }
-  getUserPaginator: {
+  userPaginator: {
     first?: Scalars['number']
     last?: Scalars['number']
     after?: Scalars['string']
@@ -168,7 +165,7 @@ export type FilterByField<T> = {
     permissions?: Scalars['userPermission'][] | null
   }
   updateUser: {
-    item: InputTypes['getUser']
+    item: InputTypes['user']
     fields: InputTypes['updateUserFields']
   }
   socialLogin: {
@@ -176,7 +173,7 @@ export type FilterByField<T> = {
     code: Scalars['string']
     redirect_uri: Scalars['string']
   }
-  getEvent: { id?: Scalars['id']; code?: Scalars['string'] }
+  event: { id?: Scalars['id']; code?: Scalars['string'] }
   'eventFilterByField/id': FilterByField<Scalars['id']>
   'eventFilterByField/created_by': FilterByField<Scalars['id']>
   'eventFilterByField/code': FilterByField<Scalars['string']>
@@ -185,7 +182,7 @@ export type FilterByField<T> = {
     created_by?: InputTypes['eventFilterByField/created_by']
     code?: InputTypes['eventFilterByField/code']
   }
-  getEventPaginator: {
+  eventPaginator: {
     first?: Scalars['number']
     last?: Scalars['number']
     after?: Scalars['string']
@@ -199,7 +196,6 @@ export type FilterByField<T> = {
   createEvent: {
     name: Scalars['string']
     code: Scalars['string']
-    max_attempts?: Scalars['number']
     score_method: Scalars['scoreMethod']
   }
   updateEventFields: {
@@ -208,17 +204,17 @@ export type FilterByField<T> = {
     score_method?: Scalars['scoreMethod']
   }
   updateEvent: {
-    item: InputTypes['getEvent']
+    item: InputTypes['event']
     fields: InputTypes['updateEventFields']
   }
-  getProduct: { id?: Scalars['id'] }
+  product: { id?: Scalars['id'] }
   'productFilterByField/id': FilterByField<Scalars['id']>
   'productFilterByField/created_by': FilterByField<Scalars['id']>
   productFilterByObject: {
     id?: InputTypes['productFilterByField/id']
     created_by?: InputTypes['productFilterByField/created_by']
   }
-  getProductPaginator: {
+  productPaginator: {
     first?: Scalars['number']
     last?: Scalars['number']
     after?: Scalars['string']
@@ -232,17 +228,17 @@ export type FilterByField<T> = {
   createProduct: { name: Scalars['string'] }
   updateProductFields: { name?: Scalars['string'] }
   updateProduct: {
-    item: InputTypes['getProduct']
+    item: InputTypes['product']
     fields: InputTypes['updateProductFields']
   }
-  getPersonalBestClass: { id?: Scalars['id'] }
+  personalBestClass: { id?: Scalars['id'] }
   'personalBestClassFilterByField/id': FilterByField<Scalars['id']>
   'personalBestClassFilterByField/created_by': FilterByField<Scalars['id']>
   personalBestClassFilterByObject: {
     id?: InputTypes['personalBestClassFilterByField/id']
     created_by?: InputTypes['personalBestClassFilterByField/created_by']
   }
-  getPersonalBestClassPaginator: {
+  personalBestClassPaginator: {
     first?: Scalars['number']
     last?: Scalars['number']
     after?: Scalars['string']
@@ -263,10 +259,10 @@ export type FilterByField<T> = {
     description?: Scalars['string'] | null
   }
   updatePersonalBestClass: {
-    item: InputTypes['getPersonalBestClass']
+    item: InputTypes['personalBestClass']
     fields: InputTypes['updatePersonalBestClassFields']
   }
-  getPersonalBest: { id?: Scalars['id'] }
+  personalBest: { id?: Scalars['id'] }
   'personalBestFilterByField/id': FilterByField<Scalars['id']>
   'personalBestFilterByField/created_by.id': FilterByField<Scalars['id']>
   'personalBestFilterByField/created_by.is_public': FilterByField<
@@ -278,6 +274,8 @@ export type FilterByField<T> = {
   'personalBestFilterByField/happened_on': FilterByField<
     Scalars['unixTimestamp']
   >
+  'personalBestFilterByField/is_current': FilterByField<Scalars['boolean']>
+  'personalBestFilterByField/set_size': FilterByField<Scalars['number']>
   personalBestFilterByObject: {
     id?: InputTypes['personalBestFilterByField/id']
     'created_by.id'?: InputTypes['personalBestFilterByField/created_by.id']
@@ -286,8 +284,10 @@ export type FilterByField<T> = {
     'event.id'?: InputTypes['personalBestFilterByField/event.id']
     'pb_class.id'?: InputTypes['personalBestFilterByField/pb_class.id']
     happened_on?: InputTypes['personalBestFilterByField/happened_on']
+    is_current?: InputTypes['personalBestFilterByField/is_current']
+    set_size?: InputTypes['personalBestFilterByField/set_size']
   }
-  getPersonalBestPaginator: {
+  personalBestPaginator: {
     first?: Scalars['number']
     last?: Scalars['number']
     after?: Scalars['string']
@@ -299,15 +299,18 @@ export type FilterByField<T> = {
     search?: Scalars['string']
   }
   createPersonalBest: {
-    pb_class: InputTypes['getPersonalBestClass']
-    event: InputTypes['getEvent']
+    pb_class: InputTypes['personalBestClass']
+    event: InputTypes['event']
     set_size: Scalars['number']
     attempts_succeeded?: Scalars['number'] | null
     attempts_total?: Scalars['number'] | null
-    product?: InputTypes['getProduct'] | null
+    product?: InputTypes['product'] | null
     happened_on: Scalars['unixTimestamp']
     time_elapsed?: Scalars['number'] | null
     moves_count?: Scalars['number'] | null
+  }
+  /**Input object for getRepositoryReleases*/ getRepositoryReleases: {
+    first: Scalars['number']
   }
 }
 /**All main types*/ export type MainTypes = {
@@ -470,7 +473,6 @@ export type PersonalBestEdge = Edge<PersonalBest>
   }
   name: { Type: Scalars['string']; Args: undefined }
   code: { Type: Scalars['string']; Args: undefined }
-  max_attempts: { Type: Scalars['number']; Args: undefined }
   score_method: { Type: Scalars['scoreMethod']; Args: undefined }
   /**When the record was created*/ created_at: {
     Type: Scalars['unixTimestamp']
@@ -546,6 +548,7 @@ export type PersonalBestEdge = Edge<PersonalBest>
     Type: Scalars['number'] | null
     Args: undefined
   }
+  is_current: { Type: Scalars['boolean']; Args: undefined }
   /**When the record was created*/ created_at: {
     Type: Scalars['unixTimestamp']
     Args: undefined
@@ -563,42 +566,39 @@ export type PersonalBestEdge = Edge<PersonalBest>
     Args: undefined
   }
   getCurrentUser: { Type: User; Args: undefined }
-  getUser: { Type: User; Args: InputTypes['getUser'] }
-  getUserPaginator: {
-    Type: UserPaginator
-    Args: InputTypes['getUserPaginator']
-  }
-  deleteUser: { Type: User; Args: InputTypes['getUser'] }
+  getUser: { Type: User; Args: InputTypes['user'] }
+  getUserPaginator: { Type: UserPaginator; Args: InputTypes['userPaginator'] }
+  deleteUser: { Type: User; Args: InputTypes['user'] }
   createUser: { Type: User; Args: InputTypes['createUser'] }
   updateUser: { Type: User; Args: InputTypes['updateUser'] }
   socialLogin: { Type: Auth; Args: [InputTypes['socialLogin']] }
-  getEvent: { Type: Event; Args: InputTypes['getEvent'] }
+  getEvent: { Type: Event; Args: InputTypes['event'] }
   getEventPaginator: {
     Type: EventPaginator
-    Args: InputTypes['getEventPaginator']
+    Args: InputTypes['eventPaginator']
   }
-  deleteEvent: { Type: Event; Args: InputTypes['getEvent'] }
+  deleteEvent: { Type: Event; Args: InputTypes['event'] }
   createEvent: { Type: Event; Args: InputTypes['createEvent'] }
   updateEvent: { Type: Event; Args: InputTypes['updateEvent'] }
-  getProduct: { Type: Product; Args: InputTypes['getProduct'] }
+  getProduct: { Type: Product; Args: InputTypes['product'] }
   getProductPaginator: {
     Type: ProductPaginator
-    Args: InputTypes['getProductPaginator']
+    Args: InputTypes['productPaginator']
   }
-  deleteProduct: { Type: Product; Args: InputTypes['getProduct'] }
+  deleteProduct: { Type: Product; Args: InputTypes['product'] }
   createProduct: { Type: Product; Args: InputTypes['createProduct'] }
   updateProduct: { Type: Product; Args: InputTypes['updateProduct'] }
   getPersonalBestClass: {
     Type: PersonalBestClass
-    Args: InputTypes['getPersonalBestClass']
+    Args: InputTypes['personalBestClass']
   }
   getPersonalBestClassPaginator: {
     Type: PersonalBestClassPaginator
-    Args: InputTypes['getPersonalBestClassPaginator']
+    Args: InputTypes['personalBestClassPaginator']
   }
   deletePersonalBestClass: {
     Type: PersonalBestClass
-    Args: InputTypes['getPersonalBestClass']
+    Args: InputTypes['personalBestClass']
   }
   createPersonalBestClass: {
     Type: PersonalBestClass
@@ -608,17 +608,22 @@ export type PersonalBestEdge = Edge<PersonalBest>
     Type: PersonalBestClass
     Args: InputTypes['updatePersonalBestClass']
   }
-  getPersonalBest: { Type: PersonalBest; Args: InputTypes['getPersonalBest'] }
+  getPersonalBest: { Type: PersonalBest; Args: InputTypes['personalBest'] }
   getPersonalBestPaginator: {
     Type: PersonalBestPaginator
-    Args: InputTypes['getPersonalBestPaginator']
+    Args: InputTypes['personalBestPaginator']
   }
-  deletePersonalBest: {
-    Type: PersonalBest
-    Args: InputTypes['getPersonalBest']
-  }
+  deletePersonalBest: { Type: PersonalBest; Args: InputTypes['personalBest'] }
   createPersonalBest: {
     Type: PersonalBest
     Args: InputTypes['createPersonalBest']
+  }
+  getRepositoryReleases: {
+    Type: Scalars['unknown'][]
+    Args: InputTypes['getRepositoryReleases']
+  }
+  getRepositoryLatestVersion: {
+    Type: Scalars['unknown'] | null
+    Args: undefined
   }
 }

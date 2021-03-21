@@ -26,6 +26,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
         | 'html'
         | 'single-image'
         | 'multiple-image'
+        | 'key-value-array'
         | 'avatar'
         | 'datepicker'
         | 'switch'
@@ -47,11 +48,11 @@ export type RecordInfo<T extends keyof MainTypes> = {
       optional?: boolean
       default?: (that) => unknown
       // fetching from API, in editRecordInterface (when editing/viewing)
-      serialize?: (val: unknown) => unknown
+      serialize?: (val: MainTypes[T]['Type'][K]) => unknown
       // submitting to API, in filterBy and create/update functions
       parseValue?: (val: unknown) => unknown
       // for crudRecordPage. parsing the query params
-      parseQueryValue?: (val: string) => unknown
+      parseQueryValue?: (val: unknown) => unknown
       component?: any // component for rendering the field in table
     }
   }
@@ -59,8 +60,8 @@ export type RecordInfo<T extends keyof MainTypes> = {
   // options related to viewing multiple, if possible
   paginationOptions?: {
     // does the interface have a search bar?
-    hasSearch: `get${Capitalize<T>}Paginator` extends keyof InputTypes
-      ? 'search' extends keyof InputTypes[`get${Capitalize<T>}Paginator`]
+    hasSearch: `${T}Paginator` extends keyof InputTypes
+      ? 'search' extends keyof InputTypes[`${T}Paginator`]
         ? boolean
         : false
       : false

@@ -57,7 +57,7 @@ export default {
       getRepositoryLatestVersion: true,
     }).then((res) => {
       this.latestVersion = res
-      if (this.currentVersion !== this.latestVersion) {
+      if (this.latestVersion && this.currentVersion !== this.latestVersion) {
         // only open the snackbar if not DEV
         if (this.currentVersion !== 'DEV') {
           this.open = true
