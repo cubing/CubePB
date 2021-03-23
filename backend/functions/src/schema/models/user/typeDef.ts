@@ -1,4 +1,5 @@
 // import * as bcrypt from "bcryptjs";
+import { knex } from "../../../utils/knex";
 
 import { JomqlObjectType, ObjectTypeDefinition } from "jomql";
 import { User } from "../../services";
@@ -26,36 +27,41 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     provider: generateStringField({
       allowNull: false,
       typeDefOptions: { addable: true, updateable: false },
-      sqlDefinition: { unique: "compositeIndex" },
+      sqlOptions: { unique: "compositeIndex" },
       hidden: true,
     }),
-    provider_id: generateStringField({
+    providerId: generateStringField({
       allowNull: false,
       typeDefOptions: { addable: true, updateable: false },
-      sqlDefinition: { unique: "compositeIndex" },
+      sqlOptions: {
+        field: "provider_id",
+        unique: "compositeIndex",
+      },
       hidden: true,
     }),
-    wca_id: generateStringField({
+    wcaId: generateStringField({
       allowNull: true,
+      sqlOptions: {
+        field: "wca_id",
+      },
       typeDefOptions: { addable: true, updateable: false },
     }),
     email: generateStringField({
       allowNull: false,
-      sqlDefinition: { unique: true },
+      sqlOptions: { unique: true },
       nestHidden: true,
     }),
-    name: generateStringField({
-      allowNull: false,
-    }),
+    name: generateStringField({ allowNull: false }),
     avatar: generateStringField({
       allowNull: true,
     }),
     country: generateStringField({
       allowNull: true,
     }),
-    is_public: generateBooleanField({
+    isPublic: generateBooleanField({
       allowNull: false,
       defaultValue: true,
+      sqlOptions: { field: "is_public" },
     }),
     role: generateEnumField({
       scalarDefinition: Scalars.userRole,
@@ -69,7 +75,7 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       type: Scalars.userPermission,
       nestHidden: true,
     }),
-    all_permissions: {
+    allPermissions: {
       type: Scalars.userPermission,
       arrayOptions: {
         allowNullElement: false,
@@ -92,6 +98,40 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
 
         // fetch the user role IF it is not provided
         return rolePermissionsArray.concat(permissionsArray);
+      },
+    },
+    // foreign sql field
+    currentUserFollowing: {
+      type: Scalars.id,
+      allowNull: true,
+      sqlOptions: {
+        field: "id",
+        specialJoin: {
+          foreignTable: "userUserFollowLink",
+          joinFunction: (
+            knexObject,
+            parentTableAlias,
+            joinTableAlias,
+            specialParams
+          ) => {
+            knexObject.leftJoin(
+              {
+                [joinTableAlias]: "userUserFollowLink",
+              },
+              (builder) => {
+                builder
+                  .on(parentTableAlias + ".id", "=", joinTableAlias + ".target")
+                  .andOn(
+                    specialParams.currentUserId
+                      ? knex.raw(`"${joinTableAlias}".user = ?`, [
+                          specialParams.currentUserId,
+                        ])
+                      : knex.raw("false")
+                  );
+              }
+            );
+          },
+        },
       },
     },
     ...generateCreatedAtField(),

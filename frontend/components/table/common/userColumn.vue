@@ -6,6 +6,7 @@
       :min-width="300"
       :max-width="300"
       offset-y
+      top
     >
       <template v-slot:activator="{ on }">
         <v-chip pill small v-on="on">
@@ -33,7 +34,10 @@
                 ></v-progress-linear>
                 <template v-else-if="currentUser">
                   <v-list-item-subtitle
-                    >WCA ID: {{ currentUser.wca_id }}</v-list-item-subtitle
+                    >WCA ID:
+                    <a @click="openWCAProfile(currentUser.wca_id)">{{
+                      currentUser.wca_id
+                    }}</a></v-list-item-subtitle
                   >
                   <v-list-item-subtitle
                     >Nationality:
@@ -47,7 +51,6 @@
 
         <v-divider></v-divider>
         <v-card-actions>
-          <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn icon v-on="on" @click="openProfile()">
@@ -56,6 +59,17 @@
             </template>
             <span>Go to Profile</span>
           </v-tooltip>
+          <v-spacer></v-spacer>
+          <template v-if="currentUser">
+            <v-btn
+              color="primary"
+              :loading="loading.toggleFollow"
+              @click="toggleFollowUser(!currentUser.current_user_following)"
+              >{{
+                currentUser.current_user_following ? 'Un-Follow' : 'Follow'
+              }}</v-btn
+            >
+          </template>
         </v-card-actions>
       </v-card>
     </v-menu>
@@ -76,6 +90,7 @@ export default {
       open: false,
       loading: {
         loadData: false,
+        toggleFollow: false,
       },
     }
   },
@@ -106,6 +121,56 @@ export default {
       window.open(routeData.href, '_blank')
     },
 
+    openWCAProfile(wcaId) {
+      window.open(
+        'https://www.worldcubeassociation.org/persons/' + wcaId,
+        '_blank'
+      )
+    },
+
+    async toggleFollowUser(follow) {
+      this.loading.toggleFollow = true
+      try {
+        // login is required
+        if (!this.$store.getters['auth/user']) throw new Error('Login required')
+
+        if (follow) {
+          const data = await executeJomql(this, {
+            createUserUserFollowLink: {
+              id: true,
+              __args: {
+                user: {
+                  id: this.$store.getters['auth/user']?.id,
+                },
+                target: {
+                  id: this.currentItem.id,
+                },
+              },
+            },
+          })
+
+          this.currentUser.current_user_following = data.id
+        } else {
+          await executeJomql(this, {
+            deleteUserUserFollowLink: {
+              __args: {
+                id: this.currentUser.current_user_following,
+              },
+            },
+          })
+          this.currentUser.current_user_following = null
+        }
+
+        this.$notifier.showSnackbar({
+          message: `User ${follow ? '' : 'Un-'}Followed`,
+          variant: 'success',
+        })
+      } catch (err) {
+        handleError(this, err)
+      }
+      this.loading.toggleFollow = false
+    },
+
     async loadData() {
       this.loading.loadData = true
       try {
@@ -113,6 +178,7 @@ export default {
           getUser: {
             country: true,
             wca_id: true,
+            current_user_following: true,
             __args: {
               id: this.currentItem.id,
             },

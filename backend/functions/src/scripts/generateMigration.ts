@@ -38,18 +38,21 @@ function generateMigration(initSubscriptions = true, force = false) {
 
     Object.entries(typeDef.definition.fields).forEach(
       ([fieldName, typeDefField]) => {
-        const sqlDefinition = typeDefField.sqlOptions?.sqlDefinition;
+        // if has no sqlDefinition, sqlOptions, or if it has specialJoin, skip
+        // (special join means it resides on a foreign table)
+        if (!typeDefField.sqlOptions || typeDefField.sqlOptions.specialJoin)
+          return;
 
-        // if has no sqlDefinition, skip
-        if (!sqlDefinition) return;
+        // set actual field name
+        const sqlFieldName = typeDefField.sqlOptions.field ?? fieldName;
 
         // if ID field, set ID and return
-        if (fieldName === "id") {
+        if (sqlFieldName === "id") {
           operationsArray.push("table.increments()");
           return;
         }
 
-        let operationString = `table.${sqlDefinition.type}("${fieldName}")`;
+        let operationString = `table.${typeDefField.sqlOptions.type}("${sqlFieldName}")`;
 
         // handle (not) nullable
         operationString += typeDefField.allowNull
@@ -57,33 +60,33 @@ function generateMigration(initSubscriptions = true, force = false) {
           : `.notNullable()`;
 
         // set default value
-        if (sqlDefinition.defaultValue !== undefined) {
+        if (typeDefField.sqlOptions.defaultValue !== undefined) {
           // add quotes if string, convert any objects to knex.fn.now()
           const defaultValueString =
-            typeof sqlDefinition.defaultValue === "string"
-              ? `"${sqlDefinition.defaultValue}"`
-              : isKnexNow(sqlDefinition.defaultValue)
+            typeof typeDefField.sqlOptions.defaultValue === "string"
+              ? `"${typeDefField.sqlOptions.defaultValue}"`
+              : isKnexNow(typeDefField.sqlOptions.defaultValue)
               ? "knex.fn.now()"
-              : sqlDefinition.defaultValue;
+              : typeDefField.sqlOptions.defaultValue;
 
           operationString += `.defaultTo(${defaultValueString})`;
         }
 
         // assemble unique indices
-        if (sqlDefinition.unique !== undefined) {
+        if (typeDefField.sqlOptions.unique !== undefined) {
           // if true, apply unique constraint to that column only
-          if (sqlDefinition.unique === true) {
+          if (typeDefField.sqlOptions.unique === true) {
             operationString += `.unique()`;
           }
 
           // if string, add to indicesMap
-          if (typeof sqlDefinition.unique === "string") {
-            if (!indicesMap.has(sqlDefinition.unique)) {
-              indicesMap.set(sqlDefinition.unique, new Set());
+          if (typeof typeDefField.sqlOptions.unique === "string") {
+            if (!indicesMap.has(typeDefField.sqlOptions.unique)) {
+              indicesMap.set(typeDefField.sqlOptions.unique, new Set());
             }
 
-            const index = indicesMap.get(sqlDefinition.unique);
-            index!.add(fieldName);
+            const index = indicesMap.get(typeDefField.sqlOptions.unique);
+            index!.add(sqlFieldName);
           }
         }
 

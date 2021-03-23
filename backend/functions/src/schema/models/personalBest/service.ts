@@ -11,14 +11,14 @@ export class PersonalBestService extends PaginatedService {
 
   filterFieldsMap = {
     id: {},
-    "created_by.id": {},
-    "created_by.is_public": {},
+    "createdBy.id": {},
+    "createdBy.isPublic": {},
     "product.id": {},
     "event.id": {},
-    "pb_class.id": {},
-    happened_on: {},
-    is_current: {},
-    set_size: {},
+    "pbClass.id": {},
+    happenedOn: {},
+    isCurrent: {},
+    setSize: {},
   };
 
   uniqueKeyMap = {
@@ -27,14 +27,14 @@ export class PersonalBestService extends PaginatedService {
 
   sortFieldsMap = {
     id: {},
-    created_at: {},
+    createdAt: {},
     score: {},
     "event.name": {},
-    "pb_class.name": {},
-    set_size: {},
-    time_elapsed: {},
-    happened_on: {},
-    is_current: {},
+    "pbClass.name": {},
+    setSize: {},
+    timeElapsed: {},
+    happenedOn: {},
+    isCurrent: {},
   };
 
   searchFieldsMap = {
@@ -380,33 +380,35 @@ export class PersonalBestService extends PaginatedService {
     // if the new PB is the current one and at least 1 preceding PB, set all others to false first
     if (isCurrentPb && beforePbs.length > 0) {
       await sqlHelper.updateTableRow(
-        this.typename,
         {
-          is_current: false,
-        },
-        {
-          fields: [
-            {
-              field: "event",
-              value: validatedArgs.event,
-            },
-            {
-              field: "pb_class",
-              value: validatedArgs.pb_class,
-            },
-            {
-              field: "set_size",
-              value: validatedArgs.set_size,
-            },
-            {
-              field: "created_by",
-              value: req.user!.id,
-            },
-            {
-              field: "is_current",
-              value: true,
-            },
-          ],
+          table: this.typename,
+          fields: {
+            is_current: false,
+          },
+          where: {
+            fields: [
+              {
+                field: "event",
+                value: validatedArgs.event,
+              },
+              {
+                field: "pb_class",
+                value: validatedArgs.pb_class,
+              },
+              {
+                field: "set_size",
+                value: validatedArgs.set_size,
+              },
+              {
+                field: "created_by",
+                value: req.user!.id,
+              },
+              {
+                field: "is_current",
+                value: true,
+              },
+            ],
+          },
         },
         fieldPath
       );
@@ -509,18 +511,21 @@ export class PersonalBestService extends PaginatedService {
 
       if (previousPbResults.length > 0) {
         await sqlHelper.updateTableRow(
-          this.typename,
           {
-            is_current: true,
+            table: this.typename,
+            fields: {
+              is_current: true,
+            },
+            where: {
+              fields: [
+                {
+                  field: "id",
+                  value: previousPbResults[0].id,
+                },
+              ],
+            },
           },
-          {
-            fields: [
-              {
-                field: "id",
-                value: previousPbResults[0].id,
-              },
-            ],
-          }
+          fieldPath
         );
       }
     }

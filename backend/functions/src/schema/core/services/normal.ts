@@ -1,13 +1,14 @@
 import * as errorHelper from "../../helpers/error";
 import { BaseService } from ".";
-import * as sqlHelper from "../../helpers/sql";
-import { permissionsCheck } from "../../helpers/permissions";
 import {
-  handleJqlSubscription,
-  handleJqlSubscriptionTriggerIterative,
-  handleJqlSubscriptionTrigger,
-  deleteJqlSubscription,
-} from "../../helpers/subscription";
+  fetchTableRows,
+  SqlOrderByObject,
+  SqlSelectQueryObject,
+  SqlWhereFieldOperator,
+  SqlWhereObject,
+} from "../../helpers/sql";
+import { permissionsCheck } from "../../helpers/permissions";
+import { handleJqlSubscription } from "../../helpers/subscription";
 
 import * as Resolver from "../../helpers/resolver";
 
@@ -22,20 +23,13 @@ import {
   JomqlInputFieldType,
   JomqlInitializationError,
   JomqlScalarType,
-  StringKeyObject,
   JomqlBaseError,
 } from "jomql";
 
-import {
-  SqlWhereObject,
-  SqlQuerySelectObject,
-  SqlSortFieldObject,
-  ServiceFunctionInputs,
-  SqlWhereFieldOperator,
-  SqlSelectFieldObject,
-} from "../../../types";
+import { ServiceFunctionInputs } from "../../../types";
 
-import { btoa, isObject, capitalizeString } from "../../helpers/shared";
+import { btoa, isObject } from "../../helpers/shared";
+
 export type JoinFieldObject = {
   field?: string;
 };
@@ -280,8 +274,8 @@ export class NormalService extends BaseService {
       sqlParams: {
         where: whereObject,
         limit: 1,
-        miscParams: {
-          user: req.user?.id,
+        specialParams: {
+          currentUserId: req.user?.id,
         },
       },
       data,
@@ -561,8 +555,8 @@ export class NormalService extends BaseService {
     const limit = Math.min(requestedLimit, 100) || 100;
 
     // process sort fields
-    const orderBy: SqlSortFieldObject[] = [];
-    const rawSelect: SqlQuerySelectObject[] = [{ field: "id", as: "last_id" }];
+    const orderBy: SqlOrderByObject[] = [];
+    const rawSelect: SqlSelectQueryObject[] = [{ field: "id", as: "last_id" }];
 
     if (sortByField) {
       rawSelect.push({
@@ -586,13 +580,13 @@ export class NormalService extends BaseService {
       req,
       fieldPath,
       externalQuery: selectQuery,
+      rawSelect,
       sqlParams: {
-        rawSelect,
         where: whereObject,
         orderBy,
         limit: limit,
-        miscParams: {
-          user: req.user?.id,
+        specialParams: {
+          currentUserId: req.user?.id,
         },
         distinct: true,
         groupBy: Array.isArray(validatedArgs.groupBy)
@@ -624,7 +618,7 @@ export class NormalService extends BaseService {
       const typeField = this.getTypeDef().definition.fields[key]?.type;
       if (typeField instanceof JomqlObjectTypeLookup && isObject(args[key])) {
         // get record ID of type, replace object with the ID
-        const results = await sqlHelper.fetchTableRows({
+        const results = await fetchTableRows({
           select: [{ field: "id" }],
           from: typeField.name,
           where: {
@@ -651,11 +645,11 @@ export class NormalService extends BaseService {
 
   // looks up a record using its keys
   async lookupRecord(
-    selectFields: SqlSelectFieldObject[],
+    selectFields: SqlSelectQueryObject[],
     args: any,
     fieldPath: string[]
   ): Promise<any> {
-    const results = await sqlHelper.fetchTableRows({
+    const results = await fetchTableRows({
       select: selectFields ?? [{ field: "id" }],
       from: this.typename,
       where: {
@@ -742,31 +736,19 @@ export class NormalService extends BaseService {
   }: ServiceFunctionInputs) {
     // args should be validated already
     const validatedArgs = <any>args;
-    // check if record exists, get ID
-    const records = await sqlHelper.fetchTableRows({
-      select: [{ field: "id" }],
-      from: this.typename,
-      where: {
-        connective: "AND",
-        fields: Object.entries(validatedArgs.item).map(([field, value]) => ({
-          field,
-          value,
-        })),
-      },
-    });
 
-    if (records.length < 1) {
-      throw errorHelper.itemNotFoundError(fieldPath);
-    }
-
-    const itemId = records[0].id;
+    const item = await this.lookupRecord(
+      [{ field: "id" }],
+      validatedArgs.item,
+      fieldPath
+    );
 
     // convert any lookup/joined fields into IDs
     await this.handleLookupArgs(validatedArgs.fields, fieldPath);
 
     await Resolver.updateObjectType({
       typename: this.typename,
-      id: itemId,
+      id: item.id,
       updateFields: {
         ...validatedArgs.fields,
         updated_at: 1,
@@ -777,29 +759,12 @@ export class NormalService extends BaseService {
 
     const returnData = await this.getRecord({
       req,
-      args: { id: itemId },
+      args: { id: item.id },
       query,
       fieldPath,
       isAdmin,
       data,
     });
-
-    /*     handleJqlSubscriptionTrigger(req, this, this.typename + "Updated", {
-      id: itemId,
-    });
-
-    // subscriptions will be checked against these args
-    const subscriptionFilterableArgs = {
-      created_by: null, //no way to access this at the moment
-    };
-
-    handleJqlSubscriptionTriggerIterative(
-      req,
-      this,
-      this.typename + "ListUpdated",
-      subscriptionFilterableArgs,
-      { id: itemId }
-    ); */
 
     return returnData;
   }
@@ -816,23 +781,11 @@ export class NormalService extends BaseService {
     // args should be validated already
     const validatedArgs = <any>args;
     // confirm existence of item and get ID
-    const results = await sqlHelper.fetchTableRows({
-      select: [{ field: "id" }],
-      from: this.typename,
-      where: {
-        connective: "AND",
-        fields: Object.entries(validatedArgs).map(([field, value]) => ({
-          field,
-          value,
-        })),
-      },
-    });
-
-    if (results.length < 1) {
-      throw new Error(`${this.typename} not found`);
-    }
-
-    const itemId = results[0].id;
+    const item = await this.lookupRecord(
+      [{ field: "id" }],
+      validatedArgs,
+      fieldPath
+    );
 
     // first, fetch the requested query, if any
     const requestedResults = await this.getRecord({
@@ -844,36 +797,12 @@ export class NormalService extends BaseService {
       data,
     });
 
-    /*     await handleJqlSubscriptionTrigger(req, this, this.typename + "Deleted", {
-      id: itemId,
-    });
-
-    // subscriptions will be checked against these args
-    const subscriptionFilterableArgs = {
-      created_by: null, //no way to access this at the moment
-    };
-
-    await handleJqlSubscriptionTriggerIterative(
-      req,
-      this,
-      this.typename + "ListUpdated",
-      subscriptionFilterableArgs,
-      { id: itemId }
-    ); */
-
     await Resolver.deleteObjectType({
       typename: this.typename,
-      id: itemId,
+      id: item.id,
       req,
       fieldPath,
     });
-
-    //cleanup
-
-    //also need to delete all subscriptions for this item
-    /*     await deleteJqlSubscription(req, this.typename + "Deleted", {
-      id: itemId,
-    }); */
 
     return requestedResults;
   }

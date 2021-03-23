@@ -33,7 +33,6 @@ export class PaginatorInfoService extends SimpleService {
         req,
         fieldPath,
         externalQuery: selectQuery,
-        sqlParams: {},
         data,
         externalTypeDef: this.typeDef, // must pass the specific typeDef for this Paginator
       });

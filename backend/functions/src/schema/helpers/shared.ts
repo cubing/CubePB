@@ -11,6 +11,9 @@ export function isObject(ele: unknown): ele is StringKeyObject {
   return Object.prototype.toString.call(ele) === "[object Object]";
 }
 
+export const snakeToCamel = (str: string): string =>
+  str.replace(/([-_]\w)/g, (g) => g[1].toUpperCase());
+
 export function deepAssign(
   target: StringKeyObject,
   source: StringKeyObject

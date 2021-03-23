@@ -14,17 +14,17 @@ export class UserService extends PaginatedService {
 
   filterFieldsMap = {
     id: {},
-    "created_by.id": {},
-    "created_by.name": {},
+    "createdBy.id": {},
+    "createdBy.name": {},
     role: {},
     name: {},
-    is_public: {},
+    isPublic: {},
   };
 
   sortFieldsMap = {
     id: {},
-    created_at: {},
-    updated_at: {},
+    createdAt: {},
+    updatedAt: {},
   };
 
   searchFieldsMap = {

@@ -10,18 +10,22 @@ import {
 } from "../../helpers/typeDef";
 import { ObjectTypeDefinition, ObjectTypeDefinitionField } from "jomql";
 
+type ServicesObjectMap = {
+  [x: string]: NormalService;
+};
+
 export function generateLinkTypeDef(
-  services: NormalService[],
+  servicesObjectMap: ServicesObjectMap,
   currentService: BaseService,
   additionalFields?: { [x: string]: ObjectTypeDefinitionField }
 ): ObjectTypeDefinition {
   const typeDefFields = {};
 
-  for (const service of services) {
-    typeDefFields[service.typename] = generateJoinableField({
+  for (const field in servicesObjectMap) {
+    typeDefFields[field] = generateJoinableField({
       allowNull: false,
-      service: service,
-      sqlDefinition: { unique: "compositeIndex" },
+      service: servicesObjectMap[field],
+      sqlOptions: { unique: "compositeIndex" },
     });
   }
 

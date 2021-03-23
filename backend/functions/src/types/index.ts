@@ -1,4 +1,6 @@
 import type { Request } from "express";
+import { ObjectTypeDefinitionField } from "jomql";
+import Knex = require("knex");
 import { userPermissionEnum, userRoleKenum } from "../schema/enums";
 
 export type StringKeyObject = Record<string, unknown>;
@@ -10,99 +12,33 @@ export type PusherEnv = {
   readonly cluster: string;
 };
 
-export type SqlEnv = {
-  readonly database: string;
-  readonly user: string;
-  readonly password: string;
-  readonly socketpath?: string;
-  readonly host?: string;
-  readonly port?: string;
-};
-
-export type SqlWhereObject = {
-  connective?: string;
-  fields: (SqlWhereObject | SqlWhereFieldObject)[];
-};
-
-export type SqlJoinFieldObject = {
-  table: string;
-  field: string;
-  foreignField: string;
-};
-
-export type SqlSelectFieldObject = SqlFieldObject & {
-  field: string;
-};
-
-export type SqlWhereFieldObject = SqlFieldObject & {
-  field: string;
-  value: any;
-  operator?: SqlWhereFieldOperator;
-};
-
-export type SqlWhereFieldOperator =
-  | "eq"
-  | "neq"
-  | "in"
-  | "nin"
-  | "regex"
-  | "like"
-  | "gt"
-  | "lt";
-
-export type SqlSortFieldObject = SqlFieldObject & {
-  field: string;
-  desc?: boolean;
-};
-
-export type SqlGroupFieldObject = SqlFieldObject & {
-  field: string;
-};
-
-export type SqlFieldObject = {
-  joinFields?: SqlJoinFieldObject[];
-};
-
-export type SqlQueryObject = SqlParams & {
-  select: SqlQuerySelectObject[];
-  from: string;
-};
-
-export type SqlQuerySelectObject = {
-  field: string;
-  as?: string;
-};
-
-export type SqlParams = {
-  rawSelect?: SqlQuerySelectObject[];
-  where?: SqlWhereObject;
-  limit?: number;
-  groupBy?: SqlGroupFieldObject[];
-  orderBy?: SqlSortFieldObject[];
-  miscParams?: any;
-  distinct?: boolean;
-};
-
-export type SqlSelectQueryOutput = null | {
-  [x: string]: any;
-};
+export type SpecialJoinFunction = (
+  knexObject: Knex.QueryBuilder,
+  parentTableAlias: string,
+  joinTableAlias: string,
+  specialParams: any
+) => void;
 
 export type ObjectTypeDefSqlOptions = {
-  joinInfo?: {
-    type: string; // foreign table name
-    // foreignKey?: string; // foreign table id (should always be id)
+  // if this is a join field, the typename of the joinType
+  joinType?: string;
+
+  // if this is an alias, the actual final field on the sqlTable this field refers to
+  field?: string;
+
+  specialJoin?: {
+    // if the field exists on a foreign table, specify it here.
+    foreignTable: string;
+    // the function that will perform the necessary joins to access the foreignTable
+    joinFunction: SpecialJoinFunction;
   };
-  fieldInfo?: {
-    field: string; // field alias, if different from the key
-  };
-  getter?: (value: string) => string;
+
+  getter?: (tableAlias: string, field: string) => string;
   setter?: (value: string) => string;
   parseValue?: (value: unknown) => unknown; // performed before inserts/updates
-  sqlDefinition?: SqlDefinition;
-};
 
-export type SqlDefinition = {
-  type: SqlType;
+  // sql definition
+  type?: SqlType;
   defaultValue?: any;
   unique?: boolean | string;
 };

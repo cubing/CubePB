@@ -315,6 +315,11 @@ export type FilterByField<T> = {
   /**Input object for getRepositoryReleases*/ getRepositoryReleases: {
     first: Scalars["number"];
   };
+  userUserFollowLink: { id?: Scalars["id"] };
+  createUserUserFollowLink: {
+    user: InputTypes["user"];
+    target: InputTypes["user"];
+  };
 };
 /**All main types*/ export type MainTypes = {
   paginatorInfo: { Typename: "paginatorInfo"; Type: GetType<PaginatorInfo> };
@@ -343,6 +348,14 @@ export type FilterByField<T> = {
     Typename: "personalBestPaginator";
     Type: GetType<PersonalBestPaginator>;
   };
+  userUserFollowLinkEdge: {
+    Typename: "userUserFollowLinkEdge";
+    Type: GetType<UserUserFollowLinkEdge>;
+  };
+  userUserFollowLinkPaginator: {
+    Typename: "userUserFollowLinkPaginator";
+    Type: GetType<UserUserFollowLinkPaginator>;
+  };
   userRoleEnumPaginator: {
     Typename: "userRoleEnumPaginator";
     Type: GetType<UserRoleEnumPaginator>;
@@ -360,6 +373,10 @@ export type FilterByField<T> = {
     Type: GetType<PersonalBestClass>;
   };
   personalBest: { Typename: "personalBest"; Type: GetType<PersonalBest> };
+  userUserFollowLink: {
+    Typename: "userUserFollowLink";
+    Type: GetType<UserUserFollowLink>;
+  };
 };
 /**PaginatorInfo Type*/ export type PaginatorInfo = {
   /**The typename of the record*/ __typename: {
@@ -415,6 +432,15 @@ export type PersonalBestEdge = Edge<PersonalBest>;
   };
   paginatorInfo: { Type: PaginatorInfo; Args: undefined };
   edges: { Type: PersonalBestEdge[]; Args: undefined };
+};
+export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
+/**Paginator*/ export type UserUserFollowLinkPaginator = {
+  /**The typename of the record*/ __typename: {
+    Type: Scalars["string"];
+    Args: [Scalars["number"]];
+  };
+  paginatorInfo: { Type: PaginatorInfo; Args: undefined };
+  edges: { Type: UserUserFollowLinkEdge[]; Args: undefined };
 };
 /**EnumPaginator*/ export type UserRoleEnumPaginator = {
   /**The typename of the record*/ __typename: {
@@ -562,6 +588,24 @@ export type PersonalBestEdge = Edge<PersonalBest>;
   };
   created_by: { Type: User; Args: undefined };
 };
+/**Link type*/ export type UserUserFollowLink = {
+  /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
+  /**The typename of the record*/ __typename: {
+    Type: Scalars["string"];
+    Args: [Scalars["number"]];
+  };
+  user: { Type: User; Args: undefined };
+  target: { Type: User; Args: undefined };
+  /**When the record was created*/ created_at: {
+    Type: Scalars["unixTimestamp"];
+    Args: undefined;
+  };
+  /**When the record was last updated*/ updated_at: {
+    Type: Scalars["unixTimestamp"] | null;
+    Args: undefined;
+  };
+  created_by: { Type: User; Args: undefined };
+};
 /**All Root resolvers*/ export type Root = {
   getUserRoleEnumPaginator: { Type: UserRoleEnumPaginator; Args: undefined };
   getScoreMethodEnumPaginator: {
@@ -628,5 +672,13 @@ export type PersonalBestEdge = Edge<PersonalBest>;
   getRepositoryLatestVersion: {
     Type: Scalars["unknown"] | null;
     Args: undefined;
+  };
+  deleteUserUserFollowLink: {
+    Type: UserUserFollowLink;
+    Args: InputTypes["userUserFollowLink"];
+  };
+  createUserUserFollowLink: {
+    Type: UserUserFollowLink;
+    Args: InputTypes["createUserUserFollowLink"];
   };
 };

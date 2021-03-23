@@ -20,18 +20,14 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     name: generateStringField({ allowNull: false }),
     code: generateStringField({
       allowNull: false,
-      sqlDefinition: {
+      sqlOptions: {
         unique: true,
       },
     }),
-    /*     max_attempts: generateIntegerField({
-      allowNull: false,
-      defaultValue: 1,
-      typeDefOptions: { addable: true, updateable: false },
-    }), */
-    score_method: generateEnumField({
+    scoreMethod: generateEnumField({
       scalarDefinition: Scalars.scoreMethod,
       allowNull: false,
+      sqlOptions: { field: "score_method" },
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),

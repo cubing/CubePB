@@ -30,7 +30,6 @@ export class SimpleService extends BaseService {
       req,
       fieldPath,
       externalQuery: selectQuery,
-      sqlParams: {},
       data,
     });
 

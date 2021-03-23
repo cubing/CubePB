@@ -23,66 +23,75 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
   fields: {
     ...generateIdField(),
     ...generateTypenameField(PersonalBest),
-    pb_class: generateJoinableField({
+    pbClass: generateJoinableField({
       service: PersonalBestClass,
       allowNull: false,
-      sqlDefinition: {
+      sqlOptions: {
         unique: "compositeIndex",
+        field: "pb_class",
       },
     }),
     event: generateJoinableField({
       service: Event,
       allowNull: false,
-      sqlDefinition: {
+      sqlOptions: {
         unique: "compositeIndex",
       },
     }),
-    set_size: generateIntegerField({
+    setSize: generateIntegerField({
       allowNull: false,
-      sqlDefinition: {
+      sqlOptions: {
         unique: "compositeIndex",
+        field: "set_size",
       },
     }),
     score: generateIntegerField({
       allowNull: false,
       typeDefOptions: { addable: false, updateable: false },
     }),
-    attempts_succeeded: generateIntegerField({
+    attemptsSucceeded: generateIntegerField({
       allowNull: true,
       description: "The number of successful attempts",
+      sqlOptions: { field: "attempts_succeeded" },
     }),
-    attempts_total: generateIntegerField({
+    attemptsTotal: generateIntegerField({
       allowNull: true,
       description: "The total number of attempts",
+      sqlOptions: { field: "attempts_total" },
     }),
     product: generateJoinableField({
       service: Product,
       allowNull: true,
     }),
-    happened_on: generateUnixTimestampField({
+    happenedOn: generateUnixTimestampField({
       allowNull: false,
+      sqlOptions: { field: "happened_on" },
     }),
-    time_elapsed: generateIntegerField({
+    timeElapsed: generateIntegerField({
       allowNull: true,
       description: "The amount of ms time elapsed for the pb attempt",
+      sqlOptions: { field: "time_elapsed" },
     }),
-    moves_count: generateIntegerField({
+    movesCount: generateIntegerField({
       allowNull: true,
       description: "The amount of moves used in the pb attempt",
+      sqlOptions: { field: "moves_count" },
     }),
-    is_current: generateBooleanField({
+    isCurrent: generateBooleanField({
       allowNull: false,
       typeDefOptions: { addable: false, updateable: false },
+      sqlOptions: { field: "is_current" },
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),
     // ...generateCreatedByField(User),
-    created_by: generateJoinableField({
+    createdBy: generateJoinableField({
       service: User,
       allowNull: false,
       typeDefOptions: { addable: false, updateable: false },
-      sqlDefinition: {
+      sqlOptions: {
         unique: "compositeIndex",
+        field: "created_by",
       },
     }),
   },

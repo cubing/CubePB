@@ -19,9 +19,10 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     ...generateTypenameField(PersonalBestClass),
     name: generateStringField({ allowNull: false }),
     description: generateTextField({ allowNull: true }),
-    set_size: generateIntegerField({
+    setSize: generateIntegerField({
       allowNull: true,
       typeDefOptions: { addable: true, updateable: false },
+      sqlOptions: { field: "set_size" },
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),

@@ -44,7 +44,7 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       resolver: () =>
         Math.floor(Date.now() / 1000) + jwtExpirationDays * 24 * 60 * 60,
     },
-    expiration_days: {
+    expirationDays: {
       type: Scalars.number,
       isArray: false,
       allowNull: false,

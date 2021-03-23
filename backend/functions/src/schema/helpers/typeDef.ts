@@ -17,15 +17,11 @@ import {
 } from "jomql";
 import { knex } from "../../utils/knex";
 import * as Resolver from "./resolver";
-import { deepAssign, isObject, capitalizeString } from "./shared";
+import { deepAssign, isObject, snakeToCamel } from "./shared";
 import { BaseService, NormalService, PaginatedService } from "../core/services";
 import { linkDefs } from "../links";
 import * as Scalars from "../scalars";
-import type {
-  ObjectTypeDefSqlOptions,
-  SqlDefinition,
-  SqlType,
-} from "../../types";
+import type { ObjectTypeDefSqlOptions, SqlType } from "../../types";
 
 type GenerateFieldParams = {
   name?: string;
@@ -34,7 +30,6 @@ type GenerateFieldParams = {
   hidden?: boolean;
   nestHidden?: boolean;
   defaultValue?: unknown;
-  sqlDefinition?: Partial<SqlDefinition>;
   sqlOptions?: Partial<ObjectTypeDefSqlOptions>;
   typeDefOptions?: Partial<ObjectTypeDefinitionField>;
 };
@@ -52,7 +47,6 @@ export function generateStandardField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull,
     arrayOptions,
@@ -61,10 +55,10 @@ export function generateStandardField(
     defaultValue,
     sqlType,
     type,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
+
   const typeDef = <ObjectTypeDefinitionField>{
     type,
     description,
@@ -73,11 +67,8 @@ export function generateStandardField(
     required: defaultValue === undefined && !allowNull,
     sqlOptions: sqlType
       ? {
-          sqlDefinition: {
-            type: sqlType,
-            ...(defaultValue !== undefined && { defaultValue: defaultValue }),
-            ...sqlDefinition,
-          },
+          type: sqlType,
+          ...(defaultValue !== undefined && { defaultValue: defaultValue }),
           ...sqlOptions,
         }
       : undefined,
@@ -87,11 +78,7 @@ export function generateStandardField(
     updateable: true,
     ...typeDefOptions,
   };
-  return name
-    ? {
-        [name]: typeDef,
-      }
-    : typeDef;
+  return typeDef;
 }
 
 // NOT a sql field.
@@ -102,7 +89,6 @@ export function generateGenericScalarField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull = true,
     arrayOptions,
@@ -110,12 +96,10 @@ export function generateGenericScalarField(
     hidden,
     nestHidden,
     type,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     arrayOptions,
@@ -123,7 +107,6 @@ export function generateGenericScalarField(
     hidden,
     nestHidden,
     type: type ?? Scalars.string,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -135,19 +118,16 @@ export function generateStringField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
     type,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
@@ -155,7 +135,6 @@ export function generateStringField(
     nestHidden,
     sqlType: "string",
     type: type ?? Scalars.string,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -168,19 +147,16 @@ export function generateUnixTimestampField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
     nowOnly,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
@@ -188,9 +164,9 @@ export function generateUnixTimestampField(
     nestHidden,
     sqlType: "dateTime",
     type: Scalars.unixTimestamp,
-    sqlDefinition,
     sqlOptions: {
-      getter: (field) => "extract(epoch from " + field + ")",
+      getter: (tableAlias, field) =>
+        `extract(epoch from "${tableAlias}".${field})`,
       parseValue: nowOnly
         ? () => knex.fn.now()
         : (value: unknown) => {
@@ -206,18 +182,15 @@ export function generateUnixTimestampField(
 
 export function generateDateField(params: GenerateFieldParams) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
@@ -225,7 +198,6 @@ export function generateDateField(params: GenerateFieldParams) {
     nestHidden,
     sqlType: "date",
     type: Scalars.date,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -233,24 +205,20 @@ export function generateDateField(params: GenerateFieldParams) {
 
 export function generateTextField(params: GenerateFieldParams) {
   const {
-    name,
     description,
     allowNull = true,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull: allowNull,
     hidden,
     nestHidden,
     sqlType: "text",
     type: Scalars.string,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -258,18 +226,15 @@ export function generateTextField(params: GenerateFieldParams) {
 
 export function generateIntegerField(params: GenerateFieldParams) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
@@ -277,7 +242,6 @@ export function generateIntegerField(params: GenerateFieldParams) {
     nestHidden,
     sqlType: "integer",
     type: Scalars.number,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -285,18 +249,15 @@ export function generateIntegerField(params: GenerateFieldParams) {
 
 export function generateFloatField(params: GenerateFieldParams) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
@@ -304,7 +265,6 @@ export function generateFloatField(params: GenerateFieldParams) {
     nestHidden,
     sqlType: "float",
     type: Scalars.number,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -312,18 +272,15 @@ export function generateFloatField(params: GenerateFieldParams) {
 
 export function generateDecimalField(params: GenerateFieldParams) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
@@ -331,7 +288,6 @@ export function generateDecimalField(params: GenerateFieldParams) {
     nestHidden,
     sqlType: "decimal",
     type: Scalars.number,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -339,18 +295,15 @@ export function generateDecimalField(params: GenerateFieldParams) {
 
 export function generateBooleanField(params: GenerateFieldParams) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
@@ -358,7 +311,6 @@ export function generateBooleanField(params: GenerateFieldParams) {
     nestHidden,
     sqlType: "boolean",
     type: Scalars.boolean,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -372,19 +324,16 @@ export function generateArrayField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull = true,
     allowNullElement = false,
     hidden,
     nestHidden,
     type,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     arrayOptions: {
       allowNullElement,
@@ -394,7 +343,6 @@ export function generateArrayField(
     nestHidden,
     sqlType: "json",
     type,
-    sqlDefinition,
     sqlOptions: {
       // necessary for inserting JSON into DB properly
       parseValue: (val) => JSON.stringify(val),
@@ -409,24 +357,20 @@ export function generateArrayField(
 // generic JSON field, stored as JSON, but input/output as stringified JSON
 export function generateJSONField(params: GenerateFieldParams) {
   const {
-    name,
     description,
     allowNull = true,
     hidden,
     nestHidden,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     hidden,
     nestHidden,
     sqlType: "json",
     type: Scalars.jsonString,
-    sqlDefinition,
     sqlOptions: {
       // necessary for inserting JSON into DB properly -- already stringified
       // parseValue: (val) => JSON.stringify(val),
@@ -446,14 +390,12 @@ export function generateEnumField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     nestHidden,
     scalarDefinition,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
     isKenum = false,
@@ -462,7 +404,6 @@ export function generateEnumField(
   // if scalarDefinition.parseValue, run that on defaultValue
 
   return generateStandardField({
-    name,
     description,
     allowNull: allowNull,
     defaultValue:
@@ -473,7 +414,6 @@ export function generateEnumField(
     nestHidden,
     sqlType: isKenum ? "integer" : "string",
     type: scalarDefinition,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   });
@@ -539,63 +479,72 @@ export function generateKeyValueArray(
  */
 
 export function generateCreatedAtField() {
-  return generateUnixTimestampField({
-    name: "created_at",
-    description: "When the record was created",
-    allowNull: false,
-    defaultValue: knex.fn.now(),
-    typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
-  });
+  return {
+    createdAt: generateUnixTimestampField({
+      description: "When the record was created",
+      allowNull: false,
+      defaultValue: knex.fn.now(),
+      sqlOptions: { field: "created_at" },
+      typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
+    }),
+  };
 }
 
 export function generateUpdatedAtField() {
-  return generateUnixTimestampField({
-    name: "updated_at",
-    description: "When the record was last updated",
-    allowNull: true,
-    typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
-    nowOnly: true,
-  });
+  return {
+    updatedAt: generateUnixTimestampField({
+      description: "When the record was last updated",
+      allowNull: true,
+      sqlOptions: { field: "updated_at" },
+      typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
+      nowOnly: true,
+    }),
+  };
 }
 
 export function generateIdField() {
-  return generateStandardField({
-    name: "id",
-    description: "The unique ID of the field",
-    allowNull: false,
-    sqlType: "integer",
-    type: Scalars.id,
-    sqlDefinition: undefined, // not in sql
-    typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
-  });
+  return {
+    id: generateStandardField({
+      description: "The unique ID of the field",
+      allowNull: false,
+      sqlType: "integer",
+      type: Scalars.id,
+      typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
+    }),
+  };
 }
 
 export function generateTypenameField(service: BaseService) {
-  return generateGenericScalarField({
-    name: "__typename",
-    description: "The typename of the record",
-    allowNull: false,
-    type: Scalars.string,
-    typeDefOptions: {
-      resolver: () => service.typename,
-      args: new JomqlInputFieldType({
-        required: false,
-        allowNull: false,
-        type: Scalars.number,
-      }),
-      addable: false,
-      updateable: false, // not addable or updateable
-    },
-  });
+  return {
+    __typename: generateGenericScalarField({
+      description: "The typename of the record",
+      allowNull: false,
+      type: Scalars.string,
+      typeDefOptions: {
+        resolver: () => service.typename,
+        args: new JomqlInputFieldType({
+          required: false,
+          allowNull: false,
+          type: Scalars.number,
+        }),
+        addable: false,
+        updateable: false, // not addable or updateable
+      },
+    }),
+  };
 }
 
 export function generateCreatedByField(service: NormalService) {
-  return generateJoinableField({
-    name: "created_by",
-    allowNull: false,
-    service,
-    typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
-  });
+  return {
+    createdBy: generateJoinableField({
+      allowNull: false,
+      service,
+      sqlOptions: {
+        field: "created_by",
+      },
+      typeDefOptions: { addable: false, updateable: false }, // not addable or updateable
+    }),
+  };
 }
 
 export function generateJoinableField(
@@ -604,30 +553,24 @@ export function generateJoinableField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     sqlOptions,
-    sqlDefinition,
     typeDefOptions,
     service,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
     hidden,
     sqlType: "integer",
     type: service.typeDefLookup,
-    sqlDefinition,
     typeDefOptions,
     sqlOptions: {
-      joinInfo: {
-        type: service.typename,
-      },
+      joinType: service.typename,
       ...sqlOptions,
     },
   });
@@ -640,25 +583,21 @@ export function generateDataloadableField(
   } & GenerateFieldParams
 ) {
   const {
-    name,
     description,
     allowNull = true,
     defaultValue,
     hidden,
     service,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions,
   } = params;
   return generateStandardField({
-    name,
     description,
     allowNull,
     defaultValue,
     hidden,
     sqlType: "integer",
     type: service.typeDefLookup,
-    sqlDefinition,
     sqlOptions,
     typeDefOptions: {
       defer: true,

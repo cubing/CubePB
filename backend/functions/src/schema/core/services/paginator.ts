@@ -55,7 +55,6 @@ export class PaginatorService extends SimpleService {
         req,
         fieldPath,
         externalQuery: selectQuery,
-        sqlParams: {},
         data: paginatorData,
       });
 

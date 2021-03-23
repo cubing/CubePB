@@ -91,13 +91,16 @@ export class AuthService extends SimpleService {
 
       // set created_by to id
       await sqlHelper.updateTableRow(
-        User.typename,
         {
-          created_by: addResults.id,
+          table: User.typename,
+          fields: {
+            created_by: addResults.id,
+          },
+          where: {
+            fields: [{ field: "id", value: addResults.id }],
+          },
         },
-        {
-          fields: [{ field: "id", value: addResults.id }],
-        }
+        fieldPath
       );
 
       userInfo = {
@@ -107,17 +110,20 @@ export class AuthService extends SimpleService {
     } else {
       // if found, force update wca_id, email, name, avatar, country fields
       await sqlHelper.updateTableRow(
-        User.typename,
         {
-          wca_id: wcaData.me.wca_id,
-          email: wcaData.me.email,
-          name: wcaData.me.name,
-          avatar: wcaData.me.avatar.thumb_url,
-          country: wcaData.me.country_iso2,
+          table: User.typename,
+          fields: {
+            wca_id: wcaData.me.wca_id,
+            email: wcaData.me.email,
+            name: wcaData.me.name,
+            avatar: wcaData.me.avatar.thumb_url,
+            country: wcaData.me.country_iso2,
+          },
+          where: {
+            fields: [{ field: "id", value: userResults[0].id }],
+          },
         },
-        {
-          fields: [{ field: "id", value: userResults[0].id }],
-        }
+        fieldPath
       );
 
       userInfo = {

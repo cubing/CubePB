@@ -5,9 +5,7 @@ export class ProductService extends PaginatedService {
 
   filterFieldsMap = {
     id: {},
-    created_by: {
-      field: "created_by.id",
-    },
+    "createdBy.id": {},
   };
 
   uniqueKeyMap = {

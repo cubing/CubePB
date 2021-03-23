@@ -11,20 +11,17 @@ import {
 } from "jomql";
 
 import {
-  InsertTableRowOptions,
   insertTableRow,
   updateTableRow,
-  removeTableRow,
+  deleteTableRow,
   fetchTableRows,
   countTableRows,
-} from "./sql";
-import {
-  SqlQuerySelectObject,
+  KnexExtendFunction,
+  SqlSelectQuery,
+  SqlSelectQueryObject,
   SqlWhereObject,
-  SqlParams,
-  SqlSelectQueryOutput,
-  CustomResolverFunction,
-} from "../../types";
+} from "./sql";
+import { CustomResolverFunction } from "../../types";
 
 import { isObject } from "../helpers/shared";
 import type { Request } from "express";
@@ -38,9 +35,11 @@ type CustomResolverMap = {
   [x: string]: CustomResolver;
 };
 
-function collapseSqlOutput(
-  obj: SqlSelectQueryOutput
-): SqlSelectQueryOutput | null {
+type SqlSelectQueryOutput = {
+  [x: string]: any;
+};
+
+function collapseSqlOutput(obj: SqlSelectQueryOutput): SqlSelectQueryOutput {
   const returnObject = {};
   const nestedFieldsSet: Set<string> = new Set();
 
@@ -89,13 +88,13 @@ export async function createObjectType({
   req,
   fieldPath,
   addFields,
-  options,
+  extendFn,
 }: {
   typename: string;
   req: Request;
   fieldPath: string[];
   addFields: { [x: string]: unknown };
-  options?: InsertTableRowOptions;
+  extendFn?: KnexExtendFunction;
 }): Promise<any> {
   const typeDef = objectTypeDefs.get(typename);
   if (!typeDef) {
@@ -139,10 +138,12 @@ export async function createObjectType({
   // do the sql fields first, if any
   if (Object.keys(sqlFields).length > 0) {
     addedResults = await insertTableRow(
-      typename,
-      sqlFields,
-      fieldPath,
-      options
+      {
+        table: typename,
+        fields: sqlFields,
+        extendFn,
+      },
+      fieldPath
     );
   }
 
@@ -215,9 +216,11 @@ export async function updateObjectType({
   // do the sql first, if any fields
   if (Object.keys(sqlFields).length > 0) {
     await updateTableRow(
-      typename,
-      sqlFields,
-      { fields: [{ field: "id", value: id }] },
+      {
+        table: typename,
+        fields: sqlFields,
+        where: { fields: [{ field: "id", value: id }] },
+      },
       fieldPath
     );
   }
@@ -281,9 +284,11 @@ export async function deleteObjectType({
 
   // do the sql first
   if (hasSqlFields)
-    await removeTableRow(
-      typename,
-      { fields: [{ field: "id", value: id }] },
+    await deleteTableRow(
+      {
+        table: typename,
+        where: { fields: [{ field: "id", value: id }] },
+      },
       fieldPath
     );
 
@@ -305,14 +310,16 @@ export async function getObjectType({
   fieldPath,
   externalQuery,
   sqlParams,
+  rawSelect = [],
   data = {},
   externalTypeDef,
 }: {
   typename: string;
-  req;
+  req: Request;
   fieldPath: string[];
   externalQuery: unknown;
-  sqlParams: SqlParams;
+  sqlParams?: Omit<SqlSelectQuery, "from" | "select">;
+  rawSelect?: SqlSelectQueryObject[];
   data?: any;
   externalTypeDef?: JomqlObjectType;
 }): Promise<unknown[]> {
@@ -346,15 +353,27 @@ export async function getObjectType({
     fieldPath,
   });
 
-  const sqlQuery = {
-    select: validatedSqlSelectArray,
-    from: typename,
-    ...sqlParams,
-  };
+  let jomqlResultsTreeArray: SqlSelectQueryOutput[];
 
-  const jomqlResultsTreeArray: SqlSelectQueryOutput[] = collapseSqlOutputArray(
-    await fetchTableRows(sqlQuery, fieldPath)
-  );
+  // if no sql fields, skip
+  if (validatedSqlSelectArray.length < 1) {
+    jomqlResultsTreeArray = [{}];
+  } else {
+    if (!sqlParams)
+      throw new JomqlBaseError({
+        message: `SQL Params required`,
+        fieldPath,
+      });
+    const sqlQuery = {
+      select: validatedSqlSelectArray.concat(rawSelect),
+      from: typename,
+      ...sqlParams,
+    };
+
+    jomqlResultsTreeArray = collapseSqlOutputArray(
+      await fetchTableRows(sqlQuery, fieldPath)
+    );
+  }
 
   // finish processing jomqlResolverNode by running the resolvers on the data fetched thru sql.
   const processedResultsTree = await Promise.all(
@@ -389,7 +408,14 @@ export function countObjectType(
   whereObject: SqlWhereObject,
   distinct?: boolean
 ): Promise<number> {
-  return countTableRows(typename, whereObject, distinct, fieldPath);
+  return countTableRows(
+    {
+      from: typename,
+      where: whereObject,
+      distinct,
+    },
+    fieldPath
+  );
 }
 
 function generateSqlQuerySelectObject({
@@ -401,7 +427,9 @@ function generateSqlQuerySelectObject({
   parentFields?: string[];
   fieldPath: string[];
 }) {
-  const sqlSelectObjectArray: SqlQuerySelectObject[] = [];
+  const sqlSelectObjectArray: {
+    field: string;
+  }[] = [];
 
   let addIdField = true;
   for (const field in nestedResolverNodeMap) {
@@ -420,7 +448,7 @@ function generateSqlQuerySelectObject({
         nested &&
         !typeDef.resolver &&
         !typeDef.dataloader &&
-        sqlOptions.joinInfo
+        sqlOptions.joinType
       ) {
         sqlSelectObjectArray.push(
           ...generateSqlQuerySelectObject({
@@ -439,16 +467,9 @@ function generateSqlQuerySelectObject({
         } else {
           if (field === "id") addIdField = false;
 
-          if (sqlOptions.fieldInfo?.field) {
-            sqlSelectObjectArray.push({
-              field: parentFields.concat(sqlOptions.fieldInfo.field).join("."),
-              as: parentPlusCurrentField.join("."),
-            });
-          } else {
-            sqlSelectObjectArray.push({
-              field: parentPlusCurrentField.join("."),
-            });
-          }
+          sqlSelectObjectArray.push({
+            field: parentPlusCurrentField.join("."),
+          });
         }
       }
     } else {

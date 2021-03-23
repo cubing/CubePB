@@ -5,9 +5,7 @@ export class PersonalBestClassService extends PaginatedService {
 
   filterFieldsMap = {
     id: {},
-    created_by: {
-      field: "created_by.id",
-    },
+    "createdBy.id": {},
   };
 
   uniqueKeyMap = {
