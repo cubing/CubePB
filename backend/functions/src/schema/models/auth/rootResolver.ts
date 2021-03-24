@@ -28,7 +28,7 @@ export default {
             type: Scalars.string,
             required: true,
           }),
-          redirect_uri: new JomqlInputFieldType({
+          redirectUri: new JomqlInputFieldType({
             type: Scalars.string,
             required: true,
           }),

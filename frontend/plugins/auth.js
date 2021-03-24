@@ -14,7 +14,7 @@ export default (context) => {
           role: true,
           avatar: true,
           permissions: true,
-          all_permissions: true,
+          allPermissions: true,
         },
       })
         .then((data) => {

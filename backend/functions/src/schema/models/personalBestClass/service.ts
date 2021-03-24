@@ -14,7 +14,7 @@ export class PersonalBestClassService extends PaginatedService {
 
   sortFieldsMap = {
     id: {},
-    created_at: {},
+    createdAt: {},
   };
 
   searchFieldsMap = {

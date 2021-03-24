@@ -21,7 +21,7 @@ export default {
       recordInfo: PublicUsers,
       lockedFilters: [
         {
-          field: 'is_public',
+          field: 'isPublic',
           operator: 'eq',
           value: true,
         },

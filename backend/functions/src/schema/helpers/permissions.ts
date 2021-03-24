@@ -23,12 +23,12 @@ export function generateItemCreatedByUserGuard(
 
     try {
       const itemRecord = await service.lookupRecord(
-        [{ field: "created_by" }],
+        [{ field: "createdBy" }],
         validatedArgs.item ?? validatedArgs,
         fieldPath
       );
 
-      return itemRecord?.created_by === req.user.id;
+      return itemRecord?.createdBy === req.user.id;
     } catch (err) {
       return false;
     }

@@ -99,41 +99,43 @@ export type FilterByField<T> = {
     | "personalBest_create"
     | "product_create";
   /**Enum stored as is*/ scoreMethod: "STANDARD" | "FMC" | "MBLD";
-  userSortByKey: "id" | "created_at" | "updated_at";
+  userSortByKey: "id" | "createdAt" | "updatedAt";
   userGroupByKey: undefined;
-  eventSortByKey: "id" | "created_at";
+  eventSortByKey: "id" | "createdAt";
   eventGroupByKey: undefined;
-  productSortByKey: "id" | "created_at";
+  productSortByKey: "id" | "createdAt";
   productGroupByKey: undefined;
-  personalBestClassSortByKey: "id" | "created_at";
+  personalBestClassSortByKey: "id" | "createdAt";
   personalBestClassGroupByKey: undefined;
   personalBestSortByKey:
     | "id"
-    | "created_at"
+    | "createdAt"
     | "score"
     | "event.name"
-    | "pb_class.name"
-    | "set_size"
-    | "time_elapsed"
-    | "happened_on"
-    | "is_current";
+    | "pbClass.name"
+    | "setSize"
+    | "timeElapsed"
+    | "happenedOn"
+    | "isCurrent";
   personalBestGroupByKey: undefined;
+  userUserFollowLinkSortByKey: "createdAt";
+  userUserFollowLinkGroupByKey: undefined;
 };
 /**All Input types*/ export type InputTypes = {
   user: { id?: Scalars["id"] };
   "userFilterByField/id": FilterByField<Scalars["id"]>;
-  "userFilterByField/created_by.id": FilterByField<Scalars["id"]>;
-  "userFilterByField/created_by.name": FilterByField<Scalars["string"]>;
+  "userFilterByField/createdBy.id": FilterByField<Scalars["id"]>;
+  "userFilterByField/createdBy.name": FilterByField<Scalars["string"]>;
   "userFilterByField/role": FilterByField<Scalars["userRole"]>;
   "userFilterByField/name": FilterByField<Scalars["string"]>;
-  "userFilterByField/is_public": FilterByField<Scalars["boolean"]>;
+  "userFilterByField/isPublic": FilterByField<Scalars["boolean"]>;
   userFilterByObject: {
     id?: InputTypes["userFilterByField/id"];
-    "created_by.id"?: InputTypes["userFilterByField/created_by.id"];
-    "created_by.name"?: InputTypes["userFilterByField/created_by.name"];
+    "createdBy.id"?: InputTypes["userFilterByField/createdBy.id"];
+    "createdBy.name"?: InputTypes["userFilterByField/createdBy.name"];
     role?: InputTypes["userFilterByField/role"];
     name?: InputTypes["userFilterByField/name"];
-    is_public?: InputTypes["userFilterByField/is_public"];
+    isPublic?: InputTypes["userFilterByField/isPublic"];
   };
   userPaginator: {
     first?: Scalars["number"];
@@ -148,13 +150,13 @@ export type FilterByField<T> = {
   };
   createUser: {
     provider: Scalars["string"];
-    provider_id: Scalars["string"];
-    wca_id?: Scalars["string"] | null;
+    providerId: Scalars["string"];
+    wcaId?: Scalars["string"] | null;
     email: Scalars["string"];
     name: Scalars["string"];
     avatar?: Scalars["string"] | null;
     country?: Scalars["string"] | null;
-    is_public?: Scalars["boolean"];
+    isPublic?: Scalars["boolean"];
     role?: Scalars["userRole"];
     permissions?: Scalars["userPermission"][] | null;
   };
@@ -163,7 +165,7 @@ export type FilterByField<T> = {
     name?: Scalars["string"];
     avatar?: Scalars["string"] | null;
     country?: Scalars["string"] | null;
-    is_public?: Scalars["boolean"];
+    isPublic?: Scalars["boolean"];
     role?: Scalars["userRole"];
     permissions?: Scalars["userPermission"][] | null;
   };
@@ -178,11 +180,11 @@ export type FilterByField<T> = {
   };
   event: { id?: Scalars["id"]; code?: Scalars["string"] };
   "eventFilterByField/id": FilterByField<Scalars["id"]>;
-  "eventFilterByField/created_by": FilterByField<Scalars["id"]>;
+  "eventFilterByField/createdBy.id": FilterByField<Scalars["id"]>;
   "eventFilterByField/code": FilterByField<Scalars["string"]>;
   eventFilterByObject: {
     id?: InputTypes["eventFilterByField/id"];
-    created_by?: InputTypes["eventFilterByField/created_by"];
+    "createdBy.id"?: InputTypes["eventFilterByField/createdBy.id"];
     code?: InputTypes["eventFilterByField/code"];
   };
   eventPaginator: {
@@ -199,12 +201,12 @@ export type FilterByField<T> = {
   createEvent: {
     name: Scalars["string"];
     code: Scalars["string"];
-    score_method: Scalars["scoreMethod"];
+    scoreMethod: Scalars["scoreMethod"];
   };
   updateEventFields: {
     name?: Scalars["string"];
     code?: Scalars["string"];
-    score_method?: Scalars["scoreMethod"];
+    scoreMethod?: Scalars["scoreMethod"];
   };
   updateEvent: {
     item: InputTypes["event"];
@@ -212,10 +214,10 @@ export type FilterByField<T> = {
   };
   product: { id?: Scalars["id"] };
   "productFilterByField/id": FilterByField<Scalars["id"]>;
-  "productFilterByField/created_by": FilterByField<Scalars["id"]>;
+  "productFilterByField/createdBy.id": FilterByField<Scalars["id"]>;
   productFilterByObject: {
     id?: InputTypes["productFilterByField/id"];
-    created_by?: InputTypes["productFilterByField/created_by"];
+    "createdBy.id"?: InputTypes["productFilterByField/createdBy.id"];
   };
   productPaginator: {
     first?: Scalars["number"];
@@ -236,10 +238,10 @@ export type FilterByField<T> = {
   };
   personalBestClass: { id?: Scalars["id"] };
   "personalBestClassFilterByField/id": FilterByField<Scalars["id"]>;
-  "personalBestClassFilterByField/created_by": FilterByField<Scalars["id"]>;
+  "personalBestClassFilterByField/createdBy.id": FilterByField<Scalars["id"]>;
   personalBestClassFilterByObject: {
     id?: InputTypes["personalBestClassFilterByField/id"];
-    created_by?: InputTypes["personalBestClassFilterByField/created_by"];
+    "createdBy.id"?: InputTypes["personalBestClassFilterByField/createdBy.id"];
   };
   personalBestClassPaginator: {
     first?: Scalars["number"];
@@ -255,7 +257,7 @@ export type FilterByField<T> = {
   createPersonalBestClass: {
     name: Scalars["string"];
     description?: Scalars["string"] | null;
-    set_size?: Scalars["number"] | null;
+    setSize?: Scalars["number"] | null;
   };
   updatePersonalBestClassFields: {
     name?: Scalars["string"];
@@ -267,28 +269,28 @@ export type FilterByField<T> = {
   };
   personalBest: { id?: Scalars["id"] };
   "personalBestFilterByField/id": FilterByField<Scalars["id"]>;
-  "personalBestFilterByField/created_by.id": FilterByField<Scalars["id"]>;
-  "personalBestFilterByField/created_by.is_public": FilterByField<
+  "personalBestFilterByField/createdBy.id": FilterByField<Scalars["id"]>;
+  "personalBestFilterByField/createdBy.isPublic": FilterByField<
     Scalars["boolean"]
   >;
   "personalBestFilterByField/product.id": FilterByField<Scalars["id"]>;
   "personalBestFilterByField/event.id": FilterByField<Scalars["id"]>;
-  "personalBestFilterByField/pb_class.id": FilterByField<Scalars["id"]>;
-  "personalBestFilterByField/happened_on": FilterByField<
+  "personalBestFilterByField/pbClass.id": FilterByField<Scalars["id"]>;
+  "personalBestFilterByField/happenedOn": FilterByField<
     Scalars["unixTimestamp"]
   >;
-  "personalBestFilterByField/is_current": FilterByField<Scalars["boolean"]>;
-  "personalBestFilterByField/set_size": FilterByField<Scalars["number"]>;
+  "personalBestFilterByField/isCurrent": FilterByField<Scalars["boolean"]>;
+  "personalBestFilterByField/setSize": FilterByField<Scalars["number"]>;
   personalBestFilterByObject: {
     id?: InputTypes["personalBestFilterByField/id"];
-    "created_by.id"?: InputTypes["personalBestFilterByField/created_by.id"];
-    "created_by.is_public"?: InputTypes["personalBestFilterByField/created_by.is_public"];
+    "createdBy.id"?: InputTypes["personalBestFilterByField/createdBy.id"];
+    "createdBy.isPublic"?: InputTypes["personalBestFilterByField/createdBy.isPublic"];
     "product.id"?: InputTypes["personalBestFilterByField/product.id"];
     "event.id"?: InputTypes["personalBestFilterByField/event.id"];
-    "pb_class.id"?: InputTypes["personalBestFilterByField/pb_class.id"];
-    happened_on?: InputTypes["personalBestFilterByField/happened_on"];
-    is_current?: InputTypes["personalBestFilterByField/is_current"];
-    set_size?: InputTypes["personalBestFilterByField/set_size"];
+    "pbClass.id"?: InputTypes["personalBestFilterByField/pbClass.id"];
+    happenedOn?: InputTypes["personalBestFilterByField/happenedOn"];
+    isCurrent?: InputTypes["personalBestFilterByField/isCurrent"];
+    setSize?: InputTypes["personalBestFilterByField/setSize"];
   };
   personalBestPaginator: {
     first?: Scalars["number"];
@@ -302,18 +304,34 @@ export type FilterByField<T> = {
     search?: Scalars["string"];
   };
   createPersonalBest: {
-    pb_class: InputTypes["personalBestClass"];
+    pbClass: InputTypes["personalBestClass"];
     event: InputTypes["event"];
-    set_size: Scalars["number"];
-    attempts_succeeded?: Scalars["number"] | null;
-    attempts_total?: Scalars["number"] | null;
+    setSize: Scalars["number"];
+    attemptsSucceeded?: Scalars["number"] | null;
+    attemptsTotal?: Scalars["number"] | null;
     product?: InputTypes["product"] | null;
-    happened_on: Scalars["unixTimestamp"];
-    time_elapsed?: Scalars["number"] | null;
-    moves_count?: Scalars["number"] | null;
+    happenedOn: Scalars["unixTimestamp"];
+    timeElapsed?: Scalars["number"] | null;
+    movesCount?: Scalars["number"] | null;
   };
   /**Input object for getRepositoryReleases*/ getRepositoryReleases: {
     first: Scalars["number"];
+  };
+  "userUserFollowLinkFilterByField/user.id": FilterByField<Scalars["id"]>;
+  "userUserFollowLinkFilterByField/target.id": FilterByField<Scalars["id"]>;
+  userUserFollowLinkFilterByObject: {
+    "user.id"?: InputTypes["userUserFollowLinkFilterByField/user.id"];
+    "target.id"?: InputTypes["userUserFollowLinkFilterByField/target.id"];
+  };
+  userUserFollowLinkPaginator: {
+    first?: Scalars["number"];
+    last?: Scalars["number"];
+    after?: Scalars["string"];
+    before?: Scalars["string"];
+    sortBy?: Scalars["userUserFollowLinkSortByKey"][];
+    sortDesc?: Scalars["boolean"][];
+    filterBy?: InputTypes["userUserFollowLinkFilterByObject"][];
+    groupBy?: Scalars["userUserFollowLinkGroupByKey"][];
   };
   userUserFollowLink: { id?: Scalars["id"] };
   createUserUserFollowLink: {
@@ -356,6 +374,10 @@ export type FilterByField<T> = {
     Typename: "userUserFollowLinkPaginator";
     Type: GetType<UserUserFollowLinkPaginator>;
   };
+  userUserFollowLink: {
+    Typename: "userUserFollowLink";
+    Type: GetType<UserUserFollowLink>;
+  };
   userRoleEnumPaginator: {
     Typename: "userRoleEnumPaginator";
     Type: GetType<UserRoleEnumPaginator>;
@@ -373,10 +395,6 @@ export type FilterByField<T> = {
     Type: GetType<PersonalBestClass>;
   };
   personalBest: { Typename: "personalBest"; Type: GetType<PersonalBest> };
-  userUserFollowLink: {
-    Typename: "userUserFollowLink";
-    Type: GetType<UserUserFollowLink>;
-  };
 };
 /**PaginatorInfo Type*/ export type PaginatorInfo = {
   /**The typename of the record*/ __typename: {
@@ -442,6 +460,24 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   paginatorInfo: { Type: PaginatorInfo; Args: undefined };
   edges: { Type: UserUserFollowLinkEdge[]; Args: undefined };
 };
+/**Link type*/ export type UserUserFollowLink = {
+  /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
+  /**The typename of the record*/ __typename: {
+    Type: Scalars["string"];
+    Args: [Scalars["number"]];
+  };
+  user: { Type: User; Args: undefined };
+  target: { Type: User; Args: undefined };
+  /**When the record was created*/ createdAt: {
+    Type: Scalars["unixTimestamp"];
+    Args: undefined;
+  };
+  /**When the record was last updated*/ updatedAt: {
+    Type: Scalars["unixTimestamp"] | null;
+    Args: undefined;
+  };
+  createdBy: { Type: User; Args: undefined };
+};
 /**EnumPaginator*/ export type UserRoleEnumPaginator = {
   /**The typename of the record*/ __typename: {
     Type: Scalars["string"];
@@ -463,25 +499,26 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Args: [Scalars["number"]];
   };
   provider: { Type: never; Args: undefined };
-  provider_id: { Type: never; Args: undefined };
-  wca_id: { Type: Scalars["string"] | null; Args: undefined };
+  providerId: { Type: never; Args: undefined };
+  wcaId: { Type: Scalars["string"] | null; Args: undefined };
   email: { Type: Scalars["string"]; Args: undefined };
   name: { Type: Scalars["string"]; Args: undefined };
   avatar: { Type: Scalars["string"] | null; Args: undefined };
   country: { Type: Scalars["string"] | null; Args: undefined };
-  is_public: { Type: Scalars["boolean"]; Args: undefined };
+  isPublic: { Type: Scalars["boolean"]; Args: undefined };
   role: { Type: Scalars["userRole"]; Args: undefined };
   permissions: { Type: Scalars["userPermission"][] | null; Args: undefined };
-  all_permissions: { Type: Scalars["userPermission"][]; Args: undefined };
-  /**When the record was created*/ created_at: {
+  allPermissions: { Type: Scalars["userPermission"][]; Args: undefined };
+  currentUserFollowing: { Type: Scalars["id"] | null; Args: undefined };
+  /**When the record was created*/ createdAt: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
   };
-  /**When the record was last updated*/ updated_at: {
+  /**When the record was last updated*/ updatedAt: {
     Type: Scalars["unixTimestamp"] | null;
     Args: undefined;
   };
-  created_by: { Type: User; Args: undefined };
+  createdBy: { Type: User; Args: undefined };
 };
 /**Authentication type*/ export type Auth = {
   /**The typename of the record*/ __typename: {
@@ -491,7 +528,7 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   type: { Type: Scalars["string"]; Args: undefined };
   token: { Type: Scalars["string"]; Args: undefined };
   expiration: { Type: Scalars["number"]; Args: undefined };
-  expiration_days: { Type: Scalars["number"]; Args: undefined };
+  expirationDays: { Type: Scalars["number"]; Args: undefined };
   user: { Type: User; Args: undefined };
 };
 /**Event Type*/ export type Event = {
@@ -502,16 +539,16 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   };
   name: { Type: Scalars["string"]; Args: undefined };
   code: { Type: Scalars["string"]; Args: undefined };
-  score_method: { Type: Scalars["scoreMethod"]; Args: undefined };
-  /**When the record was created*/ created_at: {
+  scoreMethod: { Type: Scalars["scoreMethod"]; Args: undefined };
+  /**When the record was created*/ createdAt: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
   };
-  /**When the record was last updated*/ updated_at: {
+  /**When the record was last updated*/ updatedAt: {
     Type: Scalars["unixTimestamp"] | null;
     Args: undefined;
   };
-  created_by: { Type: User; Args: undefined };
+  createdBy: { Type: User; Args: undefined };
 };
 /**Product Type*/ export type Product = {
   /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
@@ -520,15 +557,15 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Args: [Scalars["number"]];
   };
   name: { Type: Scalars["string"]; Args: undefined };
-  /**When the record was created*/ created_at: {
+  /**When the record was created*/ createdAt: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
   };
-  /**When the record was last updated*/ updated_at: {
+  /**When the record was last updated*/ updatedAt: {
     Type: Scalars["unixTimestamp"] | null;
     Args: undefined;
   };
-  created_by: { Type: User; Args: undefined };
+  createdBy: { Type: User; Args: undefined };
 };
 /**Personal Best Type Type*/ export type PersonalBestClass = {
   /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
@@ -538,16 +575,16 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   };
   name: { Type: Scalars["string"]; Args: undefined };
   description: { Type: Scalars["string"] | null; Args: undefined };
-  set_size: { Type: Scalars["number"] | null; Args: undefined };
-  /**When the record was created*/ created_at: {
+  setSize: { Type: Scalars["number"] | null; Args: undefined };
+  /**When the record was created*/ createdAt: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
   };
-  /**When the record was last updated*/ updated_at: {
+  /**When the record was last updated*/ updatedAt: {
     Type: Scalars["unixTimestamp"] | null;
     Args: undefined;
   };
-  created_by: { Type: User; Args: undefined };
+  createdBy: { Type: User; Args: undefined };
 };
 /**Personal Best*/ export type PersonalBest = {
   /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
@@ -555,56 +592,38 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Type: Scalars["string"];
     Args: [Scalars["number"]];
   };
-  pb_class: { Type: PersonalBestClass; Args: undefined };
+  pbClass: { Type: PersonalBestClass; Args: undefined };
   event: { Type: Event; Args: undefined };
-  set_size: { Type: Scalars["number"]; Args: undefined };
+  setSize: { Type: Scalars["number"]; Args: undefined };
   score: { Type: Scalars["number"]; Args: undefined };
-  /**The number of successful attempts*/ attempts_succeeded: {
+  /**The number of successful attempts*/ attemptsSucceeded: {
     Type: Scalars["number"] | null;
     Args: undefined;
   };
-  /**The total number of attempts*/ attempts_total: {
+  /**The total number of attempts*/ attemptsTotal: {
     Type: Scalars["number"] | null;
     Args: undefined;
   };
   product: { Type: Product | null; Args: undefined };
-  happened_on: { Type: Scalars["unixTimestamp"]; Args: undefined };
-  /**The amount of ms time elapsed for the pb attempt*/ time_elapsed: {
+  happenedOn: { Type: Scalars["unixTimestamp"]; Args: undefined };
+  /**The amount of ms time elapsed for the pb attempt*/ timeElapsed: {
     Type: Scalars["number"] | null;
     Args: undefined;
   };
-  /**The amount of moves used in the pb attempt*/ moves_count: {
+  /**The amount of moves used in the pb attempt*/ movesCount: {
     Type: Scalars["number"] | null;
     Args: undefined;
   };
-  is_current: { Type: Scalars["boolean"]; Args: undefined };
-  /**When the record was created*/ created_at: {
+  isCurrent: { Type: Scalars["boolean"]; Args: undefined };
+  /**When the record was created*/ createdAt: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
   };
-  /**When the record was last updated*/ updated_at: {
+  /**When the record was last updated*/ updatedAt: {
     Type: Scalars["unixTimestamp"] | null;
     Args: undefined;
   };
-  created_by: { Type: User; Args: undefined };
-};
-/**Link type*/ export type UserUserFollowLink = {
-  /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
-  /**The typename of the record*/ __typename: {
-    Type: Scalars["string"];
-    Args: [Scalars["number"]];
-  };
-  user: { Type: User; Args: undefined };
-  target: { Type: User; Args: undefined };
-  /**When the record was created*/ created_at: {
-    Type: Scalars["unixTimestamp"];
-    Args: undefined;
-  };
-  /**When the record was last updated*/ updated_at: {
-    Type: Scalars["unixTimestamp"] | null;
-    Args: undefined;
-  };
-  created_by: { Type: User; Args: undefined };
+  createdBy: { Type: User; Args: undefined };
 };
 /**All Root resolvers*/ export type Root = {
   getUserRoleEnumPaginator: { Type: UserRoleEnumPaginator; Args: undefined };
@@ -613,6 +632,7 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Args: undefined;
   };
   getCurrentUser: { Type: User; Args: undefined };
+  test: { Type: Scalars["unknown"] | null; Args: undefined };
   getUser: { Type: User; Args: InputTypes["user"] };
   getUserPaginator: { Type: UserPaginator; Args: InputTypes["userPaginator"] };
   deleteUser: { Type: User; Args: InputTypes["user"] };
@@ -672,6 +692,10 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   getRepositoryLatestVersion: {
     Type: Scalars["unknown"] | null;
     Args: undefined;
+  };
+  getUserUserFollowLinkPaginator: {
+    Type: UserUserFollowLinkPaginator;
+    Args: InputTypes["userUserFollowLinkPaginator"];
   };
   deleteUserUserFollowLink: {
     Type: UserUserFollowLink;

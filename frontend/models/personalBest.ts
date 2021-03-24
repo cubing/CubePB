@@ -17,23 +17,23 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   pluralName: 'Personal Bests',
   icon: 'mdi-timer',
   renderItem: (item) => item.name,
-  requiredFields: ['event.id', 'pb_class.id', 'set_size', 'created_by.id'],
+  requiredFields: ['event.id', 'pbClass.id', 'setSize', 'createdBy.id'],
   fields: {
     id: {
       text: 'ID',
     },
-    'created_by.name+created_by.avatar+created_by.id': {
+    'createdBy.name+createdBy.avatar+createdBy.id': {
       text: 'Created By',
       component: UserColumn,
     },
-    'pb_class.id': {
+    'pbClass.id': {
       text: 'PB Type',
       parseQueryValue: (val) => Number(val),
       getOptions: getPersonalBestClasses,
       typename: 'personalBestClass',
       inputType: 'select',
     },
-    'pb_class.name': {
+    'pbClass.name': {
       text: 'PB Type',
     },
     'event.id': {
@@ -53,7 +53,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'Event',
       component: EventColumn,
     },
-    set_size: {
+    setSize: {
       text: 'Sample Size',
       hint: '# of attempts in your PB. For Avg5, this would be 5.',
     },
@@ -70,13 +70,13 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     'product.name': {
       text: 'Cube',
     },
-    'created_by.name': {
+    'createdBy.name': {
       text: 'Created By',
     },
-    'created_by.avatar': {
+    'createdBy.avatar': {
       text: 'Created By',
     },
-    time_elapsed: {
+    timeElapsed: {
       text: 'Time',
       hint: 'Skip this for FMC',
       inputRules: [
@@ -114,19 +114,19 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         return 10 * Math.floor(ms / 10)
       },
     },
-    moves_count: {
+    movesCount: {
       text: 'Move Count',
       hint: 'For FMC only',
     },
-    attempts_succeeded: {
+    attemptsSucceeded: {
       text: 'Total Succeeded',
       default: () => 1,
     },
-    attempts_total: {
+    attemptsTotal: {
       text: 'Total Attempts',
       default: () => 1,
     },
-    happened_on: {
+    happenedOn: {
       text: 'Date Happened',
       inputType: 'datepicker',
       // default to today.
@@ -137,7 +137,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       // YYYY-MM-DD to unix timestamp
       parseValue: (val: string) => val && new Date(val).getTime() / 1000,
     },
-    'created_by.id': {
+    'createdBy.id': {
       text: 'Created By',
       inputType: 'server-autocomplete',
       lookupFilters: (_that) => {
@@ -152,19 +152,19 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       typename: 'user',
       parseQueryValue: (val) => Number(val),
     },
-    'created_by.is_public': {
+    'createdBy.isPublic': {
       text: 'Created By - Public',
     },
-    is_current: {
+    isCurrent: {
       text: 'Is Current PB',
       inputType: 'switch',
       parseQueryValue: (val) => val === 'true',
     },
-    created_at: {
+    createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
     },
-    updated_at: {
+    updatedAt: {
       text: 'Updated At',
       component: TimeagoColumn,
     },
@@ -178,11 +178,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         operator: 'eq',
       },
       {
-        field: 'pb_class.id',
+        field: 'pbClass.id',
         operator: 'eq',
       },
       {
-        field: 'set_size',
+        field: 'setSize',
         operator: 'eq',
       },
       {
@@ -190,21 +190,21 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         operator: 'eq',
       },
       {
-        field: 'created_by.id',
+        field: 'createdBy.id',
         operator: 'eq',
       },
       {
-        field: 'happened_on',
+        field: 'happenedOn',
         title: 'Happened After',
         operator: 'gt',
       },
       {
-        field: 'happened_on',
+        field: 'happenedOn',
         title: 'Happened Before',
         operator: 'lt',
       },
       {
-        field: 'is_current',
+        field: 'isCurrent',
         operator: 'eq',
       },
     ],
@@ -215,47 +215,47 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         width: '200px',
       },
       {
-        field: 'pb_class.name',
+        field: 'pbClass.name',
         sortable: true,
         width: '100px',
       },
       {
-        field: 'set_size',
+        field: 'setSize',
         sortable: true,
         width: '125px',
         align: 'right',
       },
       {
-        field: 'time_elapsed',
+        field: 'timeElapsed',
         sortable: true,
         width: '125px',
         align: 'right',
       },
       {
-        field: 'moves_count',
+        field: 'movesCount',
         sortable: false,
         width: '125px',
         align: 'right',
       },
       {
-        field: 'attempts_succeeded',
+        field: 'attemptsSucceeded',
         sortable: false,
         width: '150px',
         align: 'right',
       },
       {
-        field: 'attempts_total',
+        field: 'attemptsTotal',
         sortable: false,
         width: '150px',
         align: 'right',
       },
       {
-        field: 'happened_on',
+        field: 'happenedOn',
         sortable: true,
         width: '150px',
       },
       {
-        field: 'created_by.name+created_by.avatar+created_by.id',
+        field: 'createdBy.name+createdBy.avatar+createdBy.id',
         sortable: false,
       },
       {
@@ -271,13 +271,13 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   addOptions: {
     fields: [
       'event.id',
-      'pb_class.id',
-      'set_size',
-      'time_elapsed',
-      'moves_count',
-      'happened_on',
-      'attempts_succeeded',
-      'attempts_total',
+      'pbClass.id',
+      'setSize',
+      'timeElapsed',
+      'movesCount',
+      'happenedOn',
+      'attemptsSucceeded',
+      'attemptsTotal',
       'product.id',
     ],
     component: EditPersonalBestInterface,
@@ -286,17 +286,17 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   viewOptions: {
     fields: [
       'event.id',
-      'pb_class.id',
-      'set_size',
-      'time_elapsed',
-      'moves_count',
-      'happened_on',
-      'attempts_succeeded',
-      'attempts_total',
+      'pbClass.id',
+      'setSize',
+      'timeElapsed',
+      'movesCount',
+      'happenedOn',
+      'attemptsSucceeded',
+      'attemptsTotal',
       'product.id',
       'score',
-      'created_by.name',
-      'is_current',
+      'createdBy.name',
+      'isCurrent',
     ],
     component: EditPersonalBestInterface,
   },

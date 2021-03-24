@@ -24,16 +24,16 @@ export const Event = <RecordInfo<'event'>>{
     code: {
       text: 'Code',
     },
-    score_method: {
+    scoreMethod: {
       text: 'Score Method',
       getOptions: getScoreMethods,
       inputType: 'select',
     },
-    created_at: {
+    createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
     },
-    updated_at: {
+    updatedAt: {
       text: 'Updated At',
       component: TimeagoColumn,
     },
@@ -47,7 +47,7 @@ export const Event = <RecordInfo<'event'>>{
         sortable: true,
       },
       {
-        field: 'score_method',
+        field: 'scoreMethod',
         sortable: false,
         width: '150px',
       },
@@ -57,12 +57,12 @@ export const Event = <RecordInfo<'event'>>{
         width: '100px',
       },
       {
-        field: 'created_at',
+        field: 'createdAt',
         width: '150px',
         sortable: true,
       },
       {
-        field: 'updated_at',
+        field: 'updatedAt',
         width: '150px',
         sortable: true,
       },
@@ -70,13 +70,13 @@ export const Event = <RecordInfo<'event'>>{
     downloadOptions: {},
   },
   addOptions: {
-    fields: ['name', 'code', 'score_method'],
+    fields: ['name', 'code', 'scoreMethod'],
   },
   editOptions: {
     fields: ['name', 'code'],
   },
   viewOptions: {
-    fields: ['name', 'code', 'score_method'],
+    fields: ['name', 'code', 'scoreMethod'],
   },
   deleteOptions: {},
   shareOptions: undefined,

@@ -27,12 +27,12 @@ export default {
       hiddenFilters: ['is_current'],
       lockedFilters: [
         {
-          field: 'created_by.is_public',
+          field: 'createdBy.isPublic',
           operator: 'eq',
           value: true,
         },
         {
-          field: 'is_current',
+          field: 'isCurrent',
           operator: 'eq',
           value: true,
         },

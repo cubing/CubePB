@@ -14,6 +14,7 @@ import {
   JomqlInputFieldType,
   ArrayOptions,
   inputTypeDefs,
+  ObjectTypeDefinition,
 } from "jomql";
 import { knex } from "../../utils/knex";
 import * as Resolver from "./resolver";
@@ -22,6 +23,7 @@ import { BaseService, NormalService, PaginatedService } from "../core/services";
 import { linkDefs } from "../links";
 import * as Scalars from "../scalars";
 import type { ObjectTypeDefSqlOptions, SqlType } from "../../types";
+import { FieldObject } from "../core/services/normal";
 
 type GenerateFieldParams = {
   name?: string;
@@ -623,14 +625,64 @@ export function generateDataloadableField(
   });
 }
 
+function validateFieldPath(initialTypeDef: JomqlObjectType, fieldPath: string) {
+  let currentTypeDef = initialTypeDef;
+  let allowNull = false;
+  const keyParts = fieldPath.split(/\./);
+  let currentType;
+  let currentObjectTypeField;
+
+  keyParts.forEach((keyPart, keyIndex) => {
+    if (!currentTypeDef.definition.fields[keyPart])
+      throw new JomqlInitializationError({
+        message: `Invalid fieldPath '${fieldPath}' on '${initialTypeDef.definition.name}'`,
+      });
+
+    currentObjectTypeField = currentTypeDef.definition.fields[keyPart];
+    currentType = currentObjectTypeField.type;
+
+    // if one in the chain has allowNull === true, then allowNull
+    if (currentObjectTypeField.allowNull) allowNull = true;
+
+    if (keyParts[keyIndex + 1]) {
+      if (currentType instanceof JomqlObjectTypeLookup) {
+        const lookupTypeDef = objectTypeDefs.get(currentType.name);
+
+        if (!lookupTypeDef) {
+          throw new JomqlInitializationError({
+            message: `Invalid typeDef lookup for '${currentType.name}'`,
+          });
+        }
+
+        currentTypeDef = lookupTypeDef;
+      } else if (currentType instanceof JomqlObjectType) {
+        currentTypeDef = currentType;
+      } else {
+        // must be scalar. should be over in the next iteration, else will fail
+      }
+    }
+  });
+
+  // final value must be scalar at the moment
+  if (!(currentType instanceof JomqlScalarType)) {
+    throw new JomqlInitializationError({
+      message: `Final filter field must be a scalar type. Field: '${fieldPath}' on '${initialTypeDef.definition.name}'`,
+    });
+  }
+
+  return {
+    currentType,
+    allowNull,
+  };
+}
+
 // should work for *most* cases
 // returns resolver object instead of a typeDef because it is also used to generate the rootResolver
 export function generatePaginatorPivotResolverObject(params: {
-  name?: string;
   pivotService: PaginatedService;
   currentService?: NormalService;
 }) {
-  const { name, pivotService, currentService } = params;
+  const { pivotService, currentService } = params;
 
   const filterByField = currentService
     ? currentService.typename.toLowerCase() + ".id"
@@ -643,11 +695,34 @@ export function generatePaginatorPivotResolverObject(params: {
     });
   }
 
+  // generate sortByKey ScalarDefinition
   const sortByScalarDefinition: ScalarDefinition = {
     name: pivotService.typename + "SortByKey",
-    types: Object.keys(pivotService.sortFieldsMap).map((ele) => `"${ele}"`),
+    types: Object.entries(pivotService.sortFieldsMap).map(([key, value]) => {
+      // ensure the path exists
+      validateFieldPath(pivotService.getTypeDef(), value.field ?? key);
+
+      return `"${key}"`;
+    }),
     parseValue: (value) => {
       if (typeof value !== "string" || !(value in pivotService.sortFieldsMap))
+        throw true;
+      return value;
+    },
+  };
+
+  const groupByScalarDefinition: ScalarDefinition = {
+    name: pivotService.typename + "GroupByKey",
+    types: Object.entries(pivotService.groupByFieldsMap).map(([key, value]) => {
+      // ensure the path exists
+      validateFieldPath(pivotService.getTypeDef(), value.field ?? key);
+      return `"${key}"`;
+    }),
+    parseValue: (value) => {
+      if (
+        typeof value !== "string" ||
+        !(value in pivotService.groupByFieldsMap)
+      )
         throw true;
       return value;
     },
@@ -662,72 +737,10 @@ export function generatePaginatorPivotResolverObject(params: {
   process.nextTick(() => {
     Object.entries(pivotService.filterFieldsMap).reduce(
       (total, [filterKey, filterValue]) => {
-        const actualFilterKey = filterValue.field ?? filterKey;
-        // traverse the fields to find the scalarDefinition
-        const keyParts = actualFilterKey.split(".");
-        let currentType;
-        let allowNull = false;
-        let currentObjectTypeField;
-        let currentTypeDef = pivotService.getTypeDef();
-
-        keyParts.forEach((keyPart, keyIndex) => {
-          // if keyPart contains /, it is a linkDef
-          if (keyPart.match(/\//)) {
-            const keyPartParts = keyPart.split(/\//);
-            const linkDef = linkDefs.get(keyPartParts[0]);
-            if (!linkDef)
-              throw new JomqlInitializationError({
-                message: `Invalid join field '${filterKey}' on '${currentTypeDef.definition.name}'`,
-              });
-            currentObjectTypeField = linkDef.types.get(keyPartParts[1]);
-            currentType = currentObjectTypeField.typeDefLookup;
-          } else if (keyPart in currentTypeDef.definition.fields) {
-            currentObjectTypeField = currentTypeDef.definition.fields[keyPart];
-            currentType = currentObjectTypeField.type;
-          } else {
-            // throw err
-            throw new JomqlInitializationError({
-              message: `Invalid join field '${filterKey}' on '${currentTypeDef.definition.name}'`,
-            });
-          }
-
-          // if currentType undefined, must be an unrecognized field
-          if (!currentObjectTypeField) {
-            throw new JomqlInitializationError({
-              message: `Invalid field '${filterKey}' on '${currentTypeDef.definition.name}'`,
-            });
-          }
-
-          // set the currentType
-
-          // if one in the chain has allowNull === true, then allowNull
-          if (currentObjectTypeField.allowNull) allowNull = true;
-
-          // if has next field and currentType is JomqlObjectType, get and set the next typeDef
-          if (keyParts[keyIndex + 1]) {
-            if (currentType instanceof JomqlObjectTypeLookup) {
-              const lookupTypeDef = objectTypeDefs.get(currentType.name);
-
-              if (!lookupTypeDef) {
-                throw new JomqlInitializationError({
-                  message: `Invalid typeDef lookup for '${currentType.name}'`,
-                });
-              }
-
-              currentTypeDef = lookupTypeDef;
-            } else if (currentType instanceof JomqlObjectType) {
-              currentTypeDef = currentType;
-            } else {
-              // must be scalar. should be over
-            }
-          }
-        });
-        // final value must be scalar at the moment
-        if (!(currentType instanceof JomqlScalarType)) {
-          throw new JomqlInitializationError({
-            message: `Final filter field must be a scalar type. Field: '${filterKey}'`,
-          });
-        }
+        const { currentType, allowNull } = validateFieldPath(
+          pivotService.getTypeDef(),
+          filterValue.field ?? filterKey
+        );
 
         total[filterKey] = new JomqlInputFieldType({
           type: new JomqlInputType(
@@ -785,19 +798,6 @@ export function generatePaginatorPivotResolverObject(params: {
     );
   });
 
-  const groupByScalarDefinition: ScalarDefinition = {
-    name: pivotService.typename + "GroupByKey",
-    types: Object.keys(pivotService.groupByFieldsMap).map((ele) => `"${ele}"`),
-    parseValue: (value) => {
-      if (
-        typeof value !== "string" ||
-        !(value in pivotService.groupByFieldsMap)
-      )
-        throw true;
-      return value;
-    },
-  };
-
   let rootResolverFunction: RootResolverFunction | undefined;
   let resolverFunction: ResolverFunction | undefined;
 
@@ -821,7 +821,6 @@ export function generatePaginatorPivotResolverObject(params: {
       filterObjectArray.forEach((filterObject) => {
         filterObject[filterByField] = { eq: parentItemId };
       });
-      console.log(filterObjectArray);
 
       return pivotService.paginator.getRecord({
         req,

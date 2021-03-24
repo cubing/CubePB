@@ -35,8 +35,8 @@
                 <template v-else-if="currentUser">
                   <v-list-item-subtitle
                     >WCA ID:
-                    <a @click="openWCAProfile(currentUser.wca_id)">{{
-                      currentUser.wca_id
+                    <a @click="openWCAProfile(currentUser.wcaId)">{{
+                      currentUser.wcaId
                     }}</a></v-list-item-subtitle
                   >
                   <v-list-item-subtitle
@@ -64,9 +64,9 @@
             <v-btn
               color="primary"
               :loading="loading.toggleFollow"
-              @click="toggleFollowUser(!currentUser.current_user_following)"
+              @click="toggleFollowUser(!currentUser.currentUserFollowing)"
               >{{
-                currentUser.current_user_following ? 'Un-Follow' : 'Follow'
+                currentUser.currentUserFollowing ? 'Un-Follow' : 'Follow'
               }}</v-btn
             >
           </template>
@@ -149,16 +149,16 @@ export default {
             },
           })
 
-          this.currentUser.current_user_following = data.id
+          this.currentUser.currentUserFollowing = data.id
         } else {
           await executeJomql(this, {
             deleteUserUserFollowLink: {
               __args: {
-                id: this.currentUser.current_user_following,
+                id: this.currentUser.currentUserFollowing,
               },
             },
           })
-          this.currentUser.current_user_following = null
+          this.currentUser.currentUserFollowing = null
         }
 
         this.$notifier.showSnackbar({
@@ -177,8 +177,8 @@ export default {
         this.currentUser = await executeJomql(this, {
           getUser: {
             country: true,
-            wca_id: true,
-            current_user_following: true,
+            wcaId: true,
+            currentUserFollowing: true,
             __args: {
               id: this.currentItem.id,
             },

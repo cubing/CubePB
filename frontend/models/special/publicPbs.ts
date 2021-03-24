@@ -15,14 +15,14 @@ PublicPbs.expandTypes = [
       ...(<any>PublicPbs),
     },
     name: 'PB History',
-    excludeFilters: ['created_by.id', 'is_current'],
-    excludeHeaders: ['created_by.name+created_by.avatar+created_by.id'],
+    excludeFilters: ['createdBy.id', 'is_current'],
+    excludeHeaders: ['createdBy.name+createdBy.avatar+createdBy.id'],
     lockedFilters: (_that, item) => {
       return [
         {
-          field: 'created_by.id',
+          field: 'createdBy.id',
           operator: 'eq',
-          value: item.created_by.id,
+          value: item.createdBy.id,
         },
         {
           field: 'event.id',
@@ -30,24 +30,24 @@ PublicPbs.expandTypes = [
           value: item.event.id,
         },
         {
-          field: 'pb_class.id',
+          field: 'pbClass.id',
           operator: 'eq',
-          value: item.pb_class.id,
+          value: item.pbClass.id,
         },
         {
-          field: 'set_size',
+          field: 'setSize',
           operator: 'eq',
-          value: item.set_size,
+          value: item.setSize,
         },
         {
-          field: 'created_by.is_public',
+          field: 'createdBy.isPublic',
           operator: 'eq',
           value: true,
         },
       ]
     },
     initialSortOptions: {
-      sortBy: ['happened_on'],
+      sortBy: ['happenedOn'],
       sortDesc: [true],
     },
   },

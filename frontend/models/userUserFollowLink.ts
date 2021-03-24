@@ -24,11 +24,11 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
     'target.id': {
       text: 'Target',
     },
-    created_at: {
+    createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
     },
-    updated_at: {
+    updatedAt: {
       text: 'Updated At',
       component: TimeagoColumn,
     },
@@ -48,12 +48,12 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
         width: '200px',
       },
       {
-        field: 'created_at',
+        field: 'createdAt',
         width: '150px',
         sortable: true,
       },
       {
-        field: 'updated_at',
+        field: 'updatedAt',
         width: '150px',
         sortable: true,
       },

@@ -15,7 +15,7 @@ export const PublicUsers = {
         sortable: false,
       },
       {
-        field: 'wca_id',
+        field: 'wcaId',
         width: '150px',
         sortable: false,
       },
@@ -28,7 +28,7 @@ export const PublicUsers = {
     downloadOptions: undefined,
   },
   viewOptions: {
-    fields: ['avatar', 'name', 'wca_id', 'country'],
+    fields: ['avatar', 'name', 'wcaId', 'country'],
   },
   deleteOptions: undefined,
 
@@ -36,22 +36,22 @@ export const PublicUsers = {
     {
       recordInfo: PublicPbs,
       name: 'PBs',
-      excludeFilters: ['created_by.id', 'is_current'],
-      excludeHeaders: ['created_by.name+created_by.avatar+created_by.id'],
+      excludeFilters: ['createdBy.id', 'isCurrent'],
+      excludeHeaders: ['createdBy.name+createdBy.avatar+createdBy.id'],
       lockedFilters: (_that, item) => {
         return [
           {
-            field: 'created_by.id',
+            field: 'createdBy.id',
             operator: 'eq',
             value: item.id,
           },
           {
-            field: 'created_by.is_public',
+            field: 'createdBy.isPublic',
             operator: 'eq',
             value: true,
           },
           {
-            field: 'is_current',
+            field: 'isCurrent',
             operator: 'eq',
             value: true,
           },

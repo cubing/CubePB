@@ -1,6 +1,5 @@
 import "../schema";
 import { objectTypeDefs } from "jomql";
-import { knex } from "../utils/knex";
 import * as fs from "fs";
 
 export function isKnexNow(ele: unknown) {

@@ -226,7 +226,7 @@ export default {
           icon: 'mdi-star',
           title: 'Public PBs',
           to: generateRoute('/public-pbs', {
-            sortBy: ['happened_on'],
+            sortBy: ['happenedOn'],
             sortDesc: [true],
           }),
           loginRequired: false,
@@ -272,7 +272,7 @@ export default {
         allowedRoles.includes(this.$store.getters['auth/user']?.role) ||
         allowedPermissions.some((ele) =>
           // eslint-disable-next-line camelcase
-          this.$store.getters['auth/user']?.all_permissions.includes(ele)
+          this.$store.getters['auth/user']?.allPermissions.includes(ele)
         )
       )
     },

@@ -45,29 +45,29 @@ export class PersonalBestService extends PaginatedService {
 
   accessControl = {
     get: async ({ args, fieldPath }) => {
-      // check the created_by.is_public to see if true
+      // check the createdBy.isPublic to see if true
       const result = await this.lookupRecord(
         [
           {
-            field: "created_by.is_public",
+            field: "createdBy.isPublic",
           },
         ],
         args,
         fieldPath
       );
-      return result["created_by.is_public"] === true;
+      return result["createdBy.isPublic"] === true;
     },
 
     getMultiple: ({ req, args }) => {
-      // filterBy must have created_by.is_public === true
-      // OR filterBy must have created_by.id === req.user.id
+      // filterBy must have createdBy.isPublic === true
+      // OR filterBy must have createdBy.id === req.user.id
       if (
         Array.isArray(args.filterBy) &&
         args.filterBy.length > 0 &&
         args.filterBy.every((filterObject) => {
           return (
-            filterObject["created_by.is_public"]?.eq === true ||
-            filterObject["created_by.id"]?.eq === req.user?.id
+            filterObject["createdBy.isPublic"]?.eq === true ||
+            filterObject["createdBy.id"]?.eq === req.user?.id
           );
         })
       ) {
@@ -82,13 +82,13 @@ export class PersonalBestService extends PaginatedService {
       const result = await this.lookupRecord(
         [
           {
-            field: "created_by.id",
+            field: "createdBy.id",
           },
         ],
         args,
         fieldPath
       );
-      return req.user.id === result["created_by.id"];
+      return req.user.id === result["createdBy.id"];
     },
   };
 
@@ -104,12 +104,12 @@ export class PersonalBestService extends PaginatedService {
     // args should be validated already
     const validatedArgs = <any>args;
 
-    // get event.score_method
+    // get event.scoreMethod
     const eventRecords = await sqlHelper.fetchTableRows({
       select: [
         { field: "id" },
         {
-          field: "score_method",
+          field: "scoreMethod",
         },
       ],
       from: "event",
@@ -131,103 +131,101 @@ export class PersonalBestService extends PaginatedService {
     const event = eventRecords[0];
 
     let score;
-    switch (scoreMethodEnum.fromName(event.score_method)) {
+    switch (scoreMethodEnum.fromName(event.scoreMethod)) {
       case scoreMethodEnum.STANDARD:
-        // only use time_elapsed, all other fields null
-        if (!validatedArgs.time_elapsed) {
+        // only use timeElapsed, all other fields null
+        if (!validatedArgs.timeElapsed) {
           throw new JomqlBaseError({
-            message: `This event requires time_elapsed`,
+            message: `This event requires timeElapsed`,
             fieldPath,
           });
         }
 
-        // time_elapsed must be positive integer
-        if (validatedArgs.time_elapsed <= 0)
+        // timeElapsed must be positive integer
+        if (validatedArgs.timeElapsed <= 0)
           throw new JomqlBaseError({
             message: `Time elapsed must be positive`,
             fieldPath,
           });
 
-        validatedArgs.attempts_total = null;
-        validatedArgs.attempts_succeeded = null;
-        validatedArgs.moves_count = null;
-        score = validatedArgs.time_elapsed;
+        validatedArgs.attemptsTotal = null;
+        validatedArgs.attemptsSucceeded = null;
+        validatedArgs.movesCount = null;
+        score = validatedArgs.timeElapsed;
         break;
       case scoreMethodEnum.FMC:
-        // only use moves_count, all other fields null
-        if (!validatedArgs.moves_count) {
+        // only use movesCount, all other fields null
+        if (!validatedArgs.movesCount) {
           throw new JomqlBaseError({
-            message: `This event requires moves_count`,
+            message: `This event requires movesCount`,
             fieldPath,
           });
         }
 
-        validatedArgs.attempts_total = null;
-        validatedArgs.attempts_succeeded = null;
-        validatedArgs.time_elapsed = null;
-        score = validatedArgs.moves_count;
+        validatedArgs.attemptsTotal = null;
+        validatedArgs.attemptsSucceeded = null;
+        validatedArgs.timeElapsed = null;
+        score = validatedArgs.movesCount;
         break;
       case scoreMethodEnum.MBLD:
-        // only use moves_count, all other fields null
+        // only use movesCount, all other fields null
         if (
-          !validatedArgs.attempts_total ||
-          !validatedArgs.attempts_succeeded ||
-          !validatedArgs.time_elapsed
+          !validatedArgs.attemptsTotal ||
+          !validatedArgs.attemptsSucceeded ||
+          !validatedArgs.timeElapsed
         ) {
           throw new JomqlBaseError({
-            message: `This event requires attempts_total, attempts_succeeded, time_elapsed`,
+            message: `This event requires attemptsTotal, attemptsSucceeded, timeElapsed`,
             fieldPath,
           });
         }
 
-        // time_elapsed must be positive integer
-        if (validatedArgs.time_elapsed <= 0)
+        // timeElapsed must be positive integer
+        if (validatedArgs.timeElapsed <= 0)
           throw new JomqlBaseError({
             message: `Time elapsed must be positive`,
             fieldPath,
           });
 
-        // time_elapsed must be positive integer
-        if (validatedArgs.attempts_total <= 0)
+        // timeElapsed must be positive integer
+        if (validatedArgs.attemptsTotal <= 0)
           throw new JomqlBaseError({
             message: `Time elapsed must be positive`,
             fieldPath,
           });
 
-        // attempts_succeeded must be <= attempts_total
-        if (validatedArgs.attempts_succeeded > validatedArgs.attempts_total) {
+        // attemptsSucceeded must be <= attemptsTotal
+        if (validatedArgs.attemptsSucceeded > validatedArgs.attemptsTotal) {
           throw new JomqlBaseError({
             message: `Attempts Succeeded cannot be greater than Attempts Total`,
             fieldPath,
           });
         }
 
-        validatedArgs.moves_count = null;
+        validatedArgs.movesCount = null;
         score =
-          validatedArgs.time_elapsed *
-          ((validatedArgs.attempts_total - validatedArgs.attempts_succeeded) *
+          validatedArgs.timeElapsed *
+          ((validatedArgs.attemptsTotal - validatedArgs.attemptsSucceeded) *
             -1 +
-            validatedArgs.attempts_succeeded * 1);
+            validatedArgs.attemptsSucceeded * 1);
         break;
     }
 
-    // get pb_class.set_size
+    // get pbClass.setSize
     const pbClassRecords = await sqlHelper.fetchTableRows({
       select: [
         { field: "id" },
         {
-          field: "set_size",
+          field: "setSize",
         },
       ],
       from: "personalBestClass",
       where: {
         connective: "AND",
-        fields: Object.entries(validatedArgs.pb_class).map(
-          ([field, value]) => ({
-            field,
-            value,
-          })
-        ),
+        fields: Object.entries(validatedArgs.pbClass).map(([field, value]) => ({
+          field,
+          value,
+        })),
       },
     });
 
@@ -239,11 +237,8 @@ export class PersonalBestService extends PaginatedService {
 
     const pbClass = pbClassRecords[0];
 
-    // if pb_class.set_size, args.set_size must be equal to that
-    if (
-      pbClass.set_size !== null &&
-      pbClass.set_size !== validatedArgs.set_size
-    ) {
+    // if pbClass.setSize, args.setSize must be equal to that
+    if (pbClass.setSize !== null && pbClass.setSize !== validatedArgs.setSize) {
       throw new JomqlBaseError({
         message: `Invalid set size for this PersonalBestClass`,
         fieldPath,
@@ -252,10 +247,10 @@ export class PersonalBestService extends PaginatedService {
 
     // set this now to save the work in handleLookupArgs
     validatedArgs.event = event.id;
-    validatedArgs.pb_class = pbClass.id;
+    validatedArgs.pbClass = pbClass.id;
 
-    // check scores of same event-pb_class-set_size-created_by
-    // before the happened_on time
+    // check scores of same event-pbClass-setSize-createdBy
+    // before the happenedOn time
     const beforePbs = await sqlHelper.fetchTableRows({
       select: [
         { field: "id" },
@@ -263,7 +258,7 @@ export class PersonalBestService extends PaginatedService {
           field: "score",
         },
         {
-          field: "is_current",
+          field: "isCurrent",
         },
       ],
       from: this.typename,
@@ -271,31 +266,31 @@ export class PersonalBestService extends PaginatedService {
         connective: "AND",
         fields: [
           {
-            field: "happened_on",
+            field: "happenedOn",
             operator: "lt",
-            value: validatedArgs.happened_on,
+            value: validatedArgs.happenedOn,
           },
           {
             field: "event.id",
             value: validatedArgs.event,
           },
           {
-            field: "pb_class.id",
-            value: validatedArgs.pb_class,
+            field: "pbClass.id",
+            value: validatedArgs.pbClass,
           },
           {
-            field: "set_size",
-            value: validatedArgs.set_size,
+            field: "setSize",
+            value: validatedArgs.setSize,
           },
           {
-            field: "created_by.id",
+            field: "createdBy.id",
             value: req.user!.id,
           },
         ],
       },
       orderBy: [
         {
-          field: "happened_on",
+          field: "happenedOn",
           desc: true,
         },
       ],
@@ -314,7 +309,7 @@ export class PersonalBestService extends PaginatedService {
         });
       }
 
-      if (beforePbs[0].is_current) {
+      if (beforePbs[0].isCurrent) {
         isCurrentPb = true;
       }
     }
@@ -332,31 +327,31 @@ export class PersonalBestService extends PaginatedService {
         connective: "AND",
         fields: [
           {
-            field: "happened_on",
+            field: "happenedOn",
             operator: "gt",
-            value: validatedArgs.happened_on,
+            value: validatedArgs.happenedOn,
           },
           {
             field: "event.id",
             value: validatedArgs.event,
           },
           {
-            field: "pb_class.id",
-            value: validatedArgs.pb_class,
+            field: "pbClass.id",
+            value: validatedArgs.pbClass,
           },
           {
-            field: "set_size",
-            value: validatedArgs.set_size,
+            field: "setSize",
+            value: validatedArgs.setSize,
           },
           {
-            field: "created_by.id",
+            field: "createdBy.id",
             value: req.user!.id,
           },
         ],
       },
       orderBy: [
         {
-          field: "happened_on",
+          field: "happenedOn",
           desc: false,
         },
       ],
@@ -383,7 +378,7 @@ export class PersonalBestService extends PaginatedService {
         {
           table: this.typename,
           fields: {
-            is_current: false,
+            isCurrent: false,
           },
           where: {
             fields: [
@@ -392,19 +387,19 @@ export class PersonalBestService extends PaginatedService {
                 value: validatedArgs.event,
               },
               {
-                field: "pb_class",
-                value: validatedArgs.pb_class,
+                field: "pbClass",
+                value: validatedArgs.pbClass,
               },
               {
-                field: "set_size",
-                value: validatedArgs.set_size,
+                field: "setSize",
+                value: validatedArgs.setSize,
               },
               {
-                field: "created_by",
+                field: "createdBy",
                 value: req.user!.id,
               },
               {
-                field: "is_current",
+                field: "isCurrent",
                 value: true,
               },
             ],
@@ -421,14 +416,14 @@ export class PersonalBestService extends PaginatedService {
       addFields: {
         ...validatedArgs,
         score,
-        is_current: isCurrentPb,
-        created_by: req.user!.id,
+        isCurrent: isCurrentPb,
+        createdBy: req.user!.id,
       },
       req,
       fieldPath,
       /*       options: {
         onConflict: {
-          columns: ["pb_class", "event", "set_size", "created_by"],
+          columns: ["pbClass", "event", "setSize", "createdBy"],
           action: "merge",
         },
       }, */
@@ -460,10 +455,10 @@ export class PersonalBestService extends PaginatedService {
       select: [
         { field: "id" },
         {
-          field: "is_current",
+          field: "isCurrent",
         },
         {
-          field: "happened_on",
+          field: "happenedOn",
         },
       ],
       from: this.typename,
@@ -482,8 +477,8 @@ export class PersonalBestService extends PaginatedService {
 
     const itemId = results[0].id;
 
-    // if this pb is_current === true, must set the previous pb to is_current
-    if (results[0].is_current) {
+    // if this pb isCurrent === true, must set the previous pb to isCurrent
+    if (results[0].isCurrent) {
       const previousPbResults = await sqlHelper.fetchTableRows({
         select: [
           {
@@ -494,15 +489,15 @@ export class PersonalBestService extends PaginatedService {
         where: {
           fields: [
             {
-              field: "happened_on",
+              field: "happenedOn",
               operator: "lt",
-              value: results[0].happened_on,
+              value: results[0].happenedOn,
             },
           ],
         },
         orderBy: [
           {
-            field: "happened_on",
+            field: "happenedOn",
             desc: true,
           },
         ],
@@ -514,7 +509,7 @@ export class PersonalBestService extends PaginatedService {
           {
             table: this.typename,
             fields: {
-              is_current: true,
+              isCurrent: true,
             },
             where: {
               fields: [

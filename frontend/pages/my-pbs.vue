@@ -25,8 +25,8 @@ export default {
         title: 'My PBs',
       },
       title: 'My PBs',
-      hiddenFilters: ['created_by.id', 'is_current'],
-      hiddenHeaders: ['created_by.name+created_by.avatar'],
+      hiddenFilters: ['createdBy.id', 'isCurrent'],
+      hiddenHeaders: ['createdBy.name+createdBy.avatar'],
     }
   },
 
@@ -35,12 +35,12 @@ export default {
       return this.$store.getters['auth/user']
         ? [
             {
-              field: 'created_by.id',
+              field: 'createdBy.id',
               operator: 'eq',
               value: this.$store.getters['auth/user']?.id,
             },
             {
-              field: 'is_current',
+              field: 'isCurrent',
               operator: 'eq',
               value: true,
             },

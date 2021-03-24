@@ -37,7 +37,7 @@ export class UserService extends PaginatedService {
       if (
         query &&
         Object.keys(query).some((field) =>
-          ["role", "permissions", "all_permissions", "email"].includes(field)
+          ["role", "permissions", "allPermissions", "email"].includes(field)
         ) &&
         req.user?.role !== userRoleKenum.ADMIN
       ) {
@@ -49,7 +49,7 @@ export class UserService extends PaginatedService {
         Array.isArray(args.filterBy) &&
         args.filterBy.length > 0 &&
         args.filterBy.every((filterObject) => {
-          return filterObject.is_public.eq === true;
+          return filterObject.isPublic.eq === true;
         })
       ) {
         return true;
@@ -72,10 +72,10 @@ export class UserService extends PaginatedService {
       const result = await this.lookupRecord(
         [
           {
-            field: "created_by",
+            field: "createdBy",
           },
           {
-            field: "is_public",
+            field: "isPublic",
           },
         ],
         args,
@@ -83,7 +83,7 @@ export class UserService extends PaginatedService {
       );
 
       // OR if the user created the item
-      return result.is_public === true || result.created_by === req.user?.id;
+      return result.isPublic === true || result.createdBy === req.user?.id;
     },
     // allowed to update if user created the item
     update: generateItemCreatedByUserGuard(this),

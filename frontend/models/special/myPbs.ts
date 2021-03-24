@@ -18,9 +18,9 @@ MyPbs.expandTypes = [
     lockedFilters: (_that, item) => {
       return [
         {
-          field: 'created_by.id',
+          field: 'createdBy.id',
           operator: 'eq',
-          value: item.created_by.id,
+          value: item.createdBy.id,
         },
         {
           field: 'event.id',
@@ -28,19 +28,19 @@ MyPbs.expandTypes = [
           value: item.event.id,
         },
         {
-          field: 'pb_class.id',
+          field: 'pbClass.id',
           operator: 'eq',
-          value: item.pb_class.id,
+          value: item.pbClass.id,
         },
         {
-          field: 'set_size',
+          field: 'setSize',
           operator: 'eq',
-          value: item.set_size,
+          value: item.setSize,
         },
       ]
     },
     initialSortOptions: {
-      sortBy: ['happened_on'],
+      sortBy: ['happenedOn'],
       sortDesc: [true],
     },
   },

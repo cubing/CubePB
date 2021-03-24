@@ -20,7 +20,7 @@ export class UserUserFollowLinkService extends LinkService {
   };
 
   sortFieldsMap = {
-    created_at: {},
+    createdAt: {},
   };
 
   searchFieldsMap = {};

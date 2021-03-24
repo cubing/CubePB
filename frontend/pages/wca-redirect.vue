@@ -55,12 +55,12 @@ export default {
               role: true,
               avatar: true,
               permissions: true,
-              all_permissions: true,
+              allPermissions: true,
             },
             __args: {
               provider: 'wca',
               code: this.$route.query.code,
-              redirect_uri: window.location.href,
+              redirectUri: window.location.href,
             },
           },
         })

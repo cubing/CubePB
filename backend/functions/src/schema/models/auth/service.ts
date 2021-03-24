@@ -46,7 +46,7 @@ export class AuthService extends SimpleService {
       client_id: env.wca.client_id,
       client_secret: env.wca.client_secret,
       code: validatedArgs.code,
-      redirect_uri: validatedArgs.redirect_uri,
+      redirect_uri: validatedArgs.redirectUri,
     });
 
     //hit the /me route to get the user info
@@ -56,14 +56,14 @@ export class AuthService extends SimpleService {
       },
     });
 
-    // lookup user by provider + provider_id
+    // lookup user by provider + providerId
     const userResults = await sqlHelper.fetchTableRows({
       select: [{ field: "id" }, { field: "email" }],
       from: User.typename,
       where: {
         fields: [
           { field: "provider", value: validatedArgs.provider },
-          { field: "provider_id", value: wcaData.me.id },
+          { field: "providerId", value: wcaData.me.id },
         ],
       },
     });
@@ -76,25 +76,25 @@ export class AuthService extends SimpleService {
         typename: User.typename,
         addFields: {
           provider: validatedArgs.provider,
-          provider_id: wcaData.me.id,
-          wca_id: wcaData.me.wca_id,
+          providerId: wcaData.me.id,
+          wcaId: wcaData.me.wca_id,
           email: wcaData.me.email,
           name: wcaData.me.name,
           avatar: wcaData.me.avatar.thumb_url,
           country: wcaData.me.country_iso2,
           role: userRoleKenum.NORMAL.parsed,
-          created_by: 0,
+          createdBy: 0,
         },
         req,
         fieldPath,
       });
 
-      // set created_by to id
+      // set createdBy to id
       await sqlHelper.updateTableRow(
         {
           table: User.typename,
           fields: {
-            created_by: addResults.id,
+            createdBy: addResults.id,
           },
           where: {
             fields: [{ field: "id", value: addResults.id }],
@@ -113,7 +113,7 @@ export class AuthService extends SimpleService {
         {
           table: User.typename,
           fields: {
-            wca_id: wcaData.me.wca_id,
+            wcaId: wcaData.me.wca_id,
             email: wcaData.me.email,
             name: wcaData.me.name,
             avatar: wcaData.me.avatar.thumb_url,

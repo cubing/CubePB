@@ -554,19 +554,18 @@ export async function insertTableRow(
       throw new Error(`TypeDef for '${sqlQuery.table}' not found`);
     }
 
-    // handle set fields
+    // handle set fields and convert to actual sql fields, if aliased
+    const sqlFields = {};
     for (const fieldname in sqlQuery.fields) {
-      const parseValue =
-        currentTypeDef.definition.fields[fieldname].sqlOptions?.parseValue;
+      const sqlOptions = currentTypeDef.definition.fields[fieldname].sqlOptions;
+      if (!sqlOptions) throw new Error(`'${fieldname}' is not a sql field`);
 
-      sqlQuery.fields[fieldname] = parseValue
-        ? parseValue(sqlQuery.fields[fieldname])
+      sqlFields[sqlOptions.field ?? fieldname] = sqlOptions.parseValue
+        ? sqlOptions.parseValue(sqlQuery.fields[fieldname])
         : sqlQuery.fields[fieldname];
     }
 
-    const knexObject = knex(sqlQuery.table)
-      .insert(sqlQuery.fields)
-      .returning(["id"]);
+    const knexObject = knex(sqlQuery.table).insert(sqlFields).returning(["id"]);
 
     sqlQuery.extendFn && sqlQuery.extendFn(knexObject);
 
@@ -598,13 +597,14 @@ export async function updateTableRow(
       throw new Error(`TypeDef for '${sqlQuery.table}' not found`);
     }
 
-    // handle set fields
+    // handle set fields and convert to actual sql fields, if aliased
+    const sqlFields = {};
     for (const fieldname in sqlQuery.fields) {
-      const parseValue =
-        currentTypeDef.definition.fields[fieldname].sqlOptions?.parseValue;
+      const sqlOptions = currentTypeDef.definition.fields[fieldname].sqlOptions;
+      if (!sqlOptions) throw new Error(`'${fieldname}' is not a sql field`);
 
-      sqlQuery.fields[fieldname] = parseValue
-        ? parseValue(sqlQuery.fields[fieldname])
+      sqlFields[sqlOptions.field ?? fieldname] = sqlOptions.parseValue
+        ? sqlOptions.parseValue(sqlQuery.fields[fieldname])
         : sqlQuery.fields[fieldname];
     }
 
@@ -620,7 +620,7 @@ export async function updateTableRow(
 
     sqlQuery.extendFn && sqlQuery.extendFn(knexObject);
 
-    return await knexObject.update(sqlQuery.fields);
+    return await knexObject.update(sqlFields);
   } catch (err) {
     throw generateError(err, fieldPath);
   }

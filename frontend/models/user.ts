@@ -32,7 +32,7 @@ export const User = <RecordInfo<'user'>>{
     country: {
       text: 'Country',
     },
-    wca_id: {
+    wcaId: {
       text: 'WCA ID',
     },
     role: {
@@ -46,16 +46,16 @@ export const User = <RecordInfo<'user'>>{
       parseValue: (val: string) =>
         val ? val.split(',').filter((ele) => ele) : [],
     },
-    is_public: {
+    isPublic: {
       text: 'Is Public',
       parseQueryValue: (val) => val === 'true',
       inputType: 'switch',
     },
-    created_at: {
+    createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
     },
-    updated_at: {
+    updatedAt: {
       text: 'Updated At',
       component: TimeagoColumn,
     },
@@ -68,7 +68,7 @@ export const User = <RecordInfo<'user'>>{
         operator: 'eq',
       },
       {
-        field: 'is_public',
+        field: 'isPublic',
         operator: 'eq',
       },
     ],
@@ -88,12 +88,12 @@ export const User = <RecordInfo<'user'>>{
         width: '150px',
       },
       {
-        field: 'created_at',
+        field: 'createdAt',
         width: '150px',
         sortable: true,
       },
       {
-        field: 'updated_at',
+        field: 'updatedAt',
         width: '150px',
         sortable: true,
       },
@@ -110,7 +110,7 @@ export const User = <RecordInfo<'user'>>{
       'country',
       'role',
       'permissions',
-      'is_public',
+      'isPublic',
     ],
   },
   viewOptions: {
@@ -118,11 +118,11 @@ export const User = <RecordInfo<'user'>>{
       'avatar',
       'name',
       'email',
-      'wca_id',
+      'wcaId',
       'country',
       'role',
       'permissions',
-      'is_public',
+      'isPublic',
     ],
   },
   deleteOptions: {},
@@ -133,12 +133,12 @@ export const User = <RecordInfo<'user'>>{
     {
       recordInfo: PersonalBest,
       name: 'PBs',
-      excludeFilters: ['created_by.id'],
-      excludeHeaders: ['created_by.name+created_by.avatar'],
+      excludeFilters: ['createdBy.id'],
+      excludeHeaders: ['createdBy.name+createdBy.avatar'],
       lockedFilters: (_that, item) => {
         return [
           {
-            field: 'created_by.id',
+            field: 'createdBy.id',
             operator: 'eq',
             value: item.id,
           },

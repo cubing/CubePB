@@ -14,7 +14,7 @@ export class ProductService extends PaginatedService {
 
   sortFieldsMap = {
     id: {},
-    created_at: {},
+    createdAt: {},
   };
 
   searchFieldsMap = {

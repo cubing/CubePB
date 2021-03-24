@@ -30,12 +30,12 @@ import { ServiceFunctionInputs } from "../../../types";
 
 import { btoa, isObject } from "../../helpers/shared";
 
-export type JoinFieldObject = {
+export type FieldObject = {
   field?: string;
 };
 
 export type FieldMap = {
-  [x: string]: JoinFieldObject;
+  [x: string]: FieldObject;
 };
 
 export type ExternalQuery = {
@@ -223,7 +223,7 @@ export class NormalService extends BaseService {
 
     // only allowed to filter subscriptions based on these limited args
     const subscriptionFilterableArgs = {
-      created_by: validatedArgs.created_by,
+      createdBy: validatedArgs.createdBy,
     };
 
     const channel = await handleJqlSubscription(
@@ -688,7 +688,7 @@ export class NormalService extends BaseService {
       typename: this.typename,
       addFields: {
         ...validatedArgs,
-        created_by: req.user!.id,
+        createdBy: req.user!.id,
       },
       req,
       fieldPath,
@@ -696,7 +696,7 @@ export class NormalService extends BaseService {
 
     // args that will be compared with subscription args
     /*     const subscriptionFilterableArgs = {
-      created_by: req.user?.id,
+      createdBy: req.user?.id,
     };
 
     handleJqlSubscriptionTriggerIterative(

@@ -21,7 +21,7 @@ export const getEvents = memoize(async function (that, _forceReload = false) {
         node: {
           id: true,
           name: true,
-          score_method: true,
+          scoreMethod: true,
         },
       },
       __args: {
@@ -61,7 +61,7 @@ export const getPersonalBestClasses = memoize(async function (
         node: {
           id: true,
           name: true,
-          set_size: true,
+          setSize: true,
         },
       },
       __args: {

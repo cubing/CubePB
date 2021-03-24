@@ -20,16 +20,16 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
       inputType: 'textarea',
       optional: true,
     },
-    set_size: {
+    setSize: {
       text: 'Sample Size',
       parseValue: (val) => val || null, // truthy or null
       optional: true,
     },
-    created_at: {
+    createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
     },
-    updated_at: {
+    updatedAt: {
       text: 'Updated At',
       component: TimeagoColumn,
     },
@@ -44,18 +44,18 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
         sortable: true,
       },
       {
-        field: 'set_size',
+        field: 'setSize',
         sortable: false,
         width: '100px',
       },
 
       {
-        field: 'created_at',
+        field: 'createdAt',
         width: '150px',
         sortable: true,
       },
       {
-        field: 'updated_at',
+        field: 'updatedAt',
         width: '150px',
         sortable: true,
       },
@@ -64,13 +64,13 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
   },
 
   addOptions: {
-    fields: ['name', 'description', 'set_size'],
+    fields: ['name', 'description', 'setSize'],
   },
   editOptions: {
     fields: ['name', 'description'],
   },
   viewOptions: {
-    fields: ['name', 'description', 'set_size'],
+    fields: ['name', 'description', 'setSize'],
   },
   deleteOptions: {},
   shareOptions: undefined,
