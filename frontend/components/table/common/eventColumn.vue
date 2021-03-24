@@ -1,7 +1,7 @@
 <template>
   <div v-if="currentItem">
     <v-avatar size="24">
-      <span class="cubing-icon" :class="'event-' + currentItem.code"></span>
+      <span class="cubing-icon" :class="currentItem.cubingIcon"></span>
     </v-avatar>
     {{ currentItem.name }}
   </div>

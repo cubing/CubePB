@@ -267,7 +267,7 @@ export class PersonalBestService extends PaginatedService {
         fields: [
           {
             field: "happenedOn",
-            operator: "lt",
+            operator: "lte",
             value: validatedArgs.happenedOn,
           },
           {
@@ -328,7 +328,7 @@ export class PersonalBestService extends PaginatedService {
         fields: [
           {
             field: "happenedOn",
-            operator: "gt",
+            operator: "gte",
             value: validatedArgs.happenedOn,
           },
           {
@@ -421,12 +421,6 @@ export class PersonalBestService extends PaginatedService {
       },
       req,
       fieldPath,
-      /*       options: {
-        onConflict: {
-          columns: ["pbClass", "event", "setSize", "createdBy"],
-          action: "merge",
-        },
-      }, */
     });
 
     return this.getRecord({

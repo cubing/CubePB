@@ -45,9 +45,9 @@ import editRecordInterfaceMixin from '~/mixins/editRecordInterface'
 import { isObject } from '~/services/base'
 
 const scoreMethodHiddenFieldsMap = {
-  STANDARD: ['moves_count', 'attempts_succeeded', 'attempts_total'],
-  FMC: ['time_elapsed', 'attempts_succeeded', 'attempts_total'],
-  MBLD: ['moves_count'],
+  STANDARD: ['movesCount', 'attemptsSucceeded', 'attemptsTotal'],
+  FMC: ['timeElapsed', 'attemptsSucceeded', 'attemptsTotal'],
+  MBLD: ['movesCount'],
 }
 
 export default {
@@ -64,7 +64,7 @@ export default {
 
     pbClass() {
       try {
-        return this.getInputValue('pb_class.id')
+        return this.getInputValue('pbClass.id')
       } catch {
         return null
       }
@@ -78,14 +78,14 @@ export default {
         if (this.event) {
           let scoreMethod
           if (isObject(this.event)) {
-            scoreMethod = this.event.score_method
+            scoreMethod = this.event.scoreMethod
           } else {
             const foundEventObject = this.getInputObject(
               'event.id'
             ).options.find((ele) => ele.id === this.event)
 
             if (foundEventObject) {
-              scoreMethod = foundEventObject.score_method
+              scoreMethod = foundEventObject.scoreMethod
             }
           }
 
@@ -93,17 +93,17 @@ export default {
         }
 
         if (this.pbClass) {
-          // if pbClass.set_size, also hide that
+          // if pbClass.setSize, also hide that
           let setSize
           if (isObject(this.pbClass)) {
-            setSize = this.pbClass.set_size
+            setSize = this.pbClass.setSize
           } else {
-            setSize = this.getInputObject('pb_class.id').options.find(
+            setSize = this.getInputObject('pbClass.id').options.find(
               (ele) => ele.id === this.pbClass
               // eslint-disable-next-line camelcase
-            )?.set_size
+            )?.setSize
           }
-          if (setSize) hiddenFields.push('set_size')
+          if (setSize) hiddenFields.push('setSize')
         }
 
         return !hiddenFields.includes(ele.field)
@@ -115,10 +115,10 @@ export default {
     pbClass(val) {
       if (!isObject(val)) return
       // eslint-disable-next-line camelcase
-      if (!val?.set_size) {
-        this.setInputValue('set_size', null)
+      if (!val?.setSize) {
+        this.setInputValue('setSize', null)
       } else {
-        this.setInputValue('set_size', val.set_size)
+        this.setInputValue('setSize', val.setSize)
       }
     },
   },

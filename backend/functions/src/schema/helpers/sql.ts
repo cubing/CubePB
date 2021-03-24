@@ -11,14 +11,6 @@ import Knex = require("knex");
 import { isDev } from "../../config";
 import { executeDBQuery, knex } from "../../utils/knex";
 
-// options for knex to handle conflicts
-/* export type InsertTableRowOptions = {
-  onConflict: {
-    columns: string[];
-    action: "ignore" | "merge";
-  };
-}; */
-
 type FieldInfo = {
   alias: string;
   tableAlias: string;
@@ -61,7 +53,9 @@ export type SqlWhereFieldOperator =
   | "regex"
   | "like"
   | "gt"
-  | "lt";
+  | "gte"
+  | "lt"
+  | "lte";
 
 export type SqlSelectQuery = {
   select: SqlSelectQueryObject[];
@@ -283,11 +277,27 @@ function applyWhere(
             bindings.push(whereSubObject.value);
           }
           break;
+        case "gte":
+          if (whereSubObject.value === null) {
+            throw new Error("Can't use this operator with null");
+          } else {
+            whereSubstatement += " >= ?";
+            bindings.push(whereSubObject.value);
+          }
+          break;
         case "lt":
           if (whereSubObject.value === null) {
             throw new Error("Can't use this operator with null");
           } else {
             whereSubstatement += " < ?";
+            bindings.push(whereSubObject.value);
+          }
+          break;
+        case "lte":
+          if (whereSubObject.value === null) {
+            throw new Error("Can't use this operator with null");
+          } else {
+            whereSubstatement += " <= ?";
             bindings.push(whereSubObject.value);
           }
           break;

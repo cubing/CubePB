@@ -24,6 +24,12 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
         unique: true,
       },
     }),
+    cubingIcon: generateStringField({
+      allowNull: true,
+      sqlOptions: {
+        field: "cubing_icon",
+      },
+    }),
     scoreMethod: generateEnumField({
       scalarDefinition: Scalars.scoreMethod,
       allowNull: false,

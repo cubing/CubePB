@@ -32,6 +32,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.increments();
       table.string("name").notNullable();
       table.string("code").notNullable().unique();
+      table.string("cubing_icon").nullable();
       table.string("score_method").notNullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
@@ -69,7 +70,6 @@ export async function up(knex: Knex): Promise<void[]> {
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
-      table.unique(["pb_class", "event", "set_size", "created_by"]);
     }),
   ]);
 }

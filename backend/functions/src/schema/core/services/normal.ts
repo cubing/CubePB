@@ -751,7 +751,7 @@ export class NormalService extends BaseService {
       id: item.id,
       updateFields: {
         ...validatedArgs.fields,
-        updated_at: 1,
+        updatedAt: 1,
       },
       req,
       fieldPath,

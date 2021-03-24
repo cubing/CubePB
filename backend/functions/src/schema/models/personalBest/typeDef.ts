@@ -15,6 +15,7 @@ import {
   generateIntegerField,
   generateUnixTimestampField,
   generateBooleanField,
+  generateCreatedByField,
 } from "../../helpers/typeDef";
 
 export default new JomqlObjectType(<ObjectTypeDefinition>{
@@ -27,21 +28,16 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       service: PersonalBestClass,
       allowNull: false,
       sqlOptions: {
-        unique: "compositeIndex",
         field: "pb_class",
       },
     }),
     event: generateJoinableField({
       service: Event,
       allowNull: false,
-      sqlOptions: {
-        unique: "compositeIndex",
-      },
     }),
     setSize: generateIntegerField({
       allowNull: false,
       sqlOptions: {
-        unique: "compositeIndex",
         field: "set_size",
       },
     }),
@@ -84,15 +80,6 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),
-    // ...generateCreatedByField(User),
-    createdBy: generateJoinableField({
-      service: User,
-      allowNull: false,
-      typeDefOptions: { addable: false, updateable: false },
-      sqlOptions: {
-        unique: "compositeIndex",
-        field: "created_by",
-      },
-    }),
+    ...generateCreatedByField(User),
   },
 });

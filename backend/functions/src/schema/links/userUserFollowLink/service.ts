@@ -43,13 +43,13 @@ export class UserUserFollowLinkService extends LinkService {
   }: ServiceFunctionInputs) {
     // args should be validated already
     const validatedArgs = <any>args;
-    await this.handleLookupArgs(args, fieldPath);
+    await this.handleLookupArgs(validatedArgs, fieldPath);
 
     const addResults = await Resolver.createObjectType({
       typename: this.typename,
       addFields: {
         ...validatedArgs,
-        created_by: req.user!.id,
+        createdBy: req.user!.id,
       },
       req,
       fieldPath,

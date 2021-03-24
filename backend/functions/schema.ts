@@ -176,7 +176,7 @@ export type FilterByField<T> = {
   socialLogin: {
     provider: Scalars["string"];
     code: Scalars["string"];
-    redirect_uri: Scalars["string"];
+    redirectUri: Scalars["string"];
   };
   event: { id?: Scalars["id"]; code?: Scalars["string"] };
   "eventFilterByField/id": FilterByField<Scalars["id"]>;
@@ -201,11 +201,13 @@ export type FilterByField<T> = {
   createEvent: {
     name: Scalars["string"];
     code: Scalars["string"];
+    cubingIcon?: Scalars["string"] | null;
     scoreMethod: Scalars["scoreMethod"];
   };
   updateEventFields: {
     name?: Scalars["string"];
     code?: Scalars["string"];
+    cubingIcon?: Scalars["string"] | null;
     scoreMethod?: Scalars["scoreMethod"];
   };
   updateEvent: {
@@ -539,6 +541,7 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   };
   name: { Type: Scalars["string"]; Args: undefined };
   code: { Type: Scalars["string"]; Args: undefined };
+  cubingIcon: { Type: Scalars["string"] | null; Args: undefined };
   scoreMethod: { Type: Scalars["scoreMethod"]; Args: undefined };
   /**When the record was created*/ createdAt: {
     Type: Scalars["unixTimestamp"];

@@ -60,7 +60,6 @@ export async function up(knex: Knex): Promise<void[]> {
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
       table.integer("created_by").notNullable();
-      // table.unique(["pb_class", "event", "set_size", "created_by"]);
     }),
   ]);
 }

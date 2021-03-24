@@ -24,6 +24,9 @@ export const Event = <RecordInfo<'event'>>{
     code: {
       text: 'Code',
     },
+    cubingIcon: {
+      text: 'cubing-icon',
+    },
     scoreMethod: {
       text: 'Score Method',
       getOptions: getScoreMethods,
@@ -57,6 +60,11 @@ export const Event = <RecordInfo<'event'>>{
         width: '100px',
       },
       {
+        field: 'cubingIcon',
+        sortable: false,
+        width: '100px',
+      },
+      {
         field: 'createdAt',
         width: '150px',
         sortable: true,
@@ -70,13 +78,13 @@ export const Event = <RecordInfo<'event'>>{
     downloadOptions: {},
   },
   addOptions: {
-    fields: ['name', 'code', 'scoreMethod'],
+    fields: ['name', 'code', 'cubingIcon', 'scoreMethod'],
   },
   editOptions: {
-    fields: ['name', 'code'],
+    fields: ['name', 'code', 'cubingIcon'],
   },
   viewOptions: {
-    fields: ['name', 'code', 'scoreMethod'],
+    fields: ['name', 'code', 'cubingIcon', 'scoreMethod'],
   },
   deleteOptions: {},
   shareOptions: undefined,
