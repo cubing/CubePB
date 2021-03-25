@@ -6,3 +6,10 @@
   border-left: 5px solid var(--v-secondary-base);
   border-bottom: 5px solid var(--v-secondary-base);
 }
+
+.truncate {
+  max-width: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

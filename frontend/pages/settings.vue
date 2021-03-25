@@ -20,7 +20,7 @@
               readonly
             ></v-text-field>
             <v-text-field
-              v-model="inputs.wca_id"
+              v-model="inputs.wcaId"
               label="WCA ID"
               prepend-icon="mdi-account-details"
               readonly
@@ -71,7 +71,7 @@
             >
             <v-divider></v-divider>
             <v-switch
-              v-model="inputs.is_public"
+              v-model="inputs.isPublic"
               label="Public Profile Page"
               @change="inputsChanged = true"
             ></v-switch>
@@ -105,10 +105,10 @@ export default {
       inputs: {
         id: null,
         name: null,
-        wca_id: null,
+        wcaId: null,
         avatar: null,
         country: null,
-        is_public: null,
+        isPublic: null,
       },
 
       inputsChanged: false,
@@ -143,7 +143,7 @@ export default {
                 id: this.inputs.id,
               },
               fields: {
-                is_public: this.inputs.is_public,
+                isPublic: this.inputs.isPublic,
               },
             },
           },
@@ -172,7 +172,7 @@ export default {
                 id: this.inputs.id,
               },
               fields: {
-                is_public: this.inputs.is_public,
+                isPublic: this.inputs.isPublic,
               },
             },
           },
@@ -199,10 +199,10 @@ export default {
           getCurrentUser: {
             id: true,
             name: true,
-            wca_id: true,
+            wcaId: true,
             avatar: true,
             country: true,
-            is_public: true,
+            isPublic: true,
           },
         })
 
