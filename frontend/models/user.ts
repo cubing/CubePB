@@ -3,6 +3,7 @@ import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
 import { getUserRoles } from '~/services/dropdown'
+import ViewUserInterface from '~/components/interface/crud/special/viewUserInterface.vue'
 
 export const User = <RecordInfo<'user'>>{
   typename: 'user',
@@ -39,6 +40,9 @@ export const User = <RecordInfo<'user'>>{
       text: 'User Role',
       getOptions: getUserRoles,
       inputType: 'select',
+    },
+    currentUserFollowing: {
+      text: 'Following',
     },
     permissions: {
       text: 'Permissions',
@@ -123,7 +127,9 @@ export const User = <RecordInfo<'user'>>{
       'role',
       'permissions',
       'isPublic',
+      'currentUserFollowing',
     ],
+    component: ViewUserInterface,
   },
   deleteOptions: {},
   shareOptions: {},

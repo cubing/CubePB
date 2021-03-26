@@ -256,7 +256,6 @@ export default {
         initFilters: true,
         resetSort: true,
         resetCursor: true,
-        resetExpanded: true,
       })
     },
 
@@ -274,7 +273,6 @@ export default {
       this.syncFilters()
       this.reset({
         resetCursor: true,
-        resetExpanded: true,
       })
     },
   },
@@ -691,7 +689,12 @@ export default {
 
     // if subscription, no need to manually reset on change
     handleListChange() {
-      if (!this.useSubscription) this.reset()
+      if (!this.useSubscription) {
+        // also need to emit to parent (if any)
+        this.$emit('record-changed')
+
+        this.reset()
+      }
     },
 
     reset({
@@ -700,7 +703,7 @@ export default {
       resetFilters = false,
       resetSort = false,
       resetCursor = false,
-      resetExpanded = false,
+      resetExpanded = true,
       reloadData = true,
     } = {}) {
       let actuallyReloadData = reloadData

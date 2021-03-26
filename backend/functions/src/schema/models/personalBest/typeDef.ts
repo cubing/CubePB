@@ -16,6 +16,7 @@ import {
   generateUnixTimestampField,
   generateBooleanField,
   generateCreatedByField,
+  generateDecimalField,
 } from "../../helpers/typeDef";
 
 export default new JomqlObjectType(<ObjectTypeDefinition>{
@@ -68,7 +69,7 @@ export default new JomqlObjectType(<ObjectTypeDefinition>{
       description: "The amount of ms time elapsed for the pb attempt",
       sqlOptions: { field: "time_elapsed" },
     }),
-    movesCount: generateIntegerField({
+    movesCount: generateDecimalField({
       allowNull: true,
       description: "The amount of moves used in the pb attempt",
       sqlOptions: { field: "moves_count" },

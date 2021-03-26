@@ -329,6 +329,7 @@
             is-child-component
             :dense="dense"
             @pageOptions-updated="handleSubPageOptionsUpdated"
+            @record-changed="reset({ resetExpanded: false })"
           ></component>
         </td>
       </template>

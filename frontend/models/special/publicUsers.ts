@@ -28,7 +28,8 @@ export const PublicUsers = {
     downloadOptions: undefined,
   },
   viewOptions: {
-    fields: ['avatar', 'name', 'wcaId', 'country'],
+    ...(!!User.viewOptions && User.viewOptions),
+    fields: ['avatar', 'name', 'wcaId', 'country', 'currentUserFollowing'],
   },
   deleteOptions: undefined,
 

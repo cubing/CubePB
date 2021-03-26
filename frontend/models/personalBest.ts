@@ -7,6 +7,7 @@ import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
 import EventColumn from '~/components/table/common/eventColumn.vue'
+import ResultColumn from '~/components/table/common/resultColumn.vue'
 import { serializeTime } from '~/services/base'
 import EditPersonalBestInterface from '~/components/interface/crud/special/editPersonalBestInterface.vue'
 
@@ -53,6 +54,13 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'Event',
       component: EventColumn,
     },
+    'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod': {
+      text: 'Result',
+      component: ResultColumn,
+    },
+    'event.scoreMethod': {
+      text: 'scoreMethod',
+    },
     setSize: {
       text: 'Sample Size',
       hint: '# of attempts in your PB. For Avg5, this would be 5.',
@@ -78,7 +86,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     timeElapsed: {
       text: 'Time',
-      hint: 'Skip this for FMC',
       inputRules: [
         (value) => {
           const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
@@ -116,7 +123,16 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     movesCount: {
       text: 'Move Count',
-      hint: 'For FMC only',
+      inputRules: [
+        (value) => {
+          const regEx = /^\d+(\.\d{2})?$/
+          return (
+            !value ||
+            regEx.test(value) ||
+            'Invalid Time Format, up to 2 decimal places allowed'
+          )
+        },
+      ],
     },
     attemptsSucceeded: {
       text: 'Total Succeeded',
@@ -130,7 +146,16 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'Date Happened',
       inputType: 'datepicker',
       // default to today.
-      default: () => new Date().toISOString().substring(0, 10),
+      default: () => {
+        const date = new Date()
+        return (
+          date.getFullYear() +
+          '-' +
+          String(date.getMonth() + 1).padStart(2, '0') +
+          '-' +
+          date.getDate()
+        )
+      },
       // unix timestamp to YYYY-MM-DD
       serialize: (val: number) =>
         val && new Date(val * 1000).toISOString().substring(0, 10),
@@ -226,43 +251,19 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         align: 'right',
       },
       {
-        field: 'timeElapsed',
+        field:
+          'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod',
         sortable: true,
-        width: '125px',
-        align: 'right',
-      },
-      {
-        field: 'movesCount',
-        sortable: false,
-        width: '125px',
-        align: 'right',
-      },
-      {
-        field: 'attemptsSucceeded',
-        sortable: false,
-        width: '150px',
-        align: 'right',
-      },
-      {
-        field: 'attemptsTotal',
-        sortable: false,
         width: '150px',
         align: 'right',
       },
       {
         field: 'happenedOn',
         sortable: true,
-        width: '150px',
       },
       {
         field: 'createdBy.name+createdBy.avatar+createdBy.id',
         sortable: false,
-      },
-      {
-        field: 'score',
-        sortable: true,
-        align: 'right',
-        width: '200px',
       },
     ],
     downloadOptions: {},

@@ -165,7 +165,7 @@ export class PersonalBestService extends PaginatedService {
         validatedArgs.attemptsTotal = null;
         validatedArgs.attemptsSucceeded = null;
         validatedArgs.timeElapsed = null;
-        score = validatedArgs.movesCount;
+        score = validatedArgs.movesCount * 1000;
         break;
       case scoreMethodEnum.MBLD:
         // only use movesCount, all other fields null
@@ -203,11 +203,14 @@ export class PersonalBestService extends PaginatedService {
         }
 
         validatedArgs.movesCount = null;
+        // rightmost 7 rights are for time (), lower is better
+        // remaining digits are for the score (x -1*1E8), higher is better
         score =
-          validatedArgs.timeElapsed *
-          ((validatedArgs.attemptsTotal - validatedArgs.attemptsSucceeded) *
-            -1 +
-            validatedArgs.attemptsSucceeded * 1);
+          validatedArgs.timeElapsed +
+          -100000000 *
+            ((validatedArgs.attemptsTotal - validatedArgs.attemptsSucceeded) *
+              -1 +
+              validatedArgs.attemptsSucceeded * 1);
         break;
     }
 
@@ -445,34 +448,22 @@ export class PersonalBestService extends PaginatedService {
     // args should be validated already
     const validatedArgs = <any>args;
     // confirm existence of item and get ID
-    const results = await sqlHelper.fetchTableRows({
-      select: [
+    const item = await this.lookupRecord(
+      [
         { field: "id" },
-        {
-          field: "isCurrent",
-        },
-        {
-          field: "happenedOn",
-        },
+        { field: "event" },
+        { field: "pbClass" },
+        { field: "setSize" },
+        { field: "createdBy" },
+        { field: "isCurrent" },
+        { field: "happenedOn" },
       ],
-      from: this.typename,
-      where: {
-        connective: "AND",
-        fields: Object.entries(validatedArgs).map(([field, value]) => ({
-          field,
-          value,
-        })),
-      },
-    });
+      validatedArgs,
+      fieldPath
+    );
 
-    if (results.length < 1) {
-      throw new Error(`${this.typename} not found`);
-    }
-
-    const itemId = results[0].id;
-
-    // if this pb isCurrent === true, must set the previous pb to isCurrent
-    if (results[0].isCurrent) {
+    // if this pb isCurrent === true, must set the previous pb of the same event-pbClass-setSize-createdBy combination to isCurrent
+    if (item.isCurrent) {
       const previousPbResults = await sqlHelper.fetchTableRows({
         select: [
           {
@@ -485,7 +476,23 @@ export class PersonalBestService extends PaginatedService {
             {
               field: "happenedOn",
               operator: "lt",
-              value: results[0].happenedOn,
+              value: item.happenedOn,
+            },
+            {
+              field: "event",
+              value: item.event,
+            },
+            {
+              field: "pbClass",
+              value: item.pbClass,
+            },
+            {
+              field: "setSize",
+              value: item.setSize,
+            },
+            {
+              field: "createdBy",
+              value: item.createdBy,
             },
           ],
         },
@@ -531,7 +538,7 @@ export class PersonalBestService extends PaginatedService {
 
     await Resolver.deleteObjectType({
       typename: this.typename,
-      id: itemId,
+      id: item.id,
       req,
       fieldPath,
     });

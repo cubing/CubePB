@@ -66,7 +66,7 @@
               :loading="loading.toggleFollow"
               @click="toggleFollowUser(!currentUser.currentUserFollowing)"
               >{{
-                currentUser.currentUserFollowing ? 'Un-Follow' : 'Follow'
+                currentUser.currentUserFollowing ? 'Following' : 'Follow'
               }}</v-btn
             >
           </template>
