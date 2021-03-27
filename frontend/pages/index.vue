@@ -20,7 +20,7 @@
               >
               to let us know your feedback, report bugs, or to contribute.
               Please also check out our official
-              <a href="https://discord.gg/syZfxBpT" target="_blank"
+              <a href="https://discord.gg/72d8gNq7bh" target="_blank"
                 >Discord server</a
               >. If you would prefer to email, our email is
               <a>hello@cubepb.com</a>.
