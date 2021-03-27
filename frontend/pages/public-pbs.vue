@@ -24,7 +24,7 @@ export default {
       head: {
         title: 'Public PBs',
       },
-      hiddenFilters: ['is_current'],
+      hiddenFilters: ['isCurrent'],
       lockedFilters: [
         {
           field: 'createdBy.isPublic',
