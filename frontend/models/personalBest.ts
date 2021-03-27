@@ -50,7 +50,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     'event.code': {
       text: 'Event Code',
     },
-    'event.name+event.code': {
+    'event.cubingIcon': {
+      text: 'Event Icon',
+    },
+    'event.name+event.cubingIcon': {
       text: 'Event',
       component: EventColumn,
     },
@@ -168,7 +171,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       lookupFilters: (_that) => {
         return [
           {
-            is_public: {
+            isPublic: {
               eq: true,
             },
           },
@@ -235,7 +238,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     ],
     headers: [
       {
-        field: 'event.name+event.code',
+        field: 'event.name+event.cubingIcon',
         sortable: true,
         width: '200px',
       },
