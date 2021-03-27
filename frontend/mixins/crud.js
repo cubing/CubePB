@@ -526,9 +526,10 @@ export default {
                       headerInfo.field.split(/\+/).forEach((field) => {
                         total[field] = true
                         // assuming all fields are valid
-                        serializeMap[field] = this.recordInfo.fields[
-                          field
-                        ].serialize
+                        serializeMap.set(
+                          field,
+                          this.recordInfo.fields[field].serialize
+                        )
                       })
                     } else {
                       total[headerInfo.field] = true
@@ -593,8 +594,6 @@ export default {
         const results = await this.getRecords()
 
         this.records = results.edges.map((ele) => ele.node)
-
-        // serialize any fields if necessary
 
         this.nextPaginatorInfo = results.paginatorInfo
       } catch (err) {

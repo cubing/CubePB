@@ -74,6 +74,10 @@ export default {
         // if no event, only show event input
         if (!this.event) return ele.field === 'event.id'
 
+        // if no pbClass, only allow event + pbClass
+        if (!this.pbClass)
+          return ele.field === 'event.id' || ele.field === 'pbClass.id'
+
         const hiddenFields = []
         if (this.event) {
           let scoreMethod

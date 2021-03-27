@@ -35,6 +35,7 @@
 
 <script>
 import EditRecordInterface from '~/components/interface/crud/editRecordInterface.vue'
+import ViewRecordInterface from '~/components/interface/crud/viewRecordInterface.vue'
 import DeleteRecordInterface from '~/components/interface/crud/deleteRecordInterface.vue'
 import ShareRecordInterface from '~/components/interface/crud/shareRecordInterface.vue'
 
@@ -52,7 +53,7 @@ const modesMap = {
   view: {
     icon: 'mdi-eye',
     prefix: 'View',
-    defaultInterface: EditRecordInterface,
+    defaultInterface: ViewRecordInterface,
   },
   delete: {
     icon: 'mdi-delete',

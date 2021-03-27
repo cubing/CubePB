@@ -116,7 +116,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
   }
 
   viewOptions?: {
-    // required: fields that can be added
+    // required: fields that can be viewed
     fields: string[]
     // custom component
     component?: any

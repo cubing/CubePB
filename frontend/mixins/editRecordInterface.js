@@ -5,6 +5,7 @@ import {
   capitalizeString,
   handleError,
   isObject,
+  serializeNestedProperty,
 } from '~/services/base'
 import GenericInput from '~/components/input/genericInput.vue'
 
@@ -48,6 +49,8 @@ export default {
 
       // loaded from loadMiscDropdowns, if provided
       miscOptions: {},
+
+      currentItem: null,
 
       loading: {
         editRecord: false,
@@ -240,6 +243,9 @@ export default {
     async loadRecord() {
       this.loading.loadRecord = true
       try {
+        // create a map field -> serializeFn for fast serialization
+        const serializeMap = new Map()
+
         const fields =
           this.mode === 'edit'
             ? this.recordInfo.editOptions.fields
@@ -254,7 +260,20 @@ export default {
 
                 // if field is hidden, exclude
                 if (fieldInfo.hidden) return total
-                total[fieldKey] = true
+
+                // if field has '+', add all of the fields
+                if (fieldKey.match(/\+/)) {
+                  fieldKey.split(/\+/).forEach((field) => {
+                    total[field] = true
+                    // assuming all fields are valid
+                    serializeMap[field] = this.recordInfo.fields[
+                      field
+                    ].serialize
+                  })
+                } else {
+                  total[fieldKey] = true
+                  serializeMap.set(fieldKey, fieldInfo.serialize)
+                }
                 return total
               }, {})
             ),
@@ -264,7 +283,20 @@ export default {
           },
         })
 
-        // serialize any fields if necessary
+        // save record
+        this.currentItem = data
+
+        // remove any undefined serializeMap elements
+        serializeMap.forEach((val, key) => {
+          if (val === undefined) serializeMap.delete(key)
+        })
+
+        // apply serialization to results
+        serializeMap.forEach((serialzeFn, field) => {
+          serializeNestedProperty(data, field, serialzeFn)
+        })
+
+        // build inputs Array
         this.inputsArray = fields.map((fieldKey) => {
           const fieldInfo = this.recordInfo.fields[fieldKey]
 
@@ -275,11 +307,9 @@ export default {
             ? null
             : getNestedProperty(data, fieldKey)
           const inputObject = {
-            field: fieldKey,
+            field: fieldKey.split(/\+/)[0],
             fieldInfo,
-            value: fieldInfo.serialize
-              ? fieldInfo.serialize(fieldValue)
-              : fieldValue,
+            value: fieldValue, // already serialized
             options: [],
           }
 
