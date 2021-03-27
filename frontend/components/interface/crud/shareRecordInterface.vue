@@ -51,9 +51,13 @@ export default {
         this.recordInfo.shareOptions &&
         this.recordInfo.viewRecordRoute
         ? window.location.origin +
-            this.recordInfo.viewRecordRoute +
-            '?id=' +
-            this.selectedItem.id
+            this.$router.resolve({
+              name: this.recordInfo.viewRecordRoute,
+              query: {
+                id: this.selectedItem.id,
+                expand: this.$route.query.expand,
+              },
+            }).href
         : ''
     },
     itemIdentifier() {

@@ -221,7 +221,10 @@ export default {
         {
           icon: 'mdi-account',
           title: 'Public Users',
-          to: '/public-users',
+          to: generateRoute('/public-users', {
+            sortBy: ['createdAt'],
+            sortDesc: [true],
+          }),
           loginRequired: false,
         },
         {

@@ -2,7 +2,7 @@ import { PersonalBest } from '..'
 
 const MyPbs = <any>{
   ...PersonalBest,
-  viewRecordRoute: '/pb',
+  viewRecordRoute: 'pb',
   paginationOptions: {
     ...(!!PersonalBest.paginationOptions && PersonalBest.paginationOptions),
     downloadOptions: undefined,

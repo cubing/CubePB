@@ -3,7 +3,7 @@ import { PublicPbs } from '.'
 
 export const PublicUsers = {
   ...User,
-  viewRecordRoute: '/user',
+  viewRecordRoute: 'user',
 
   editOptions: undefined,
   paginationOptions: {
@@ -23,6 +23,11 @@ export const PublicUsers = {
         field: 'country',
         width: '100px',
         sortable: false,
+      },
+      {
+        field: 'createdAt',
+        width: '150px',
+        sortable: true,
       },
     ],
     downloadOptions: undefined,
