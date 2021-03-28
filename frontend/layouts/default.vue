@@ -247,7 +247,7 @@ export default {
         },
         {
           icon: 'mdi-star',
-          title: 'Public PBs',
+          title: 'Latest PBs',
           to: generateRoute('/public-pbs', {
             sortBy: ['happenedOn'],
             sortDesc: [true],

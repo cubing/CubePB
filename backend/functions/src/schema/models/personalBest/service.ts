@@ -241,10 +241,26 @@ export class PersonalBestService extends PaginatedService {
 
     const pbClass = pbClassRecords[0];
 
+    // setSize must be 1 or greater
+    if (validatedArgs.setSize < 1) {
+      throw new GiraffeqlBaseError({
+        message: `setSize must be 1 or greater`,
+        fieldPath,
+      });
+    }
+
     // if pbClass.setSize, args.setSize must be equal to that
     if (pbClass.setSize !== null && pbClass.setSize !== validatedArgs.setSize) {
       throw new GiraffeqlBaseError({
-        message: `Invalid set size for this PersonalBestClass`,
+        message: `Invalid setSize for this PersonalBestClass`,
+        fieldPath,
+      });
+    }
+
+    // if pbClass.setSize === null, args.setSize must be gt 1
+    if (pbClass.setSize === null && validatedArgs.setSize <= 1) {
+      throw new GiraffeqlBaseError({
+        message: `setSize must be greater than 1 for this pbClass`,
         fieldPath,
       });
     }

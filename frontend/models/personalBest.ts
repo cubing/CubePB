@@ -8,6 +8,7 @@ import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
 import EventColumn from '~/components/table/common/eventColumn.vue'
 import ResultColumn from '~/components/table/common/resultColumn.vue'
+import PbTypeColumn from '~/components/table/common/pbTypeColumn.vue'
 import { serializeTime } from '~/services/base'
 import EditPersonalBestInterface from '~/components/interface/crud/special/editPersonalBestInterface.vue'
 
@@ -57,6 +58,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'Event',
       component: EventColumn,
     },
+    'pbClass.name+setSize': {
+      text: 'PB Type',
+      component: PbTypeColumn,
+    },
     'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod': {
       text: 'Result',
       component: ResultColumn,
@@ -67,6 +72,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     setSize: {
       text: 'Solve Count',
       hint: '# of solves in your PB. For Avg5, this would be 5.',
+      inputRules: [
+        (value) => {
+          return !value || Number(value) > 1 || 'Must be greater than 1'
+        },
+      ],
     },
     score: {
       text: 'Score',
@@ -244,15 +254,9 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         width: '200px',
       },
       {
-        field: 'pbClass.name',
+        field: 'pbClass.name+setSize',
         sortable: true,
         width: '100px',
-      },
-      {
-        field: 'setSize',
-        sortable: true,
-        width: '125px',
-        align: 'right',
       },
       {
         field:
