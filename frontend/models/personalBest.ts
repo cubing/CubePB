@@ -65,8 +65,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'scoreMethod',
     },
     setSize: {
-      text: 'Sample Size',
-      hint: '# of attempts in your PB. For Avg5, this would be 5.',
+      text: 'Solve Count',
+      hint: '# of solves in your PB. For Avg5, this would be 5.',
     },
     score: {
       text: 'Score',
