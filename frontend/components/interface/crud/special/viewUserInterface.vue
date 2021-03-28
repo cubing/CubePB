@@ -52,7 +52,7 @@
 <script>
 import editRecordInterfaceMixin from '~/mixins/editRecordInterface'
 import { handleError } from '~/services/base'
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 
 export default {
   mixins: [editRecordInterfaceMixin],

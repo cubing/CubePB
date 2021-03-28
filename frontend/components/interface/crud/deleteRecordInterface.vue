@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 import { capitalizeString, handleError } from '~/services/base'
 
 export default {

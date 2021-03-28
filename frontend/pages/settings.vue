@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 import { goToWcaAccountManagement, goToWcaAuth } from '~/services/auth'
 import { handleError } from '~/services/base'
 

@@ -1,4 +1,4 @@
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 
 function memoize(memoizedFn) {
   const cache = {}

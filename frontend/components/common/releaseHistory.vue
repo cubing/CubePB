@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 import { generateTimeAgoString } from '~/services/base'
 
 export default {

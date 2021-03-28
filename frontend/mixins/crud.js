@@ -1,7 +1,7 @@
 import {
   executeGiraffeql,
   executeGiraffeqlSubscription,
-} from '~/services/Giraffeql'
+} from '~/services/giraffeql'
 import { unsubscribeChannels } from '~/services/pusher'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'

@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 import { copyToClipboard } from '~/services/base'
 
 export default {

@@ -16,7 +16,7 @@
 
 <script>
 import { handleLogin } from '~/services/auth'
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 import { handleError } from '~/services/base'
 
 export default {

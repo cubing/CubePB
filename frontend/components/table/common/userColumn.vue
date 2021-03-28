@@ -79,7 +79,7 @@
 <script>
 import columnMixin from '~/mixins/column'
 import { getNestedProperty, handleError } from '~/services/base'
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 
 export default {
   mixins: [columnMixin],

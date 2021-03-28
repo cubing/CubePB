@@ -440,7 +440,7 @@
 import Draggable from 'vuedraggable'
 // import { uploadFile } from '~/services/file'
 import { capitalizeString, isObject, handleError } from '~/services/base'
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 
 export default {
   components: {

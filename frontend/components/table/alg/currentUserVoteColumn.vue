@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 import { handleError } from '~/services/base'
 import columnMixin from '~/mixins/column'
 

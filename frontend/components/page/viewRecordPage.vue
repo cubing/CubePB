@@ -128,7 +128,7 @@
 <script>
 import EditRecordInterface from '~/components/interface/crud/editRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
-import { executeGiraffeql } from '~/services/Giraffeql'
+import { executeGiraffeql } from '~/services/giraffeql'
 import {
   capitalizeString,
   handleError,
