@@ -44,6 +44,8 @@ export const User = <RecordInfo<'user'>>{
     currentUserFollowing: {
       text: 'Following',
     },
+    'userUserFollowLink/user.id': {},
+    'userUserFollowLink/target.id': {},
     permissions: {
       text: 'Permissions',
       serialize: (val: string[]) => val && val.join(','),

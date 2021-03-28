@@ -12,6 +12,7 @@ import ViewRecordPage from '~/components/page/viewRecordPage.vue'
 import { MyProfile } from '~/models/special'
 
 export default {
+  middleware: ['router-auth'],
   components: {
     ViewRecordPage,
   },

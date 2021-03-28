@@ -1,13 +1,13 @@
 import { Github } from "../../services";
 import * as Scalars from "../../scalars";
 import {
-  JomqlInputFieldType,
-  JomqlInputType,
-  JomqlRootResolverType,
-} from "jomql";
+  GiraffeqlInputFieldType,
+  GiraffeqlInputType,
+  GiraffeqlRootResolverType,
+} from "giraffeql";
 
 export default {
-  getRepositoryReleases: new JomqlRootResolverType({
+  getRepositoryReleases: new GiraffeqlRootResolverType({
     name: "getRepositoryReleases",
     restOptions: {
       method: "get",
@@ -18,13 +18,13 @@ export default {
     arrayOptions: {
       allowNullElement: false,
     },
-    args: new JomqlInputFieldType({
+    args: new GiraffeqlInputFieldType({
       required: true,
-      type: new JomqlInputType({
+      type: new GiraffeqlInputType({
         name: "getRepositoryReleases",
         description: "Input object for getRepositoryReleases",
         fields: {
-          first: new JomqlInputFieldType({
+          first: new GiraffeqlInputFieldType({
             type: Scalars.number,
             required: true,
           }),
@@ -34,7 +34,7 @@ export default {
     resolver: (inputs) => Github.getRepositoryReleases(inputs),
   }),
 
-  getRepositoryLatestVersion: new JomqlRootResolverType({
+  getRepositoryLatestVersion: new GiraffeqlRootResolverType({
     name: "getRepositoryLatestVersion",
     restOptions: {
       method: "get",

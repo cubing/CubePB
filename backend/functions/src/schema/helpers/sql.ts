@@ -1,15 +1,16 @@
 /*
- * Purpose: execute raw SQL instructions while making use of the jomql schema
+ * Purpose: execute raw SQL instructions while making use of the Giraffeql schema
  */
 
 import {
-  JomqlBaseError,
+  GiraffeqlBaseError,
   ObjectTypeDefinitionField,
   objectTypeDefs,
-} from "jomql";
+} from "giraffeql";
 import Knex = require("knex");
 import { isDev } from "../../config";
 import { executeDBQuery, knex } from "../../utils/knex";
+import { linkDefs } from "../links";
 
 type FieldInfo = {
   alias: string;
@@ -104,7 +105,7 @@ export type SqlDeleteQuery = {
 function generateError(err: Error, fieldPath?: string[]) {
   const errMessage = isDev ? err.message : "A SQL error has occurred";
   console.log(err);
-  return new JomqlBaseError({
+  return new GiraffeqlBaseError({
     message: errMessage,
     fieldPath,
   });
@@ -126,6 +127,8 @@ function extractFields(whereObject: SqlWhereObject): string[] {
 type JoinObject = {
   table: string;
   alias: string;
+  field: string; // field from the originating table
+  joinField: string; // field to be joined from joinedTable
   nested: {
     [x: string]: JoinObject;
   };
@@ -166,20 +169,65 @@ function processFields(relevantFields: Set<string>, table: string) {
     let currentJoinObject = requiredJoins;
 
     fieldParts.forEach((fieldPart, index) => {
+      // does the field have a "/"? if so, must handle differently
+      let actualFieldPart = fieldPart;
+      if (fieldPart.match(/\//)) {
+        const subParts = fieldPart.split(/\//);
+        const linkJoinType = subParts[0];
+
+        // ensure the type exists
+        const linkService = linkDefs.get(linkJoinType);
+        if (!linkService)
+          throw new Error(`Link type '${linkJoinType}' does not exist`);
+
+        const linkJoinTypeDef = linkService.typeDef;
+
+        // determine how to join this table, based on the definition
+        const joinField =
+          linkService.joinFieldMap[currentTypeDef.definition.name];
+
+        if (!joinField)
+          throw new Error(
+            `Joining type '${linkJoinType}' from type '${currentTypeDef.definition.name}' is not configured`
+          );
+
+        // advance the currentTypeDef to the link Join Type Def
+        currentTypeDef = linkJoinTypeDef;
+
+        // set the actualFieldPart to the 2nd part
+        actualFieldPart = subParts[1];
+
+        const linkTableAlias = acquireTableAlias(tableIndexMap, linkJoinType);
+
+        // set and advance the join table
+        currentJoinObject[fieldPart] = {
+          table: linkJoinType,
+          alias: linkTableAlias,
+          field: "id",
+          joinField,
+          nested: {},
+        };
+
+        currentJoinObject = currentJoinObject[fieldPart].nested;
+
+        // set currentTableAlias
+        currentTableAlias = linkTableAlias;
+      }
+
       // find the field on the currentTypeDef
-      const typeDefField = currentTypeDef.definition.fields[fieldPart];
+      const typeDefField = currentTypeDef.definition.fields[actualFieldPart];
 
       if (!typeDefField)
         throw new Error(
-          `Field '${field}' does not exist on type '${currentTypeDef.definition.name}'`
+          `Field '${actualFieldPart}' does not exist on type '${currentTypeDef.definition.name}'`
         );
 
       if (!typeDefField.sqlOptions)
         throw new Error(
-          `Field '${field}' on type '${currentTypeDef.definition.name}' is not a SQL field`
+          `Field '${actualFieldPart}' on type '${currentTypeDef.definition.name}' is not a SQL field`
         );
 
-      const actualSqlField = typeDefField.sqlOptions.field ?? fieldPart;
+      const actualSqlField = typeDefField.sqlOptions.field ?? actualFieldPart;
 
       // if no more fields, set the alias
       if (!fieldParts[index + 1]) {
@@ -194,7 +242,7 @@ function processFields(relevantFields: Set<string>, table: string) {
         const joinType = typeDefField.sqlOptions.joinType;
         if (!joinType)
           throw new Error(
-            `Field '${fieldPart}' is not joinable on type '${currentTypeDef.definition.name}'`
+            `Field '${actualFieldPart}' is not joinable on type '${currentTypeDef.definition.name}'`
           );
 
         // ensure the type exists
@@ -213,6 +261,8 @@ function processFields(relevantFields: Set<string>, table: string) {
           currentJoinObject[actualSqlField] = {
             table: joinType,
             alias: joinTableAlias,
+            field: actualSqlField,
+            joinField: "id",
             nested: {},
           };
         }
@@ -363,8 +413,8 @@ function applyJoins(
   for (const field in currentJoinObject) {
     knexObject.leftJoin(
       { [currentJoinObject[field].alias]: currentJoinObject[field].table },
-      parentTableAlias + "." + field,
-      currentJoinObject[field].alias + ".id"
+      parentTableAlias + "." + currentJoinObject[field].field,
+      currentJoinObject[field].alias + "." + currentJoinObject[field].joinField
     );
     if (currentJoinObject[field].nested) {
       applyJoins(

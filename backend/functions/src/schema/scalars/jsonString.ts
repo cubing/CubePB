@@ -1,6 +1,6 @@
-import { JomqlScalarType } from "jomql";
+import { GiraffeqlScalarType } from "giraffeql";
 
-export const jsonString = new JomqlScalarType({
+export const jsonString = new GiraffeqlScalarType({
   name: "jsonString",
   types: ["string"],
   description: "Valid JSON as a string",

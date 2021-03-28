@@ -4,7 +4,7 @@ import {
 } from "../helpers/scalar";
 import { userRoleKenum, userPermissionEnum, scoreMethodEnum } from "../enums";
 
-import { BaseScalars, JomqlScalarType } from "jomql";
+import { BaseScalars, GiraffeqlScalarType } from "giraffeql";
 
 // base scalars
 export const string = BaseScalars.string;
@@ -23,14 +23,14 @@ export { json } from "./json";
 export { jsonString } from "./jsonString";
 
 // generated scalars
-export const userRole = new JomqlScalarType(
+export const userRole = new GiraffeqlScalarType(
   generateKenumScalarDefinition("userRole", userRoleKenum)
 );
 
-export const userPermission = new JomqlScalarType(
+export const userPermission = new GiraffeqlScalarType(
   generateEnumScalarDefinition("userPermission", userPermissionEnum)
 );
 
-export const scoreMethod = new JomqlScalarType(
+export const scoreMethod = new GiraffeqlScalarType(
   generateEnumScalarDefinition("scoreMethod", scoreMethodEnum)
 );

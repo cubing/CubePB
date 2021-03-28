@@ -1,4 +1,4 @@
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import {
   collapseObject,
   getNestedProperty,
@@ -155,7 +155,7 @@ export default {
             if (typeof inputObject.value === 'string') {
               // expecting either string or obj
               // create the item, get its id.
-              const results = await executeJomql(this, {
+              const results = await executeGiraffeql(this, {
                 ['create' + capitalizeString(inputObject.fieldInfo.typename)]: {
                   id: true,
                   name: true,
@@ -224,7 +224,7 @@ export default {
             },
           }
         }
-        const data = await executeJomql(this, query)
+        const data = await executeGiraffeql(this, query)
 
         this.$notifier.showSnackbar({
           message:
@@ -250,7 +250,7 @@ export default {
           this.mode === 'edit'
             ? this.recordInfo.editOptions.fields
             : this.recordInfo.viewOptions.fields
-        const data = await executeJomql(this, {
+        const data = await executeGiraffeql(this, {
           ['get' + this.capitalizedType]: {
             ...collapseObject(
               fields.reduce((total, fieldKey) => {
@@ -320,7 +320,7 @@ export default {
           ) {
             inputObject.value = null // set this to null initially while the results load, to prevent console error
             if (fieldValue) {
-              executeJomql(this, {
+              executeGiraffeql(this, {
                 [`get${capitalizeString(fieldInfo.typename)}`]: {
                   id: true,
                   name: true,
@@ -409,7 +409,7 @@ export default {
           ) {
             // only if readonly and value is truthy
             if (inputObject.readonly && inputObject.value) {
-              executeJomql(this, {
+              executeGiraffeql(this, {
                 [`get${capitalizeString(fieldInfo.typename)}`]: {
                   id: true,
                   name: true,

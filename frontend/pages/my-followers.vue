@@ -2,16 +2,15 @@
   <CrudRecordPage
     :record-info="recordInfo"
     :locked-filters="lockedFilters"
-    :hidden-filters="hiddenFilters"
-    :hidden-headers="hiddenHeaders"
     :title="title"
     :head="head"
+    :icon="icon"
   ></CrudRecordPage>
 </template>
 
 <script>
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
-import { MyPbs } from '~/models/special'
+import { PublicFollows } from '~/models/special'
 
 export default {
   middleware: ['router-auth'],
@@ -21,29 +20,24 @@ export default {
 
   data() {
     return {
-      recordInfo: MyPbs,
+      recordInfo: PublicFollows,
+      // override
+      hiddenHeaders: ['target.id+target.name+target.avatar'],
       head: {
-        title: 'My PBs',
+        title: 'Users Following Me',
       },
-      title: 'My PBs',
-      hiddenFilters: ['createdBy.id', 'isCurrent'],
-      hiddenHeaders: ['createdBy.name+createdBy.avatar'],
+      icon: 'mdi-account-multiple',
+      title: 'Users Following Me',
     }
   },
-
   computed: {
     lockedFilters() {
       return this.$store.getters['auth/user']
         ? [
             {
-              field: 'createdBy.id',
+              field: 'target.id',
               operator: 'eq',
-              value: this.$store.getters['auth/user']?.id,
-            },
-            {
-              field: 'isCurrent',
-              operator: 'eq',
-              value: true,
+              value: this.$store.getters['auth/user'].id,
             },
           ]
         : []

@@ -1,5 +1,5 @@
 import { PersonalBestClass, User } from "../../services";
-import { JomqlObjectType, ObjectTypeDefinition } from "jomql";
+import { GiraffeqlObjectType, ObjectTypeDefinition } from "giraffeql";
 import {
   generateIdField,
   generateCreatedAtField,
@@ -11,7 +11,7 @@ import {
   generateIntegerField,
 } from "../../helpers/typeDef";
 
-export default new JomqlObjectType(<ObjectTypeDefinition>{
+export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: PersonalBestClass.typename,
   description: "Personal Best Type Type",
   fields: {

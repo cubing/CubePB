@@ -1,6 +1,6 @@
 import { EnumService, SimpleService } from ".";
 import { generateEnumPaginatorTypeDef } from "../generators";
-import { JomqlObjectType } from "jomql";
+import { GiraffeqlObjectType } from "giraffeql";
 
 export class EnumPaginatorService extends SimpleService {
   constructor(service: EnumService) {
@@ -12,7 +12,7 @@ export class EnumPaginatorService extends SimpleService {
     };
 
     this.setTypeDef(
-      new JomqlObjectType(generateEnumPaginatorTypeDef(service, this))
+      new GiraffeqlObjectType(generateEnumPaginatorTypeDef(service, this))
     );
   }
 }

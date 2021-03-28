@@ -19,10 +19,15 @@ export const PersonalBestClass = new PersonalBestClassService();
 export const PersonalBest = new PersonalBestService();
 export const Github = new GithubService();
 
-export const UserUserFollowLink = new UserUserFollowLinkService({
-  user: User,
-  target: User,
-});
+export const UserUserFollowLink = new UserUserFollowLinkService(
+  {
+    user: User,
+    target: User,
+  },
+  {
+    user: "target",
+  }
+);
 
 export const UserRole = new KenumService("userRole", userRoleKenum);
 

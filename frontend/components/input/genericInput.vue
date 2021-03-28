@@ -440,7 +440,7 @@
 import Draggable from 'vuedraggable'
 // import { uploadFile } from '~/services/file'
 import { capitalizeString, isObject, handleError } from '~/services/base'
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 
 export default {
   components: {
@@ -604,7 +604,7 @@ export default {
     async loadSearchResults(inputObject) {
       inputObject.loading = true
       try {
-        const results = await executeJomql(this, {
+        const results = await executeGiraffeql(this, {
           [`get${capitalizeString(inputObject.fieldInfo.typename)}Paginator`]: {
             edges: {
               node: {

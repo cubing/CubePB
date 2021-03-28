@@ -8,7 +8,7 @@ import {
   generateJoinableField,
   generateTypenameField,
 } from "../../helpers/typeDef";
-import { ObjectTypeDefinition, ObjectTypeDefinitionField } from "jomql";
+import { ObjectTypeDefinition, ObjectTypeDefinitionField } from "giraffeql";
 
 type ServicesObjectMap = {
   [x: string]: NormalService;

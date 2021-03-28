@@ -3,7 +3,7 @@ import { permissionsCheck } from "../../helpers/permissions";
 import * as Resolver from "../../helpers/resolver";
 import * as sqlHelper from "../../helpers/sql";
 import { ServiceFunctionInputs } from "../../../types";
-import { JomqlBaseError } from "jomql";
+import { GiraffeqlBaseError } from "giraffeql";
 import { scoreMethodEnum } from "../../enums";
 
 export class PersonalBestService extends PaginatedService {
@@ -19,6 +19,7 @@ export class PersonalBestService extends PaginatedService {
     happenedOn: {},
     isCurrent: {},
     setSize: {},
+    "createdBy.userUserFollowLink/user.id": {},
   };
 
   uniqueKeyMap = {
@@ -123,7 +124,7 @@ export class PersonalBestService extends PaginatedService {
     });
 
     if (eventRecords.length < 1)
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message: `Event not found`,
         fieldPath,
       });
@@ -135,7 +136,7 @@ export class PersonalBestService extends PaginatedService {
       case scoreMethodEnum.STANDARD:
         // only use timeElapsed, all other fields null
         if (!validatedArgs.timeElapsed) {
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `This event requires timeElapsed`,
             fieldPath,
           });
@@ -143,7 +144,7 @@ export class PersonalBestService extends PaginatedService {
 
         // timeElapsed must be positive integer
         if (validatedArgs.timeElapsed <= 0)
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `Time elapsed must be positive`,
             fieldPath,
           });
@@ -156,7 +157,7 @@ export class PersonalBestService extends PaginatedService {
       case scoreMethodEnum.FMC:
         // only use movesCount, all other fields null
         if (!validatedArgs.movesCount) {
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `This event requires movesCount`,
             fieldPath,
           });
@@ -174,7 +175,7 @@ export class PersonalBestService extends PaginatedService {
           !validatedArgs.attemptsSucceeded ||
           !validatedArgs.timeElapsed
         ) {
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `This event requires attemptsTotal, attemptsSucceeded, timeElapsed`,
             fieldPath,
           });
@@ -182,21 +183,21 @@ export class PersonalBestService extends PaginatedService {
 
         // timeElapsed must be positive integer
         if (validatedArgs.timeElapsed <= 0)
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `Time elapsed must be positive`,
             fieldPath,
           });
 
         // timeElapsed must be positive integer
         if (validatedArgs.attemptsTotal <= 0)
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `Time elapsed must be positive`,
             fieldPath,
           });
 
         // attemptsSucceeded must be <= attemptsTotal
         if (validatedArgs.attemptsSucceeded > validatedArgs.attemptsTotal) {
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `Attempts Succeeded cannot be greater than Attempts Total`,
             fieldPath,
           });
@@ -233,7 +234,7 @@ export class PersonalBestService extends PaginatedService {
     });
 
     if (pbClassRecords.length < 1)
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message: `PersonalBestClass not found`,
         fieldPath,
       });
@@ -242,7 +243,7 @@ export class PersonalBestService extends PaginatedService {
 
     // if pbClass.setSize, args.setSize must be equal to that
     if (pbClass.setSize !== null && pbClass.setSize !== validatedArgs.setSize) {
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message: `Invalid set size for this PersonalBestClass`,
         fieldPath,
       });
@@ -306,7 +307,7 @@ export class PersonalBestService extends PaginatedService {
       // if there were any before this one, check the score
       // current score must be greater than this
       if (score >= beforePbs[0].score) {
-        throw new JomqlBaseError({
+        throw new GiraffeqlBaseError({
           message: `Score must be better than preceding scores`,
           fieldPath,
         });
@@ -365,7 +366,7 @@ export class PersonalBestService extends PaginatedService {
       // if there were any after this one, check the score
       // current score must be less than this
       if (score <= afterPbs[0].score) {
-        throw new JomqlBaseError({
+        throw new GiraffeqlBaseError({
           message: `Score must be worse than future scores`,
           fieldPath,
         });

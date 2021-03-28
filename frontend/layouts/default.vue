@@ -212,9 +212,27 @@ export default {
           to: '/my-pbs',
         },
         {
+          icon: 'mdi-timetable',
+          title: 'My PB Feed',
+          to: generateRoute('/my-pb-feed', {
+            sortBy: ['happenedOn'],
+            sortDesc: [true],
+          }),
+        },
+        {
           icon: 'mdi-card-account-details',
           title: 'My Profile',
           to: '/my-profile?expand=0',
+        },
+        {
+          icon: 'mdi-account-multiple',
+          title: 'My Followers',
+          to: '/my-followers',
+        },
+        {
+          icon: 'mdi-account-switch',
+          title: 'Users I Follow',
+          to: '/my-follows',
         },
       ],
       navItems: [

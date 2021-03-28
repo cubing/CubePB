@@ -1,14 +1,14 @@
 import {
   generateAnonymousRootResolver,
-  generateJomqlResolverTree,
-  processJomqlResolverTree,
-  JomqlResolverNode,
-  JomqlObjectType,
+  generateGiraffeqlResolverTree,
+  processGiraffeqlResolverTree,
+  GiraffeqlResolverNode,
+  GiraffeqlObjectType,
   objectTypeDefs,
-  JomqlObjectTypeLookup,
+  GiraffeqlObjectTypeLookup,
   isRootResolverDefinition,
-  JomqlBaseError,
-} from "jomql";
+  GiraffeqlBaseError,
+} from "giraffeql";
 
 import {
   insertTableRow,
@@ -98,7 +98,7 @@ export async function createObjectType({
 }): Promise<any> {
   const typeDef = objectTypeDefs.get(typename);
   if (!typeDef) {
-    throw new JomqlBaseError({
+    throw new GiraffeqlBaseError({
       message: `Invalid typeDef '${typename}'`,
       fieldPath,
     });
@@ -112,7 +112,7 @@ export async function createObjectType({
 
   for (const field in addFields) {
     if (!(field in typeDef.definition.fields)) {
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message: `Invalid field`,
         fieldPath,
       });
@@ -178,7 +178,7 @@ export async function updateObjectType({
 }): Promise<any> {
   const typeDef = objectTypeDefs.get(typename);
   if (!typeDef) {
-    throw new JomqlBaseError({
+    throw new GiraffeqlBaseError({
       message: `Invalid typeDef '${typename}'`,
       fieldPath,
     });
@@ -192,7 +192,7 @@ export async function updateObjectType({
 
   for (const field in updateFields) {
     if (!(field in typeDef.definition.fields)) {
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message: `Invalid update field`,
         fieldPath,
       });
@@ -257,7 +257,7 @@ export async function deleteObjectType({
   //resolve the deleters
   const typeDef = objectTypeDefs.get(typename);
   if (!typeDef) {
-    throw new JomqlBaseError({
+    throw new GiraffeqlBaseError({
       message: `Invalid typeDef '${typename}'`,
       fieldPath,
     });
@@ -321,7 +321,7 @@ export async function getObjectType({
   sqlParams?: Omit<SqlSelectQuery, "from" | "select">;
   rawSelect?: SqlSelectQueryObject[];
   data?: any;
-  externalTypeDef?: JomqlObjectType;
+  externalTypeDef?: GiraffeqlObjectType;
 }): Promise<unknown[]> {
   // shortcut: if no fields were requested, simply return empty object
   if (isObject(externalQuery) && Object.keys(externalQuery).length < 1)
@@ -329,38 +329,38 @@ export async function getObjectType({
 
   const typeDef = objectTypeDefs.get(typename);
   if (!typeDef) {
-    throw new JomqlBaseError({
+    throw new GiraffeqlBaseError({
       message: `Invalid typeDef '${typename}'`,
       fieldPath,
     });
   }
 
   const anonymousRootResolver = generateAnonymousRootResolver(
-    externalTypeDef ?? new JomqlObjectTypeLookup(typename)
+    externalTypeDef ?? new GiraffeqlObjectTypeLookup(typename)
   );
 
   // build an anonymous root resolver
-  const jomqlResolverTree = generateJomqlResolverTree(
+  const giraffeqlResolverTree = generateGiraffeqlResolverTree(
     externalQuery,
     anonymousRootResolver,
     fieldPath
   );
 
-  // convert jomqlResolverNode into a validatedSqlQuery
+  // convert GiraffeqlResolverNode into a validatedSqlQuery
   const validatedSqlSelectArray = generateSqlQuerySelectObject({
     // should never end up in here without a nested query
-    nestedResolverNodeMap: jomqlResolverTree.nested!,
+    nestedResolverNodeMap: giraffeqlResolverTree.nested!,
     fieldPath,
   });
 
-  let jomqlResultsTreeArray: SqlSelectQueryOutput[];
+  let giraffeqlResultsTreeArray: SqlSelectQueryOutput[];
 
   // if no sql fields, skip
   if (validatedSqlSelectArray.length < 1) {
-    jomqlResultsTreeArray = [{}];
+    giraffeqlResultsTreeArray = [{}];
   } else {
     if (!sqlParams)
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message: `SQL Params required`,
         fieldPath,
       });
@@ -370,17 +370,17 @@ export async function getObjectType({
       ...sqlParams,
     };
 
-    jomqlResultsTreeArray = collapseSqlOutputArray(
+    giraffeqlResultsTreeArray = collapseSqlOutputArray(
       await fetchTableRows(sqlQuery, fieldPath)
     );
   }
 
-  // finish processing jomqlResolverNode by running the resolvers on the data fetched thru sql.
+  // finish processing GiraffeqlResolverNode by running the resolvers on the data fetched thru sql.
   const processedResultsTree = await Promise.all(
-    jomqlResultsTreeArray.map((jomqlResultsTree) =>
-      processJomqlResolverTree({
-        jomqlResultsNode: jomqlResultsTree,
-        jomqlResolverNode: jomqlResolverTree,
+    giraffeqlResultsTreeArray.map((giraffeqlResultsTree) =>
+      processGiraffeqlResolverTree({
+        giraffeqlResultsNode: giraffeqlResultsTree,
+        giraffeqlResolverNode: giraffeqlResolverTree,
         req,
         data,
         fieldPath,
@@ -389,10 +389,10 @@ export async function getObjectType({
   );
 
   // handle aggregated fields -- must be nested query. cannot be array of scalars like [1, 2, 3, 4] at the moment
-  if (jomqlResolverTree.nested) {
+  if (giraffeqlResolverTree.nested) {
     await handleAggregatedQueries({
       resultsArray: processedResultsTree,
-      nestedResolverNodeMap: jomqlResolverTree.nested,
+      nestedResolverNodeMap: giraffeqlResolverTree.nested,
       req,
       data,
       fieldPath,
@@ -423,7 +423,7 @@ function generateSqlQuerySelectObject({
   parentFields = [],
   fieldPath,
 }: {
-  nestedResolverNodeMap: { [x: string]: JomqlResolverNode };
+  nestedResolverNodeMap: { [x: string]: GiraffeqlResolverNode };
   parentFields?: string[];
   fieldPath: string[];
 }) {
@@ -460,7 +460,7 @@ function generateSqlQuerySelectObject({
       } else {
         // if not root level AND nestHidden, throw error
         if (parentFields.length && typeDef.nestHidden) {
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `Requested field not allowed to be accessed directly in an nested context`,
             fieldPath: fieldPath.concat(parentPlusCurrentField),
           });
@@ -475,7 +475,7 @@ function generateSqlQuerySelectObject({
     } else {
       // if no sqlOptions, still check if field is nestHidden
       if (parentFields.length && typeDef.nestHidden) {
-        throw new JomqlBaseError({
+        throw new GiraffeqlBaseError({
           message: `Requested field not allowed to be accessed directly in an nested context`,
           fieldPath: fieldPath.concat(parentPlusCurrentField),
         });
@@ -515,7 +515,7 @@ async function handleAggregatedQueries({
   fieldPath = [],
 }: {
   resultsArray: any[];
-  nestedResolverNodeMap: { [x: string]: JomqlResolverNode };
+  nestedResolverNodeMap: { [x: string]: GiraffeqlResolverNode };
   req: Request;
   args?: unknown;
   data: any;

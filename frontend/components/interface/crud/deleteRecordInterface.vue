@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import { capitalizeString, handleError } from '~/services/base'
 
 export default {
@@ -59,7 +59,7 @@ export default {
     async deleteRecord() {
       this.loading.deleteRecord = true
       try {
-        const data = await executeJomql(this, {
+        const data = await executeGiraffeql(this, {
           [this.recordInfo.deleteOptions.operationName ??
           'delete' + this.capitalizedTypename]: {
             id: true,

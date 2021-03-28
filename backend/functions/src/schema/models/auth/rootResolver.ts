@@ -1,13 +1,13 @@
 import { Auth } from "../../services";
 import * as Scalars from "../../scalars";
 import {
-  JomqlRootResolverType,
-  JomqlInputFieldType,
-  JomqlInputType,
-} from "jomql";
+  GiraffeqlRootResolverType,
+  GiraffeqlInputFieldType,
+  GiraffeqlInputType,
+} from "giraffeql";
 
 export default {
-  socialLogin: new JomqlRootResolverType({
+  socialLogin: new GiraffeqlRootResolverType({
     name: "socialLogin",
     restOptions: {
       method: "post",
@@ -16,19 +16,19 @@ export default {
     },
     type: Auth.typeDef,
     allowNull: false,
-    args: new JomqlInputFieldType({
-      type: new JomqlInputType({
+    args: new GiraffeqlInputFieldType({
+      type: new GiraffeqlInputType({
         name: "socialLogin",
         fields: {
-          provider: new JomqlInputFieldType({
+          provider: new GiraffeqlInputFieldType({
             type: Scalars.string,
             required: true,
           }),
-          code: new JomqlInputFieldType({
+          code: new GiraffeqlInputFieldType({
             type: Scalars.string,
             required: true,
           }),
-          redirectUri: new JomqlInputFieldType({
+          redirectUri: new GiraffeqlInputFieldType({
             type: Scalars.string,
             required: true,
           }),

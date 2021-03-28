@@ -1,5 +1,5 @@
 import { Product, User } from "../../services";
-import { JomqlObjectType, ObjectTypeDefinition } from "jomql";
+import { GiraffeqlObjectType, ObjectTypeDefinition } from "giraffeql";
 import {
   generateIdField,
   generateCreatedAtField,
@@ -9,7 +9,7 @@ import {
   generateTypenameField,
 } from "../../helpers/typeDef";
 
-export default new JomqlObjectType(<ObjectTypeDefinition>{
+export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: Product.typename,
   description: "Product Type",
   fields: {

@@ -1,5 +1,5 @@
 import { Event, User } from "../../services";
-import { JomqlObjectType, ObjectTypeDefinition } from "jomql";
+import { GiraffeqlObjectType, ObjectTypeDefinition } from "giraffeql";
 import {
   generateIdField,
   generateCreatedAtField,
@@ -11,7 +11,7 @@ import {
 } from "../../helpers/typeDef";
 import * as Scalars from "../../scalars";
 
-export default new JomqlObjectType(<ObjectTypeDefinition>{
+export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: Event.typename,
   description: "Event Type",
   fields: {

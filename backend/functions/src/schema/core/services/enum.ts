@@ -1,12 +1,12 @@
 import { BaseService, EnumPaginatorService } from ".";
 import { ServiceFunctionInputs } from "../../../types";
 import { generateEnumRootResolver } from "../../helpers/rootResolver";
-import { JomqlRootResolverType } from "jomql";
+import { GiraffeqlRootResolverType } from "giraffeql";
 
 export class EnumService extends BaseService {
   enum;
   paginator: EnumPaginatorService;
-  rootResolvers: { [x: string]: JomqlRootResolverType };
+  rootResolvers: { [x: string]: GiraffeqlRootResolverType };
 
   constructor(enumName: string, currentEnum: any) {
     super(enumName);

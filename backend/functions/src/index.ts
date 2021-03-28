@@ -1,9 +1,9 @@
 import * as functions from "firebase-functions";
 import * as express from "express";
 
-import { initializeJomql } from "jomql";
+import { initializeGiraffeql } from "giraffeql";
 import "./schema";
-import { env, jomqlOptions } from "./config";
+import { env, giraffeqlOptions } from "./config";
 
 import { initializePusher } from "./utils/pusher";
 import { handlePusherAuth } from "./helpers/pusher";
@@ -61,11 +61,11 @@ app.options("*", function (req, res, next) {
 // initialize pusher
 env.pusher && initializePusher(env.pusher);
 
-initializeJomql(app, jomqlOptions);
+initializeGiraffeql(app, giraffeqlOptions);
 
 app.get("/schema.ts", function (req, res, next) {
   res.header("Content-Type", "text/plain");
-  const tsSchemaGenerator = new CustomSchemaGenerator(jomqlOptions);
+  const tsSchemaGenerator = new CustomSchemaGenerator(giraffeqlOptions);
   tsSchemaGenerator.buildSchema();
   tsSchemaGenerator.processSchema();
   res.send(tsSchemaGenerator.outputSchema());

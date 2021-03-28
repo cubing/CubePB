@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import { goToWcaAccountManagement, goToWcaAuth } from '~/services/auth'
 import { handleError } from '~/services/base'
 
@@ -135,7 +135,7 @@ export default {
     async syncWcaData() {
       this.loading.syncWcaData = true
       try {
-        const data = await executeJomql(this, {
+        const data = await executeGiraffeql(this, {
           syncWcaData: {
             name: true,
             __args: {
@@ -164,7 +164,7 @@ export default {
     async handleSubmit() {
       this.loading.submitting = true
       try {
-        const data = await executeJomql(this, {
+        const data = await executeGiraffeql(this, {
           updateUser: {
             name: true,
             __args: {
@@ -195,7 +195,7 @@ export default {
     async loadData() {
       this.loading.loadUser = true
       try {
-        const data = await executeJomql(this, {
+        const data = await executeGiraffeql(this, {
           getCurrentUser: {
             id: true,
             name: true,

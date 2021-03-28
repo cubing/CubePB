@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import { handleError } from '~/services/base'
 import columnMixin from '~/mixins/column'
 
@@ -56,7 +56,7 @@ export default {
     async submitVote(value) {
       this.loading.submitVote = true
       try {
-        await executeJomql(this, {
+        await executeGiraffeql(this, {
           createUserAlgVoteLink: {
             __args: {
               alg: {

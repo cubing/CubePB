@@ -19,6 +19,8 @@ export class UserService extends PaginatedService {
     role: {},
     name: {},
     isPublic: {},
+    "userUserFollowLink/user.id": {},
+    "userUserFollowLink/target.id": {},
   };
 
   sortFieldsMap = {

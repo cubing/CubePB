@@ -3,14 +3,14 @@ import { User, Auth } from "../../services";
 import * as jwt from "jsonwebtoken";
 import { generateTypenameField } from "../../helpers/typeDef";
 import { env } from "../../../config";
-import { ObjectTypeDefinition, JomqlObjectType } from "jomql";
+import { ObjectTypeDefinition, GiraffeqlObjectType } from "giraffeql";
 import * as Scalars from "../../scalars";
 
 const jwtExpirationDays = env.general.jwt_expiration
   ? parseInt(env.general.jwt_expiration)
   : 7;
 
-export default new JomqlObjectType(<ObjectTypeDefinition>{
+export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: Auth.typename,
   description: "Authentication type",
   fields: {

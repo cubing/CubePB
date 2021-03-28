@@ -1,9 +1,9 @@
 import { User } from "../../services";
 import { generateBaseRootResolvers } from "../../helpers/rootResolver";
-import { JomqlRootResolverType } from "jomql";
+import { GiraffeqlRootResolverType } from "giraffeql";
 
 export default {
-  getCurrentUser: new JomqlRootResolverType({
+  getCurrentUser: new GiraffeqlRootResolverType({
     name: "getCurrentUser",
     restOptions: {
       method: "get",

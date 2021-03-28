@@ -128,7 +128,7 @@
 <script>
 import EditRecordInterface from '~/components/interface/crud/editRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import {
   capitalizeString,
   handleError,
@@ -302,7 +302,7 @@ export default {
     async loadRecord() {
       this.loading.loadRecord = true
       try {
-        const data = await executeJomql(this, {
+        const data = await executeGiraffeql(this, {
           ['get' + this.capitalizedTypename]: {
             ...collapseObject(
               (this.recordInfo.requiredFields ?? []).reduce(

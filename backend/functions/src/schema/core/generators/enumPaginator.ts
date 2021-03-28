@@ -1,6 +1,6 @@
 import { BaseService, EnumService } from "../services";
 import * as Scalars from "../../scalars";
-import type { ObjectTypeDefinition } from "jomql";
+import type { ObjectTypeDefinition } from "giraffeql";
 import { generateTypenameField } from "../../helpers/typeDef";
 
 export function generateEnumPaginatorTypeDef(

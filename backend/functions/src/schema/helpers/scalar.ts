@@ -1,4 +1,4 @@
-import { ScalarDefinition } from "jomql";
+import { ScalarDefinition } from "giraffeql";
 
 export function generateEnumScalarDefinition(
   enumName: string,

@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import { copyToClipboard } from '~/services/base'
 
 export default {
@@ -53,7 +53,7 @@ export default {
     this.currentVersion = process.env.VER
       ? process.env.VER.split('/').pop()
       : 'DEV'
-    executeJomql(this, {
+    executeGiraffeql(this, {
       getRepositoryLatestVersion: true,
     }).then((res) => {
       this.latestVersion = res

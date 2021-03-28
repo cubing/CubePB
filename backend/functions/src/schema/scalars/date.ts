@@ -1,4 +1,4 @@
-import { JomqlScalarType } from "jomql";
+import { GiraffeqlScalarType } from "giraffeql";
 
 function validate(value) {
   const regEx = /^\d{4}-\d{2}-\d{2}$/;
@@ -11,7 +11,7 @@ function validate(value) {
   return value;
 }
 
-export const date = new JomqlScalarType({
+export const date = new GiraffeqlScalarType({
   name: "date",
   types: ["string"],
   description: "Date YYYY-MM-DD",

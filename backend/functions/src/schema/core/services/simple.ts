@@ -1,14 +1,14 @@
 import { BaseService } from ".";
-import { JomqlObjectType } from "jomql";
+import { GiraffeqlObjectType } from "giraffeql";
 import * as Resolver from "../../helpers/resolver";
 import * as errorHelper from "../../helpers/error";
 import { ServiceFunctionInputs } from "../../../types";
 
 export class SimpleService extends BaseService {
-  typeDef!: JomqlObjectType;
+  typeDef!: GiraffeqlObjectType;
 
   // set typeDef
-  setTypeDef(typeDef: JomqlObjectType) {
+  setTypeDef(typeDef: GiraffeqlObjectType) {
     this.typeDef = typeDef;
   }
 

@@ -1,39 +1,39 @@
 import { NormalService } from ".";
 import { generateLinkTypeDef } from "../generators";
 import { linkDefs } from "../../links";
-import { JomqlObjectType } from "jomql";
+import { GiraffeqlObjectType } from "giraffeql";
 import { PaginatedService } from "./paginated";
 
 type ServicesObjectMap = {
   [x: string]: NormalService;
 };
 
+type JoinFieldMap = {
+  [x: string]: string;
+};
+
 export class LinkService extends PaginatedService {
   servicesObjectMap: ServicesObjectMap;
 
+  // when joining this table from X table, must join on this key
+  joinFieldMap: JoinFieldMap;
+
   constructor(
     servicesObjectMap: ServicesObjectMap,
+    joinFieldMap: JoinFieldMap,
     generateTypeDef = true,
     name?: string
   ) {
     super(name);
     this.servicesObjectMap = servicesObjectMap;
+    this.joinFieldMap = joinFieldMap;
     if (generateTypeDef) {
-      this.typeDef = new JomqlObjectType(
+      this.typeDef = new GiraffeqlObjectType(
         generateLinkTypeDef(servicesObjectMap, this)
       );
     }
 
-    const servicesMap: Map<string, NormalService> = new Map();
-
-    for (const field in servicesObjectMap) {
-      servicesMap.set(field, servicesObjectMap[field]);
-    }
-
     // register linkDef
-    linkDefs.set(this.typename, {
-      types: servicesMap,
-      service: this,
-    });
+    linkDefs.set(this.typename, this);
   }
 }

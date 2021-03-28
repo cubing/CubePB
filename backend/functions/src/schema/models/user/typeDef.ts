@@ -1,7 +1,7 @@
 // import * as bcrypt from "bcryptjs";
 import { knex } from "../../../utils/knex";
 
-import { JomqlObjectType, ObjectTypeDefinition } from "jomql";
+import { GiraffeqlObjectType, ObjectTypeDefinition } from "giraffeql";
 import { User } from "../../services";
 import {
   generateIdField,
@@ -18,7 +18,7 @@ import * as Scalars from "../../scalars";
 import { userRoleToPermissionsMap } from "../../helpers/permissions";
 import { userRoleKenum } from "../../enums";
 
-export default new JomqlObjectType(<ObjectTypeDefinition>{
+export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: User.typename,
   description: "User type",
   fields: {

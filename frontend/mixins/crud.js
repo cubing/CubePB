@@ -1,4 +1,7 @@
-import { executeJomql, executeJomqlSubscription } from '~/services/jomql'
+import {
+  executeGiraffeql,
+  executeGiraffeqlSubscription,
+} from '~/services/Giraffeql'
 import { unsubscribeChannels } from '~/services/pusher'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
@@ -329,7 +332,7 @@ export default {
     async loadSearchResults(inputObject) {
       inputObject.loading = true
       try {
-        const results = await executeJomql(this, {
+        const results = await executeGiraffeql(this, {
           [`get${capitalizeString(inputObject.fieldInfo.typename)}Paginator`]: {
             edges: {
               node: {
@@ -498,7 +501,7 @@ export default {
       // create a map field -> serializeFn for fast serialization
       const serializeMap = new Map()
 
-      const data = await executeJomql(this, {
+      const data = await executeGiraffeql(this, {
         ['get' + this.capitalizedType + 'Paginator']: {
           paginatorInfo: {
             total: true,
@@ -603,7 +606,7 @@ export default {
     },
 
     async subscribeEvents() {
-      const channelName = await executeJomqlSubscription(
+      const channelName = await executeGiraffeqlSubscription(
         this,
         {
           [this.recordInfo.typename + 'ListUpdated']: {
@@ -650,7 +653,7 @@ export default {
             ) {
               matchingInputObject.value = ele.value
               if (matchingInputObject.value) {
-                executeJomql(this, {
+                executeGiraffeql(this, {
                   [`get${capitalizeString(
                     matchingInputObject.fieldInfo.typename
                   )}`]: {

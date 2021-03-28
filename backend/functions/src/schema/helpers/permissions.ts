@@ -2,7 +2,7 @@ import { userRoleKenum, userPermissionEnum } from "../enums";
 import { BaseService, NormalService } from "../core/services";
 import * as errorHelper from "./error";
 import { ServiceFunctionInputs, AccessControlFunction } from "../../types";
-import { StringKeyObject } from "jomql";
+import { StringKeyObject } from "giraffeql";
 
 export const userRoleToPermissionsMap = {
   [userRoleKenum.ADMIN.name]: [userPermissionEnum.A_A],

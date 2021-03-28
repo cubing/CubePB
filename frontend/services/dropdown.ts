@@ -1,4 +1,4 @@
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 
 function memoize(memoizedFn) {
   const cache = {}
@@ -15,7 +15,7 @@ function memoize(memoizedFn) {
 }
 
 export const getEvents = memoize(async function (that, _forceReload = false) {
-  const data = await executeJomql<'getEventPaginator'>(that, {
+  const data = await executeGiraffeql<'getEventPaginator'>(that, {
     getEventPaginator: {
       edges: {
         node: {
@@ -34,7 +34,7 @@ export const getEvents = memoize(async function (that, _forceReload = false) {
 })
 
 export const getProducts = memoize(async function (that, _forceReload = false) {
-  const data = await executeJomql<'getProductPaginator'>(that, {
+  const data = await executeGiraffeql<'getProductPaginator'>(that, {
     getProductPaginator: {
       edges: {
         node: {
@@ -55,7 +55,7 @@ export const getPersonalBestClasses = memoize(async function (
   that,
   _forceReload = false
 ) {
-  const data = await executeJomql<'getPersonalBestClassPaginator'>(that, {
+  const data = await executeGiraffeql<'getPersonalBestClassPaginator'>(that, {
     getPersonalBestClassPaginator: {
       edges: {
         node: {
@@ -77,7 +77,7 @@ export const getUserRoles = memoize(async function (
   that,
   _forceReload = false
 ) {
-  const data = await executeJomql<'getUserRoleEnumPaginator'>(that, {
+  const data = await executeGiraffeql<'getUserRoleEnumPaginator'>(that, {
     getUserRoleEnumPaginator: {
       values: true,
     },
@@ -90,7 +90,7 @@ export const getScoreMethods = memoize(async function (
   that,
   _forceReload = false
 ) {
-  const data = await executeJomql<'getScoreMethodEnumPaginator'>(that, {
+  const data = await executeGiraffeql<'getScoreMethodEnumPaginator'>(that, {
     getScoreMethodEnumPaginator: {
       values: true,
     },

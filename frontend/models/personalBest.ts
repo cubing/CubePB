@@ -188,6 +188,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       inputType: 'switch',
       parseQueryValue: (val) => val === 'true',
     },
+    'createdBy.userUserFollowLink/user.id': {},
     createdAt: {
       text: 'Created At',
       component: TimeagoColumn,

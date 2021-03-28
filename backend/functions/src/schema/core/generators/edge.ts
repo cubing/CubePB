@@ -3,7 +3,7 @@ import { BaseService, NormalService } from "../services";
 import * as Scalars from "../../scalars";
 import { generateTypenameField } from "../../helpers/typeDef";
 import { atob } from "../../helpers/shared";
-import type { ObjectTypeDefinition } from "jomql";
+import type { ObjectTypeDefinition } from "giraffeql";
 
 export function generateEdgeTypeDef(
   service: NormalService,

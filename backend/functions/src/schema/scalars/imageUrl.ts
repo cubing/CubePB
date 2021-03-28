@@ -1,4 +1,4 @@
-import { JomqlScalarType } from "jomql";
+import { GiraffeqlScalarType } from "giraffeql";
 
 function validate(value) {
   if (typeof value !== "string") throw true;
@@ -15,7 +15,7 @@ function validate(value) {
   return value;
 }
 
-export const imageUrl = new JomqlScalarType({
+export const imageUrl = new GiraffeqlScalarType({
   name: "imageUrl",
   types: ["string"],
   description: "Image URL Field",

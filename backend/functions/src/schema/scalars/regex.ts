@@ -1,4 +1,4 @@
-import { JomqlScalarType } from "jomql";
+import { GiraffeqlScalarType } from "giraffeql";
 
 function validate(value: unknown) {
   if (typeof value !== "string" && !(value instanceof RegExp)) {
@@ -8,7 +8,7 @@ function validate(value: unknown) {
   return new RegExp(value);
 }
 
-export const regex = new JomqlScalarType({
+export const regex = new GiraffeqlScalarType({
   name: "regex",
   types: ["RegExp"],
   description: "Regex Field",

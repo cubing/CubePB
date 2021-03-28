@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import { generateTimeAgoString } from '~/services/base'
 
 export default {
@@ -45,7 +45,7 @@ export default {
     async loadData() {
       this.loading.loadData = true
       try {
-        this.releases = await executeJomql(this, {
+        this.releases = await executeGiraffeql(this, {
           getRepositoryReleases: {
             __args: {
               first: 5,

@@ -16,7 +16,7 @@
 
 <script>
 import { handleLogin } from '~/services/auth'
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 import { handleError } from '~/services/base'
 
 export default {
@@ -44,7 +44,7 @@ export default {
           throw new Error('Missing authorization code, please try again.')
         }
 
-        const data = await executeJomql(this, {
+        const data = await executeGiraffeql(this, {
           socialLogin: {
             token: true,
             type: true,

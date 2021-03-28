@@ -4,14 +4,14 @@ import {
   ExternalQuery,
 } from "../../../types";
 import { userPermissionEnum } from "../../enums";
-import { lookupSymbol, JomqlRootResolverType } from "jomql";
+import { lookupSymbol, GiraffeqlRootResolverType } from "giraffeql";
 
 export abstract class BaseService {
   typename: string;
 
   readonly defaultTypename!: string;
 
-  rootResolvers?: { [x: string]: JomqlRootResolverType };
+  rootResolvers?: { [x: string]: GiraffeqlRootResolverType };
 
   presets: ExternalQuery = {
     default: {
@@ -20,7 +20,7 @@ export abstract class BaseService {
   };
 
   setRootResolvers(rootResolvers: {
-    [x: string]: JomqlRootResolverType;
+    [x: string]: GiraffeqlRootResolverType;
   }): void {
     this.rootResolvers = rootResolvers;
   }

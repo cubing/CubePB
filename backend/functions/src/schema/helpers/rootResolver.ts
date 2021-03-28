@@ -1,14 +1,14 @@
 import {
-  JomqlObjectTypeLookup,
-  JomqlArgsError,
+  GiraffeqlObjectTypeLookup,
+  GiraffeqlArgsError,
   RootResolverDefinition,
-  JomqlInitializationError,
-  JomqlRootResolverType,
-  JomqlInputType,
-  JomqlInputTypeLookup,
-  JomqlObjectType,
-  JomqlInputFieldType,
-} from "jomql";
+  GiraffeqlInitializationError,
+  GiraffeqlRootResolverType,
+  GiraffeqlInputType,
+  GiraffeqlInputTypeLookup,
+  GiraffeqlObjectType,
+  GiraffeqlInputFieldType,
+} from "giraffeql";
 import { NormalService, PaginatedService, EnumService } from "../core/services";
 import { generatePaginatorPivotResolverObject } from "../helpers/typeDef";
 import { capitalizeString, isObject } from "../helpers/shared";
@@ -26,7 +26,7 @@ type BaseRootResolverTypes =
 export function generateBaseRootResolvers(
   service: NormalService,
   methods: BaseRootResolverTypes[]
-): { [x: string]: JomqlRootResolverType } {
+): { [x: string]: GiraffeqlRootResolverType } {
   const capitalizedClass = capitalizeString(service.typename);
 
   const rootResolvers = {};
@@ -37,7 +37,7 @@ export function generateBaseRootResolvers(
     switch (method) {
       case "get":
         methodName = method + capitalizedClass;
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "get",
@@ -46,7 +46,7 @@ export function generateBaseRootResolvers(
           },
           type: service.typeDefLookup,
           allowNull: false,
-          args: new JomqlInputFieldType({
+          args: new GiraffeqlInputFieldType({
             required: true,
             type: service.inputTypeDefLookup,
           }),
@@ -65,7 +65,7 @@ export function generateBaseRootResolvers(
           methodName = "get" + capitalizeString(service.paginator.typename);
           rootResolvers[
             "get" + capitalizeString(service.paginator.typename)
-          ] = new JomqlRootResolverType(<RootResolverDefinition>{
+          ] = new GiraffeqlRootResolverType(<RootResolverDefinition>{
             name: methodName,
             restOptions: {
               method: "get",
@@ -77,14 +77,14 @@ export function generateBaseRootResolvers(
             }),
           });
         } else {
-          throw new JomqlInitializationError({
+          throw new GiraffeqlInitializationError({
             message: `Cannot getMultiple of a non-paginated type '${service.typename}'`,
           });
         }
         break;
       case "delete":
         methodName = method + capitalizedClass;
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "delete",
@@ -93,7 +93,7 @@ export function generateBaseRootResolvers(
           },
           type: service.typeDefLookup,
           allowNull: false,
-          args: new JomqlInputFieldType({
+          args: new GiraffeqlInputFieldType({
             required: true,
             type: service.inputTypeDefLookup,
           }),
@@ -113,16 +113,18 @@ export function generateBaseRootResolvers(
           ([key, typeDefField]) => {
             let typeField = typeDefField.type;
 
-            // if typeField is JomqlObjectTypeLookup, convert to JomqlInputTypeLookup
-            if (typeField instanceof JomqlObjectTypeLookup) {
-              typeField = new JomqlInputTypeLookup(typeField.name);
-            } else if (typeField instanceof JomqlObjectType) {
-              typeField = new JomqlInputTypeLookup(typeField.definition.name);
+            // if typeField is GiraffeqlObjectTypeLookup, convert to GiraffeqlInputTypeLookup
+            if (typeField instanceof GiraffeqlObjectTypeLookup) {
+              typeField = new GiraffeqlInputTypeLookup(typeField.name);
+            } else if (typeField instanceof GiraffeqlObjectType) {
+              typeField = new GiraffeqlInputTypeLookup(
+                typeField.definition.name
+              );
             }
 
             if (typeDefField.updateable) {
               // generate the argDefinition for the string type
-              updateArgs[key] = new JomqlInputFieldType({
+              updateArgs[key] = new GiraffeqlInputFieldType({
                 type: typeField,
                 required: false,
                 allowNull: typeDefField.allowNull,
@@ -131,7 +133,7 @@ export function generateBaseRootResolvers(
             }
           }
         );
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "put",
@@ -140,23 +142,23 @@ export function generateBaseRootResolvers(
           },
           type: service.typeDefLookup,
           allowNull: false,
-          args: new JomqlInputFieldType({
+          args: new GiraffeqlInputFieldType({
             required: true,
-            type: new JomqlInputType({
+            type: new GiraffeqlInputType({
               name: methodName,
               fields: {
-                item: new JomqlInputFieldType({
+                item: new GiraffeqlInputFieldType({
                   type: service.inputTypeDefLookup,
                   required: true,
                 }),
-                fields: new JomqlInputFieldType({
-                  type: new JomqlInputType({
+                fields: new GiraffeqlInputFieldType({
+                  type: new GiraffeqlInputType({
                     name: "update" + capitalizedClass + "Fields",
                     fields: updateArgs,
                     inputsValidator: (args, fieldPath) => {
                       // check if at least 1 valid update field provided
                       if (!isObject(args)) {
-                        throw new JomqlArgsError({
+                        throw new GiraffeqlArgsError({
                           message: `Object args required`,
                           fieldPath,
                         });
@@ -164,7 +166,7 @@ export function generateBaseRootResolvers(
 
                       const { id, ...updateFields } = args;
                       if (Object.keys(updateFields).length < 1)
-                        throw new JomqlArgsError({
+                        throw new GiraffeqlArgsError({
                           message: `No valid fields to update`,
                           fieldPath,
                         });
@@ -186,16 +188,18 @@ export function generateBaseRootResolvers(
           ([key, typeDefField]) => {
             let typeField = typeDefField.type;
 
-            // if typeField is JomqlObjectTypeLookup, convert to JomqlInputTypeLookup
-            if (typeField instanceof JomqlObjectTypeLookup) {
-              typeField = new JomqlInputTypeLookup(typeField.name);
-            } else if (typeField instanceof JomqlObjectType) {
-              typeField = new JomqlInputTypeLookup(typeField.definition.name);
+            // if typeField is GiraffeqlObjectTypeLookup, convert to GiraffeqlInputTypeLookup
+            if (typeField instanceof GiraffeqlObjectTypeLookup) {
+              typeField = new GiraffeqlInputTypeLookup(typeField.name);
+            } else if (typeField instanceof GiraffeqlObjectType) {
+              typeField = new GiraffeqlInputTypeLookup(
+                typeField.definition.name
+              );
             }
 
             if (typeDefField.addable) {
               // generate the argDefinition for the string type
-              createArgs[key] = new JomqlInputFieldType({
+              createArgs[key] = new GiraffeqlInputFieldType({
                 type: typeField,
                 required: typeDefField.required,
                 allowNull: typeDefField.allowNull,
@@ -204,7 +208,7 @@ export function generateBaseRootResolvers(
             }
           }
         );
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "post",
@@ -213,9 +217,9 @@ export function generateBaseRootResolvers(
           },
           type: service.typeDefLookup,
           allowNull: false,
-          args: new JomqlInputFieldType({
+          args: new GiraffeqlInputFieldType({
             required: true,
-            type: new JomqlInputType({
+            type: new GiraffeqlInputType({
               name: methodName,
               fields: createArgs,
             }),
@@ -231,7 +235,7 @@ export function generateBaseRootResolvers(
         break;
       case "created":
         methodName = service.typename + capitalizedMethod;
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "post",
@@ -254,7 +258,7 @@ export function generateBaseRootResolvers(
         break;
       case "deleted":
         methodName = service.typename + capitalizedMethod;
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "post",
@@ -277,7 +281,7 @@ export function generateBaseRootResolvers(
         break;
       case "updated":
         methodName = service.typename + capitalizedMethod;
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "post",
@@ -300,7 +304,7 @@ export function generateBaseRootResolvers(
         break;
       case "listUpdated":
         methodName = service.typename + capitalizedMethod;
-        rootResolvers[methodName] = new JomqlRootResolverType({
+        rootResolvers[methodName] = new GiraffeqlRootResolverType({
           name: methodName,
           restOptions: {
             method: "post",
@@ -331,11 +335,11 @@ export function generateBaseRootResolvers(
 
 export function generateEnumRootResolver(
   enumService: EnumService
-): { [x: string]: JomqlRootResolverType } {
+): { [x: string]: GiraffeqlRootResolverType } {
   const capitalizedClass = capitalizeString(enumService.paginator.typename);
   const methodName = "get" + capitalizedClass;
   const rootResolvers = {
-    [methodName]: new JomqlRootResolverType({
+    [methodName]: new GiraffeqlRootResolverType({
       name: methodName,
       restOptions: {
         method: "get",

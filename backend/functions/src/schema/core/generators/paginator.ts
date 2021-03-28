@@ -6,7 +6,7 @@ import {
 } from "../services";
 
 import { generateTypenameField } from "../../helpers/typeDef";
-import type { ObjectTypeDefinition } from "jomql";
+import type { ObjectTypeDefinition } from "giraffeql";
 import { PaginatorData } from "../../../types";
 
 export function generatePaginatorTypeDef(

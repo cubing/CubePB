@@ -1,7 +1,7 @@
-import { TsSchemaGenerator } from "jomql";
+import { TsSchemaGenerator } from "giraffeql";
 export class CustomSchemaGenerator extends TsSchemaGenerator {
-  constructor(jomqlOptions) {
-    super(jomqlOptions);
+  constructor(giraffeqlOptions) {
+    super(giraffeqlOptions);
     this.scaffoldStr += `
 type Edge<T> = {
   __typename: Field<string, undefined>;

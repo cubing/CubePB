@@ -52,7 +52,7 @@
 <script>
 import editRecordInterfaceMixin from '~/mixins/editRecordInterface'
 import { handleError } from '~/services/base'
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 
 export default {
   mixins: [editRecordInterfaceMixin],
@@ -71,7 +71,7 @@ export default {
         if (!this.$store.getters['auth/user']) throw new Error('Login required')
 
         if (follow) {
-          const data = await executeJomql(this, {
+          const data = await executeGiraffeql(this, {
             createUserUserFollowLink: {
               id: true,
               __args: {
@@ -87,7 +87,7 @@ export default {
 
           this.setInputValue('currentUserFollowing', data.id)
         } else {
-          await executeJomql(this, {
+          await executeGiraffeql(this, {
             deleteUserUserFollowLink: {
               __args: {
                 id: this.getInputValue('currentUserFollowing'),

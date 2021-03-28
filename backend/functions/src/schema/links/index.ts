@@ -1,8 +1,3 @@
-import { LinkService, NormalService } from "../core/services";
+import { LinkService } from "../core/services";
 
-type LinkDefinition = {
-  types: Map<string, NormalService>;
-  service: LinkService;
-};
-
-export const linkDefs: Map<string, LinkDefinition> = new Map();
+export const linkDefs: Map<string, LinkService> = new Map();

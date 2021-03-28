@@ -5,7 +5,7 @@ import type {
 } from "..";
 
 declare global {
-  namespace Jomql {
+  namespace Giraffeql {
     interface ObjectTypeDefinitionField {
       sqlOptions?: ObjectTypeDefSqlOptions;
       addable?: boolean;

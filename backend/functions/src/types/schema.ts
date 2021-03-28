@@ -1,5 +1,5 @@
 // Query builder (Typescript version >= 4.1.3 required)
-const queryResult = executeJomql({
+const queryResult = executeGiraffeql({
   // Start typing here to get hints
   createAndLinkAlg: {
     id: true,
@@ -12,7 +12,7 @@ const queryResult = executeJomql({
   },
 });
 
-export function executeJomql<Key extends keyof Root>(
+export function executeGiraffeql<Key extends keyof Root>(
   query: GetQuery<Key>
 ): GetResponse<Key> {
   let data: any;

@@ -1,4 +1,4 @@
-import { JomqlScalarType } from "jomql";
+import { GiraffeqlScalarType } from "giraffeql";
 
 function validate(value: unknown) {
   const parsedValue = Number(value);
@@ -7,7 +7,7 @@ function validate(value: unknown) {
   return parsedValue;
 }
 
-export const number = new JomqlScalarType({
+export const number = new GiraffeqlScalarType({
   name: "number",
   types: ["number"],
   description: "Numeric value",

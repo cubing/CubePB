@@ -7,7 +7,7 @@ const prodResource = axios.create({
   baseURL: process.env.apiUrl,
 })
 
-export async function executeJomql<Key extends keyof Root>(
+export async function executeGiraffeql<Key extends keyof Root>(
   _that,
   query: GetQuery<Key>
 ): Promise<GetResponse<Key>> {
@@ -22,12 +22,12 @@ export async function executeJomql<Key extends keyof Root>(
       }
     : undefined
 
-  const { data } = await prodResource.post('/jomql', query, request)
+  const { data } = await prodResource.post('/giraffeql', query, request)
 
   return data.data
 }
 
-export async function executeJomqlSubscription(_that, query, _callbackFn) {
+export async function executeGiraffeqlSubscription(_that, query, _callbackFn) {
   // fetches the idToken directly from the cookies, if available
   const idToken = Cookie.get('auth-token')
 
@@ -39,7 +39,7 @@ export async function executeJomqlSubscription(_that, query, _callbackFn) {
       }
     : undefined
 
-  const { data } = await prodResource.post('/jomql', query, request)
+  const { data } = await prodResource.post('/giraffeql', query, request)
 
   // const channel = pusher.subscribe(data.data.channel_name)
 

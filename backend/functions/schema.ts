@@ -1,9 +1,10 @@
 // Query builder (Typescript version >= 4.1.3 required)
-/* const queryResult = executeJomql({
+/* const queryResult = executeGiraffeql({
   // Start typing here to get hints
+  
 }); */
 
-export function executeJomql<Key extends keyof Root>(
+export function executeGiraffeql<Key extends keyof Root>(
   query: GetQuery<Key>
 ): GetResponse<Key> {
   let data: any;
@@ -129,6 +130,10 @@ export type FilterByField<T> = {
   "userFilterByField/role": FilterByField<Scalars["userRole"]>;
   "userFilterByField/name": FilterByField<Scalars["string"]>;
   "userFilterByField/isPublic": FilterByField<Scalars["boolean"]>;
+  "userFilterByField/userUserFollowLink/user.id": FilterByField<Scalars["id"]>;
+  "userFilterByField/userUserFollowLink/target.id": FilterByField<
+    Scalars["id"]
+  >;
   userFilterByObject: {
     id?: InputTypes["userFilterByField/id"];
     "createdBy.id"?: InputTypes["userFilterByField/createdBy.id"];
@@ -136,6 +141,8 @@ export type FilterByField<T> = {
     role?: InputTypes["userFilterByField/role"];
     name?: InputTypes["userFilterByField/name"];
     isPublic?: InputTypes["userFilterByField/isPublic"];
+    "userUserFollowLink/user.id"?: InputTypes["userFilterByField/userUserFollowLink/user.id"];
+    "userUserFollowLink/target.id"?: InputTypes["userFilterByField/userUserFollowLink/target.id"];
   };
   userPaginator: {
     first?: Scalars["number"];
@@ -635,7 +642,6 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Args: undefined;
   };
   getCurrentUser: { Type: User; Args: undefined };
-  test: { Type: Scalars["unknown"] | null; Args: undefined };
   getUser: { Type: User; Args: InputTypes["user"] };
   getUserPaginator: { Type: UserPaginator; Args: InputTypes["userPaginator"] };
   deleteUser: { Type: User; Args: InputTypes["user"] };

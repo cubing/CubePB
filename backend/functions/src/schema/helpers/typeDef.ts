@@ -4,18 +4,18 @@ import {
   InputTypeDefinition,
   ResolverFunction,
   RootResolverFunction,
-  JomqlArgsError,
+  GiraffeqlArgsError,
   objectTypeDefs,
-  JomqlInitializationError,
-  JomqlInputType,
-  JomqlScalarType,
-  JomqlObjectTypeLookup,
-  JomqlObjectType,
-  JomqlInputFieldType,
+  GiraffeqlInitializationError,
+  GiraffeqlInputType,
+  GiraffeqlScalarType,
+  GiraffeqlObjectTypeLookup,
+  GiraffeqlObjectType,
+  GiraffeqlInputFieldType,
   ArrayOptions,
   inputTypeDefs,
   ObjectTypeDefinition,
-} from "jomql";
+} from "giraffeql";
 import { knex } from "../../utils/knex";
 import * as Resolver from "./resolver";
 import { deepAssign, isObject, snakeToCamel } from "./shared";
@@ -44,7 +44,7 @@ type GenerateFieldParams = {
 export function generateStandardField(
   params: {
     sqlType?: SqlType;
-    type: JomqlScalarType | JomqlObjectTypeLookup | JomqlObjectType;
+    type: GiraffeqlScalarType | GiraffeqlObjectTypeLookup | GiraffeqlObjectType;
     arrayOptions?: ArrayOptions;
   } & GenerateFieldParams
 ) {
@@ -86,7 +86,7 @@ export function generateStandardField(
 // NOT a sql field.
 export function generateGenericScalarField(
   params: {
-    type: JomqlScalarType;
+    type: GiraffeqlScalarType;
     arrayOptions?: ArrayOptions;
   } & GenerateFieldParams
 ) {
@@ -116,7 +116,7 @@ export function generateGenericScalarField(
 
 export function generateStringField(
   params: {
-    type?: JomqlScalarType;
+    type?: GiraffeqlScalarType;
   } & GenerateFieldParams
 ) {
   const {
@@ -321,7 +321,7 @@ export function generateBooleanField(params: GenerateFieldParams) {
 // array of [type], stored in DB as JSON
 export function generateArrayField(
   params: {
-    type: JomqlScalarType | JomqlObjectTypeLookup | JomqlObjectType;
+    type: GiraffeqlScalarType | GiraffeqlObjectTypeLookup | GiraffeqlObjectType;
     allowNullElement?: boolean;
   } & GenerateFieldParams
 ) {
@@ -387,7 +387,7 @@ export function generateJSONField(params: GenerateFieldParams) {
 // should handle kenums too
 export function generateEnumField(
   params: {
-    scalarDefinition: JomqlScalarType;
+    scalarDefinition: GiraffeqlScalarType;
     isKenum?: boolean;
   } & GenerateFieldParams
 ) {
@@ -423,7 +423,7 @@ export function generateEnumField(
 
 export function generateKeyValueArray(
   params: {
-    valueType?: JomqlScalarType;
+    valueType?: GiraffeqlScalarType;
     allowNullValue?: boolean;
     allowNull?: boolean;
   } = {}
@@ -435,15 +435,15 @@ export function generateKeyValueArray(
   } = params;
   // generate the input type if not exists
   if (!inputTypeDefs.has("keyValueObject")) {
-    new JomqlInputType({
+    new GiraffeqlInputType({
       name: "keyValueObject",
       description: "Object Input with key and value properties",
       fields: {
-        key: new JomqlInputFieldType({
+        key: new GiraffeqlInputFieldType({
           type: Scalars.string,
           required: true,
         }),
-        value: new JomqlInputFieldType({
+        value: new GiraffeqlInputFieldType({
           type: valueType,
           required: !allowNullValue,
         }),
@@ -453,7 +453,7 @@ export function generateKeyValueArray(
 
   // generate the object type if not exists
   if (!objectTypeDefs.has("keyValueObject")) {
-    new JomqlObjectType({
+    new GiraffeqlObjectType({
       name: "keyValueObject",
       description: "Object with key and value properties",
       fields: {
@@ -472,7 +472,7 @@ export function generateKeyValueArray(
   return generateArrayField({
     allowNull,
     allowNullElement: false,
-    type: new JomqlObjectTypeLookup("keyValueObject"),
+    type: new GiraffeqlObjectTypeLookup("keyValueObject"),
   });
 }
 
@@ -524,7 +524,7 @@ export function generateTypenameField(service: BaseService) {
       type: Scalars.string,
       typeDefOptions: {
         resolver: () => service.typename,
-        args: new JomqlInputFieldType({
+        args: new GiraffeqlInputFieldType({
           required: false,
           allowNull: false,
           type: Scalars.number,
@@ -625,7 +625,12 @@ export function generateDataloadableField(
   });
 }
 
-function validateFieldPath(initialTypeDef: JomqlObjectType, fieldPath: string) {
+// user TypeDef
+// fieldPath: "userUserFollowLink/user"
+function validateFieldPath(
+  initialTypeDef: GiraffeqlObjectType,
+  fieldPath: string
+) {
   let currentTypeDef = initialTypeDef;
   let allowNull = false;
   const keyParts = fieldPath.split(/\./);
@@ -633,29 +638,47 @@ function validateFieldPath(initialTypeDef: JomqlObjectType, fieldPath: string) {
   let currentObjectTypeField;
 
   keyParts.forEach((keyPart, keyIndex) => {
-    if (!currentTypeDef.definition.fields[keyPart])
-      throw new JomqlInitializationError({
+    let actualKeyPart = keyPart;
+    // does the keypart have a "/"? if so, must handle differently
+    if (keyPart.match(/\//)) {
+      const subParts = keyPart.split(/\//);
+      const linkJoinType = subParts[0];
+
+      // ensure the type exists
+      const linkJoinTypeDef = objectTypeDefs.get(linkJoinType);
+      if (!linkJoinTypeDef)
+        throw new Error(`Link join type '${linkJoinType}' does not exist`);
+
+      // advance the currentTypeDef to the link Join Type Def
+      currentTypeDef = linkJoinTypeDef;
+
+      // set the actualFieldPart to the 2nd part
+      actualKeyPart = subParts[1];
+    }
+
+    if (!currentTypeDef.definition.fields[actualKeyPart])
+      throw new GiraffeqlInitializationError({
         message: `Invalid fieldPath '${fieldPath}' on '${initialTypeDef.definition.name}'`,
       });
 
-    currentObjectTypeField = currentTypeDef.definition.fields[keyPart];
+    currentObjectTypeField = currentTypeDef.definition.fields[actualKeyPart];
     currentType = currentObjectTypeField.type;
 
     // if one in the chain has allowNull === true, then allowNull
     if (currentObjectTypeField.allowNull) allowNull = true;
 
     if (keyParts[keyIndex + 1]) {
-      if (currentType instanceof JomqlObjectTypeLookup) {
+      if (currentType instanceof GiraffeqlObjectTypeLookup) {
         const lookupTypeDef = objectTypeDefs.get(currentType.name);
 
         if (!lookupTypeDef) {
-          throw new JomqlInitializationError({
+          throw new GiraffeqlInitializationError({
             message: `Invalid typeDef lookup for '${currentType.name}'`,
           });
         }
 
         currentTypeDef = lookupTypeDef;
-      } else if (currentType instanceof JomqlObjectType) {
+      } else if (currentType instanceof GiraffeqlObjectType) {
         currentTypeDef = currentType;
       } else {
         // must be scalar. should be over in the next iteration, else will fail
@@ -664,8 +687,8 @@ function validateFieldPath(initialTypeDef: JomqlObjectType, fieldPath: string) {
   });
 
   // final value must be scalar at the moment
-  if (!(currentType instanceof JomqlScalarType)) {
-    throw new JomqlInitializationError({
+  if (!(currentType instanceof GiraffeqlScalarType)) {
+    throw new GiraffeqlInitializationError({
       message: `Final filter field must be a scalar type. Field: '${fieldPath}' on '${initialTypeDef.definition.name}'`,
     });
   }
@@ -690,7 +713,7 @@ export function generatePaginatorPivotResolverObject(params: {
 
   // if filterByField, ensure that filterByField is a valid filterField on pivotService
   if (filterByField && !pivotService.filterFieldsMap[filterByField]) {
-    throw new JomqlInitializationError({
+    throw new GiraffeqlInitializationError({
       message: `Filter Key '${filterByField}' does not exist on type '${pivotService.typename}'`,
     });
   }
@@ -742,46 +765,46 @@ export function generatePaginatorPivotResolverObject(params: {
           filterValue.field ?? filterKey
         );
 
-        total[filterKey] = new JomqlInputFieldType({
-          type: new JomqlInputType(
+        total[filterKey] = new GiraffeqlInputFieldType({
+          type: new GiraffeqlInputType(
             {
               name: `${pivotService.typename}FilterByField/${filterKey}`,
               fields: {
-                eq: new JomqlInputFieldType({
+                eq: new GiraffeqlInputFieldType({
                   type: currentType,
                   required: false,
                   allowNull,
                 }),
-                neq: new JomqlInputFieldType({
+                neq: new GiraffeqlInputFieldType({
                   type: currentType,
                   required: false,
                   allowNull,
                 }),
-                gt: new JomqlInputFieldType({
+                gt: new GiraffeqlInputFieldType({
                   type: currentType,
                   required: false,
                   allowNull: false,
                 }),
-                lt: new JomqlInputFieldType({
+                lt: new GiraffeqlInputFieldType({
                   type: currentType,
                   required: false,
                   allowNull: false,
                 }),
-                in: new JomqlInputFieldType({
+                in: new GiraffeqlInputFieldType({
                   type: currentType,
                   arrayOptions: {
                     allowNullElement: allowNull,
                   },
                   required: false,
                 }),
-                nin: new JomqlInputFieldType({
+                nin: new GiraffeqlInputFieldType({
                   type: currentType,
                   arrayOptions: {
                     allowNullElement: allowNull,
                   },
                   required: false,
                 }),
-                regex: new JomqlInputFieldType({
+                regex: new GiraffeqlInputFieldType({
                   type: Scalars.regex,
                   required: false,
                 }),
@@ -842,52 +865,52 @@ export function generatePaginatorPivotResolverObject(params: {
     Object.keys(pivotService.searchFieldsMap).length > 0;
 
   return <ObjectTypeDefinitionField>{
-    type: new JomqlObjectTypeLookup(pivotService.paginator.typename),
+    type: new GiraffeqlObjectTypeLookup(pivotService.paginator.typename),
     allowNull: false,
-    args: new JomqlInputFieldType({
+    args: new GiraffeqlInputFieldType({
       required: true,
-      type: new JomqlInputType(
+      type: new GiraffeqlInputType(
         {
           name: pivotService.paginator.typename,
           fields: {
-            first: new JomqlInputFieldType({
+            first: new GiraffeqlInputFieldType({
               type: Scalars.number,
             }),
-            last: new JomqlInputFieldType({
+            last: new GiraffeqlInputFieldType({
               type: Scalars.number,
             }),
-            after: new JomqlInputFieldType({
+            after: new GiraffeqlInputFieldType({
               type: Scalars.string,
             }),
-            before: new JomqlInputFieldType({
+            before: new GiraffeqlInputFieldType({
               type: Scalars.string,
             }),
-            sortBy: new JomqlInputFieldType({
-              type: new JomqlScalarType(sortByScalarDefinition, true),
+            sortBy: new GiraffeqlInputFieldType({
+              type: new GiraffeqlScalarType(sortByScalarDefinition, true),
               arrayOptions: {
                 allowNullElement: false,
               },
             }),
-            sortDesc: new JomqlInputFieldType({
+            sortDesc: new GiraffeqlInputFieldType({
               type: Scalars.boolean,
               arrayOptions: {
                 allowNullElement: false,
               },
             }),
-            filterBy: new JomqlInputFieldType({
+            filterBy: new GiraffeqlInputFieldType({
               arrayOptions: {
                 allowNullElement: false,
               },
-              type: new JomqlInputType(filterByTypeDefinition, true),
+              type: new GiraffeqlInputType(filterByTypeDefinition, true),
             }),
-            groupBy: new JomqlInputFieldType({
-              type: new JomqlScalarType(groupByScalarDefinition, true),
+            groupBy: new GiraffeqlInputFieldType({
+              type: new GiraffeqlScalarType(groupByScalarDefinition, true),
               arrayOptions: {
                 allowNullElement: false,
               },
             }),
             ...(hasSearchFields && {
-              search: new JomqlInputFieldType({
+              search: new GiraffeqlInputFieldType({
                 type: Scalars.string,
               }),
             }),
@@ -897,7 +920,7 @@ export function generatePaginatorPivotResolverObject(params: {
 
             // after
             if (!isObject(args)) {
-              throw new JomqlArgsError({
+              throw new GiraffeqlArgsError({
                 message: `Args required`,
                 fieldPath,
               });
@@ -905,12 +928,12 @@ export function generatePaginatorPivotResolverObject(params: {
 
             if ("after" in args) {
               if (!("first" in args))
-                throw new JomqlArgsError({
+                throw new GiraffeqlArgsError({
                   message: `Cannot use after without first`,
                   fieldPath,
                 });
               if ("last" in args || "before" in args)
-                throw new JomqlArgsError({
+                throw new GiraffeqlArgsError({
                   message: `Cannot use after with last/before`,
                   fieldPath,
                 });
@@ -919,7 +942,7 @@ export function generatePaginatorPivotResolverObject(params: {
             // first
             if ("first" in args) {
               if ("last" in args || "before" in args)
-                throw new JomqlArgsError({
+                throw new GiraffeqlArgsError({
                   message: `Cannot use after with last/before`,
                   fieldPath,
                 });
@@ -928,7 +951,7 @@ export function generatePaginatorPivotResolverObject(params: {
             // before
             if ("before" in args) {
               if (!("last" in args))
-                throw new JomqlArgsError({
+                throw new GiraffeqlArgsError({
                   message: `Cannot use before without last`,
                   fieldPath,
                 });
@@ -937,14 +960,14 @@ export function generatePaginatorPivotResolverObject(params: {
             // last
             if ("last" in args) {
               if (!("before" in args))
-                throw new JomqlArgsError({
+                throw new GiraffeqlArgsError({
                   message: `Cannot use before without last`,
                   fieldPath,
                 });
             }
 
             if (!("first" in args) && !("last" in args))
-              throw new JomqlArgsError({
+              throw new GiraffeqlArgsError({
                 message: `One of first or last required`,
                 fieldPath,
               });

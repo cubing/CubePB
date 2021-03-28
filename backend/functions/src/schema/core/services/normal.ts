@@ -13,18 +13,18 @@ import { handleJqlSubscription } from "../../helpers/subscription";
 import * as Resolver from "../../helpers/resolver";
 
 import {
-  JomqlObjectType,
-  JomqlRootResolverType,
-  JomqlObjectTypeLookup,
+  GiraffeqlObjectType,
+  GiraffeqlRootResolverType,
+  GiraffeqlObjectTypeLookup,
   objectTypeDefs,
-  JomqlInputType,
-  JomqlArgsError,
-  JomqlInputTypeLookup,
-  JomqlInputFieldType,
-  JomqlInitializationError,
-  JomqlScalarType,
-  JomqlBaseError,
-} from "jomql";
+  GiraffeqlInputType,
+  GiraffeqlArgsError,
+  GiraffeqlInputTypeLookup,
+  GiraffeqlInputFieldType,
+  GiraffeqlInitializationError,
+  GiraffeqlScalarType,
+  GiraffeqlBaseError,
+} from "giraffeql";
 
 import { ServiceFunctionInputs } from "../../../types";
 
@@ -47,15 +47,15 @@ export type KeyMap = {
 };
 
 export class NormalService extends BaseService {
-  typeDef!: JomqlObjectType;
+  typeDef!: GiraffeqlObjectType;
 
-  typeDefLookup: JomqlObjectTypeLookup;
+  typeDefLookup: GiraffeqlObjectTypeLookup;
 
-  inputTypeDef!: JomqlInputType;
+  inputTypeDef!: GiraffeqlInputType;
 
-  inputTypeDefLookup: JomqlInputTypeLookup;
+  inputTypeDefLookup: GiraffeqlInputTypeLookup;
 
-  rootResolvers!: { [x: string]: JomqlRootResolverType };
+  rootResolvers!: { [x: string]: GiraffeqlRootResolverType };
 
   filterFieldsMap: FieldMap = {};
 
@@ -73,27 +73,27 @@ export class NormalService extends BaseService {
   constructor(typename?: string) {
     super(typename);
 
-    this.typeDefLookup = new JomqlObjectTypeLookup(this.typename);
+    this.typeDefLookup = new GiraffeqlObjectTypeLookup(this.typename);
 
-    this.inputTypeDefLookup = new JomqlInputTypeLookup(this.typename);
+    this.inputTypeDefLookup = new GiraffeqlInputTypeLookup(this.typename);
 
     process.nextTick(() => {
       const uniqueKeyMap = {};
       Object.entries(this.uniqueKeyMap).forEach(([uniqueKeyName, entry]) => {
         entry.forEach((key) => {
           const fieldType = this.getTypeDef().definition.fields[key].type;
-          if (!(fieldType instanceof JomqlScalarType)) {
-            throw new JomqlInitializationError({
+          if (!(fieldType instanceof GiraffeqlScalarType)) {
+            throw new GiraffeqlInitializationError({
               message: `Unique key map must lead to scalar value`,
             });
           }
-          uniqueKeyMap[key] = new JomqlInputFieldType({
+          uniqueKeyMap[key] = new GiraffeqlInputFieldType({
             type: fieldType,
           });
         });
       });
 
-      this.inputTypeDef = new JomqlInputType({
+      this.inputTypeDef = new GiraffeqlInputType({
         name: this.typename,
 
         fields: uniqueKeyMap,
@@ -118,7 +118,7 @@ export class NormalService extends BaseService {
           }
 
           if (!validKeyCombination) {
-            throw new JomqlArgsError({
+            throw new GiraffeqlArgsError({
               message: `Invalid combination of args`,
               fieldPath,
             });
@@ -129,7 +129,7 @@ export class NormalService extends BaseService {
   }
 
   // set typeDef
-  setTypeDef(typeDef: JomqlObjectType) {
+  setTypeDef(typeDef: GiraffeqlObjectType) {
     this.typeDef = typeDef;
   }
 
@@ -213,7 +213,7 @@ export class NormalService extends BaseService {
 
     //check if the query is valid (no need to actually run it)
     /*     if (this.typeDef)
-      generateJomqlResolverTreeFromTypeDefinition(
+      generateGiraffeqlResolverTreeFromTypeDefinition(
         selectQuery,
         this.typeDef,
         this.typename,
@@ -616,7 +616,10 @@ export class NormalService extends BaseService {
   async handleLookupArgs(args: any, fieldPath: string[]): Promise<void> {
     for (const key in args) {
       const typeField = this.getTypeDef().definition.fields[key]?.type;
-      if (typeField instanceof JomqlObjectTypeLookup && isObject(args[key])) {
+      if (
+        typeField instanceof GiraffeqlObjectTypeLookup &&
+        isObject(args[key])
+      ) {
         // get record ID of type, replace object with the ID
         const results = await fetchTableRows({
           select: [{ field: "id" }],
@@ -631,7 +634,7 @@ export class NormalService extends BaseService {
         });
 
         if (results.length < 1) {
-          throw new JomqlBaseError({
+          throw new GiraffeqlBaseError({
             message: `${typeField.name} not found`,
             fieldPath,
           });
@@ -662,7 +665,7 @@ export class NormalService extends BaseService {
     });
 
     if (results.length < 1) {
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message: `${this.typename} not found`,
         fieldPath,
       });

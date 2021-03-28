@@ -3,7 +3,7 @@ import { permissionsCheck } from "../../helpers/permissions";
 import { ServiceFunctionInputs } from "../../../types";
 import { env } from "../../../config";
 import axios from "axios";
-import { JomqlBaseError } from "jomql";
+import { GiraffeqlBaseError } from "giraffeql";
 
 const graphqlApi = axios.create({
   baseURL: "https://api.github.com",
@@ -69,7 +69,7 @@ query {
         (edge) => edge.node
       );
     } catch (err) {
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message:
           "Unable to fetch the requested data from the repository provider",
         fieldPath,
@@ -105,7 +105,7 @@ query {
 
       return response.viewer.organization.repository.latestRelease?.tagName;
     } catch (err) {
-      throw new JomqlBaseError({
+      throw new GiraffeqlBaseError({
         message:
           "Unable to fetch the requested data from the repository provider",
         fieldPath,

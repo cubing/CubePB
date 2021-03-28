@@ -1,5 +1,5 @@
 import type { Request } from "express";
-import { ObjectTypeDefinitionField } from "jomql";
+import { ObjectTypeDefinitionField } from "giraffeql";
 import Knex = require("knex");
 import { userPermissionEnum, userRoleKenum } from "../schema/enums";
 

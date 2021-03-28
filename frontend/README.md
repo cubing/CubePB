@@ -28,7 +28,7 @@ $ npm run generate
 
 ## Backend API Schema
 
-The backend API uses jomql as the query language. It expose a schema file that roughly describe the backend models and what query operations can be performed. The TypeScript schema file can be found [here](https://api.cubepb.com/schema.ts). By pasting the `schema.ts` file into a code editor like VSCode, you can use the Query Builder located at the top of the file to formulate jomql queries.
+The backend API uses Giraffeql as the query language. It expose a schema file that roughly describe the backend models and what query operations can be performed. The TypeScript schema file can be found [here](https://api.cubepb.com/schema.ts). By pasting the `schema.ts` file into a code editor like VSCode, you can use the Query Builder located at the top of the file to formulate Giraffeql queries.
 
 ## More Info
 

@@ -3,12 +3,12 @@ import * as Resolver from "../../helpers/resolver";
 import { itemNotFoundError } from "../../helpers/error";
 import { generatePaginatorInfoTypeDef } from "../generators";
 import { ServiceFunctionInputs } from "../../../types";
-import { lookupSymbol, JomqlObjectType } from "jomql";
+import { lookupSymbol, GiraffeqlObjectType } from "giraffeql";
 
 export class PaginatorInfoService extends SimpleService {
   constructor(service: NormalService) {
     super("paginatorInfo");
-    this.typeDef = new JomqlObjectType(
+    this.typeDef = new GiraffeqlObjectType(
       generatePaginatorInfoTypeDef(service, this),
       true
     );

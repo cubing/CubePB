@@ -1,4 +1,4 @@
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 
 export default (context) => {
   const { store } = context
@@ -6,7 +6,7 @@ export default (context) => {
   return new Promise((resolve) => {
     if (store.getters['auth/getToken']() && !store.getters['auth/user']) {
       // fetch the user info
-      executeJomql(null, {
+      executeGiraffeql(null, {
         getCurrentUser: {
           id: true,
           email: true,

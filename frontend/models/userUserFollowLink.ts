@@ -1,5 +1,6 @@
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
+import UserColumn from '~/components/table/common/userColumn.vue'
 
 export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
   typename: 'userUserFollowLink',
@@ -12,20 +13,22 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
     id: {
       text: 'ID',
     },
-    'user.name': {
-      text: 'Name',
+    'user.id+user.name+user.avatar': {
+      text: 'User',
+      component: UserColumn,
     },
-    'target.name': {
-      text: 'Target',
+    'user.id': {},
+    'user.name': {},
+    'user.avatar': {},
+    'target.id+target.name+target.avatar': {
+      text: 'User',
+      component: UserColumn,
     },
-    'user.id': {
-      text: 'Name',
-    },
-    'target.id': {
-      text: 'Target',
-    },
+    'target.id': {},
+    'target.name': {},
+    'target.avatar': {},
     createdAt: {
-      text: 'Created At',
+      text: 'Followed At',
       component: TimeagoColumn,
     },
     updatedAt: {

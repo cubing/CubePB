@@ -79,7 +79,7 @@
 <script>
 import columnMixin from '~/mixins/column'
 import { getNestedProperty, handleError } from '~/services/base'
-import { executeJomql } from '~/services/jomql'
+import { executeGiraffeql } from '~/services/Giraffeql'
 
 export default {
   mixins: [columnMixin],
@@ -135,7 +135,7 @@ export default {
         if (!this.$store.getters['auth/user']) throw new Error('Login required')
 
         if (follow) {
-          const data = await executeJomql(this, {
+          const data = await executeGiraffeql(this, {
             createUserUserFollowLink: {
               id: true,
               __args: {
@@ -151,7 +151,7 @@ export default {
 
           this.currentUser.currentUserFollowing = data.id
         } else {
-          await executeJomql(this, {
+          await executeGiraffeql(this, {
             deleteUserUserFollowLink: {
               __args: {
                 id: this.currentUser.currentUserFollowing,
@@ -174,7 +174,7 @@ export default {
     async loadData() {
       this.loading.loadData = true
       try {
-        this.currentUser = await executeJomql(this, {
+        this.currentUser = await executeGiraffeql(this, {
           getUser: {
             country: true,
             wcaId: true,
