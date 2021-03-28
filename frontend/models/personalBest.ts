@@ -256,7 +256,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       {
         field: 'pbClass.name+setSize',
         sortable: true,
-        width: '100px',
+        width: '150px',
       },
       {
         field:
