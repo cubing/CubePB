@@ -2,6 +2,7 @@
   <CrudRecordPage
     :record-info="recordInfo"
     :locked-filters="lockedFilters"
+    :hidden-headers="hiddenHeaders"
     :title="title"
     :head="head"
     :icon="icon"
