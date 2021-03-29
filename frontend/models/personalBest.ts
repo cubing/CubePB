@@ -1,8 +1,4 @@
-import {
-  getEvents,
-  getProducts,
-  getPersonalBestClasses,
-} from '../services/dropdown'
+import { getEvents, getPersonalBestClasses } from '../services/dropdown'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'

@@ -166,8 +166,12 @@
         @click="copyToClipboard('hello@cubepb.com')"
         >mdi-email</v-icon
       >
-      <v-btn small text @click="toggleTheme()"
-        >Dark Mode: {{ $vuetify.theme.dark ? 'On' : 'Off' }}</v-btn
+      <v-icon
+        small
+        class="mr-2"
+        title="Toogle Brightness"
+        @click="toggleTheme()"
+        >mdi-brightness-4</v-icon
       >
     </v-footer>
     <Snackbar />
