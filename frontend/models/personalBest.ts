@@ -83,7 +83,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     'product.id': {
       text: 'Cube',
-      getOptions: getProducts,
+      // getOptions: getProducts, // not preloading these
       typename: 'product',
       inputType: 'server-combobox',
       optional: true,
