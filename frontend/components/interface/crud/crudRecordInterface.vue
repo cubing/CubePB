@@ -321,6 +321,7 @@
             :is="childInterfaceComponent"
             class="mb-2"
             :record-info="expandTypeObject.recordInfo"
+            :icon="expandTypeObject.icon"
             :title="expandTypeObject.name"
             :hidden-headers="expandTypeObject.excludeHeaders"
             :locked-filters="lockedSubFilters"
