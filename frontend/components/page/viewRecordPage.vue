@@ -213,10 +213,11 @@ export default {
     },
 
     interfaceComponent() {
-      return this.expandTypeObject
-        ? this.expandTypeObject.component
-        : this.recordInfo.paginationOptions.interfaceComponent ||
-            CrudRecordInterface
+      return (
+        this.expandTypeObject.component ||
+        this.expandTypeObject.recordInfo.paginationOptions.interfaceComponent ||
+        CrudRecordInterface
+      )
     },
   },
 

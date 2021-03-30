@@ -4,7 +4,7 @@ import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
 import { getUserRoles } from '~/services/dropdown'
 import ViewUserInterface from '~/components/interface/crud/special/viewUserInterface.vue'
-import ViewPbCardInterface from '~/components/interface/viewPbCardInterface.vue'
+// import ViewPbCardInterface from '~/components/interface/viewPbCardInterface.vue'
 
 export const User = <RecordInfo<'user'>>{
   typename: 'user',
@@ -154,10 +154,10 @@ export const User = <RecordInfo<'user'>>{
         ]
       },
     },
-    {
+    /*     {
       component: ViewPbCardInterface,
       name: 'PB Card',
       icon: 'mdi-card-text',
-    },
+    }, */
   ],
 }

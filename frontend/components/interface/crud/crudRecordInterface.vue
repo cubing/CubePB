@@ -267,7 +267,6 @@
             v-for="(headerItem, i) in headers"
             :key="i"
             :class="headerItem.align ? 'text-' + headerItem.align : null"
-            class="truncate"
           >
             <div v-if="headerItem.value === null">
               <nuxt-link

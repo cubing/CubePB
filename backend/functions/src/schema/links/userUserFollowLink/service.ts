@@ -29,6 +29,8 @@ export class UserUserFollowLinkService extends LinkService {
   groupByFieldsMap = {};
 
   accessControl: AccessControlMap = {
+    // anyone allowed to get followers/followee lists
+    getMultiple: () => true,
     create: async ({ req, args, fieldPath }) => {
       // handle lookupArgs, convert lookups into ids
       await this.handleLookupArgs(args, fieldPath);

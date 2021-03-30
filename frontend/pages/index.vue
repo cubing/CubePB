@@ -37,6 +37,25 @@
               >
             </p>
           </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn v-if="user" color="primary" nuxt to="/my-pbs"
+              >Track My PBs</v-btn
+            >
+            <v-btn v-else text @click="goToWcaAuth()">
+              <img
+                src="../static/wcalogo2020.svg"
+                alt=""
+                style="width: 32px"
+                class="pr-2"
+              />
+              Login
+            </v-btn>
+
+            <v-btn color="primary" nuxt :to="latestPbsRoute"
+              >View Latest PBs</v-btn
+            >
+          </v-card-actions>
         </v-card>
 
         <ReleaseHistory class="mt-3" />
@@ -46,14 +65,32 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ReleaseHistory from '~/components/common/releaseHistory.vue'
+import { generateRoute } from '~/services/base'
+import { goToWcaAuth } from '~/services/auth'
 
 export default {
   components: {
     ReleaseHistory,
   },
 
-  methods: {},
+  computed: {
+    ...mapGetters({
+      user: 'auth/user',
+    }),
+
+    latestPbsRoute() {
+      return generateRoute('/public-pbs', {
+        sortBy: ['happenedOn'],
+        sortDesc: [true],
+      })
+    },
+  },
+
+  methods: {
+    goToWcaAuth,
+  },
   head() {
     return {
       title: 'Home',

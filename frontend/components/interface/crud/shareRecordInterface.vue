@@ -55,7 +55,7 @@ export default {
               name: this.recordInfo.viewRecordRoute,
               query: {
                 id: this.selectedItem.id,
-                expand: this.$route.query.expand,
+                expand: this.$route.query.expand ?? 0,
               },
             }).href
         : ''

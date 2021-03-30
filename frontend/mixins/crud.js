@@ -157,8 +157,10 @@ export default {
 
     childInterfaceComponent() {
       return this.expandTypeObject
-        ? this.expandTypeObject.recordInfo.paginationOptions
-            .interfaceComponent || CrudRecordInterface
+        ? this.expandTypeObject.component ||
+            this.expandTypeObject.recordInfo.paginationOptions
+              .interfaceComponent ||
+            CrudRecordInterface
         : null
     },
     capitalizedType() {

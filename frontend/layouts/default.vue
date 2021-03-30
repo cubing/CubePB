@@ -223,11 +223,11 @@ export default {
             sortDesc: [true],
           }),
         },
-        {
+        /*         {
           icon: 'mdi-card-text',
           title: 'My PB Card',
           to: '/my-pb-card',
-        },
+        }, */
         {
           icon: 'mdi-card-account-details',
           title: 'My Profile',
