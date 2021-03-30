@@ -45,11 +45,6 @@ export default {
               operator: 'eq',
               value: this.$store.getters['auth/user'].id,
             },
-            {
-              field: 'isCurrent',
-              operator: 'eq',
-              value: true,
-            },
           ]
         : []
     },
