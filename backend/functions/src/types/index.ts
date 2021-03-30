@@ -61,7 +61,7 @@ export type ExternalQuery = {
 export type ServiceFunctionInputs = {
   req: Request;
   fieldPath: string[];
-  args: unknown;
+  args: any;
   query?: unknown;
   data?: any;
   isAdmin?: boolean;

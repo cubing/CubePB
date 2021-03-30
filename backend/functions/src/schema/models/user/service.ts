@@ -64,7 +64,7 @@ export class UserService extends PaginatedService {
       if (
         query &&
         Object.keys(query).some((field) =>
-          ["role", "permissions", "all_permissions", "email"].includes(field)
+          ["role", "permissions", "allPermissions", "email"].includes(field)
         ) &&
         req.user?.role !== userRoleKenum.ADMIN
       ) {

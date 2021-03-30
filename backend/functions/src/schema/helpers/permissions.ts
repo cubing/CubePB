@@ -9,6 +9,7 @@ export const userRoleToPermissionsMap = {
   [userRoleKenum.NORMAL.name]: [
     userPermissionEnum.personalBest_create,
     userPermissionEnum.product_create,
+    userPermissionEnum.userUserFollowLink_get,
   ],
 };
 

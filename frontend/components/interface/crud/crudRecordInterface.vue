@@ -245,7 +245,7 @@
                   @click="toggleItemExpanded(props, item)"
                 >
                   <v-list-item-icon>
-                    <v-icon>{{ item.recordInfo.icon }}</v-icon>
+                    <v-icon>{{ item.icon || item.recordInfo.icon }}</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>{{
                     item.name || item.recordInfo.name

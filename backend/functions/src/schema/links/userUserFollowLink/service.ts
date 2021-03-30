@@ -4,8 +4,9 @@ import {
   permissionsCheck,
 } from "../../helpers/permissions";
 import { userRoleKenum } from "../../enums";
-import { ServiceFunctionInputs } from "../../../types";
+import { ServiceFunctionInputs, AccessControlMap } from "../../../types";
 import * as Resolver from "../../helpers/resolver";
+import { User } from "../../services";
 
 export class UserUserFollowLinkService extends LinkService {
   defaultTypename = "userUserFollowLink";
@@ -27,9 +28,48 @@ export class UserUserFollowLinkService extends LinkService {
 
   groupByFieldsMap = {};
 
-  accessControl = {
-    create: generateUserRoleGuard([userRoleKenum.ADMIN]),
-    delete: generateUserRoleGuard([userRoleKenum.ADMIN]),
+  accessControl: AccessControlMap = {
+    create: async ({ req, args, fieldPath }) => {
+      // handle lookupArgs, convert lookups into ids
+      await this.handleLookupArgs(args, fieldPath);
+
+      // userId must be logged in and current user, else deny
+      if (!req.user || args.user !== req.user.id) return false;
+
+      // target must be public user
+      const targetUser = await User.lookupRecord(
+        [
+          {
+            field: "isPublic",
+          },
+        ],
+        args.target,
+        fieldPath
+      );
+
+      // else deny
+      if (!targetUser.isPublic) return false;
+      return true;
+    },
+    delete: async ({ req, args, fieldPath }) => {
+      // user must be logged in, else deny
+      if (!req.user) return false;
+
+      // "user" field on the link must be current user, else deny
+      const record = await this.lookupRecord(
+        [
+          {
+            field: "user.id",
+          },
+        ],
+        args,
+        fieldPath
+      );
+
+      if (record["user.id"] !== req.user.id) return false;
+
+      return true;
+    },
   };
 
   @permissionsCheck("create")
