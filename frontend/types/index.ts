@@ -133,9 +133,13 @@ export type RecordInfo<T extends keyof MainTypes> = {
   enterOptions?: {}
 
   expandTypes?: {
-    recordInfo: RecordInfo<any>
+    // recordInfo is required unless it is a custom component
+    recordInfo?: RecordInfo<any>
+    component?: any
     // name for the expandType, otherwise recordInfo.name will be used
     name?: string
+    // icon for the expandType, otherwise recordInfo.icon will be used
+    icon?: string
     // function that will replace the lockedSubFilters() computed property in crud.js if provided
     lockedFilters?: (that, item) => FilterObject[]
     // headers fields that should not be shown

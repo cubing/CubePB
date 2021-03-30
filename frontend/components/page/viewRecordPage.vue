@@ -78,7 +78,9 @@
                         @click="toggleExpand(i)"
                       >
                         <v-list-item-icon>
-                          <v-icon>{{ item.recordInfo.icon }}</v-icon>
+                          <v-icon>{{
+                            item.icon || item.recordInfo.icon
+                          }}</v-icon>
                         </v-list-item-icon>
                         <v-list-item-title>{{
                           item.name || item.recordInfo.name
@@ -97,6 +99,7 @@
               :is="interfaceComponent"
               :record-info="expandTypeObject.recordInfo"
               :title="expandTypeObject.name"
+              :icon="expandTypeObject.icon"
               :hidden-headers="expandTypeObject.excludeHeaders"
               :locked-filters="lockedSubFilters"
               :page-options="subPageOptions"
@@ -210,10 +213,10 @@ export default {
     },
 
     interfaceComponent() {
-      return (
-        this.recordInfo.paginationOptions.interfaceComponent ||
-        CrudRecordInterface
-      )
+      return this.expandTypeObject
+        ? this.expandTypeObject.component
+        : this.recordInfo.paginationOptions.interfaceComponent ||
+            CrudRecordInterface
     },
   },
 

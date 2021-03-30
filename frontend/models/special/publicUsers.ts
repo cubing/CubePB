@@ -1,5 +1,6 @@
 import { User } from '..'
 import { PublicPbs } from '.'
+import ViewPbCardInterface from '~/components/interface/viewPbCardInterface.vue'
 
 export const PublicUsers = {
   ...User,
@@ -63,6 +64,11 @@ export const PublicUsers = {
           },
         ]
       },
+    },
+    {
+      component: ViewPbCardInterface,
+      name: 'PB Card',
+      icon: 'mdi-card-text',
     },
   ],
 }

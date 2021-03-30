@@ -266,9 +266,10 @@ export default {
                   fieldKey.split(/\+/).forEach((field) => {
                     total[field] = true
                     // assuming all fields are valid
-                    serializeMap[field] = this.recordInfo.fields[
-                      field
-                    ].serialize
+                    serializeMap.set(
+                      field,
+                      this.recordInfo.fields[field].serialize
+                    )
                   })
                 } else {
                   total[fieldKey] = true
