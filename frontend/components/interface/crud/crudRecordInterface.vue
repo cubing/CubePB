@@ -305,7 +305,7 @@
                 :is="headerItem.fieldInfo.component"
                 v-if="headerItem.fieldInfo.component"
                 :item="props.item"
-                :fieldpath="headerItem.value"
+                :field-path="headerItem.path"
               ></component>
               <span v-else>
                 {{ getTableRowData(headerItem, props.item) }}

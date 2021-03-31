@@ -1,5 +1,5 @@
 <template>
-  <div v-if="item">
+  <div v-if="currentValue">
     {{ renderedResult }}
   </div>
 </template>
@@ -13,8 +13,10 @@ export default {
   computed: {
     renderedResult() {
       return (
-        this.item.pbClass.name +
-        (this.item.setSize > 1 ? ' of ' + this.item.setSize : '')
+        this.currentValue.pbClass.name +
+        (this.currentValue.setSize > 1
+          ? ' of ' + this.currentValue.setSize
+          : '')
       )
     },
   },

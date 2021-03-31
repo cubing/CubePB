@@ -22,6 +22,14 @@ export type RecordInfo<T extends keyof MainTypes> = {
       // hint field for helping the user to fill out the field
       hint?: string
       icon?: string
+
+      // if this is a compound field
+      compoundOptions?: {
+        // if this is a compound field, path is the prefix to get to the item
+        pathPrefix?: string
+        // which field should the primary field, for sort purposes
+        primaryField: string
+      }
       inputType?:
         | 'html'
         | 'single-image'

@@ -22,6 +22,9 @@ export const User = <RecordInfo<'user'>>{
     },
     'name+avatar': {
       text: 'Name',
+      compoundOptions: {
+        primaryField: 'createdBy.name',
+      },
       component: UserColumn,
     },
     email: {

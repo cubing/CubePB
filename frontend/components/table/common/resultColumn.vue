@@ -1,5 +1,5 @@
 <template>
-  <div v-if="item">
+  <div v-if="currentValue">
     {{ renderedResult }}
   </div>
 </template>
@@ -12,13 +12,13 @@ export default {
 
   computed: {
     renderedResult() {
-      switch (this.item.event.scoreMethod) {
+      switch (this.currentValue.event.scoreMethod) {
         case 'STANDARD':
-          return `${this.item.timeElapsed}`
+          return `${this.currentValue.timeElapsed}`
         case 'FMC':
-          return `${this.item.movesCount}`
+          return `${this.currentValue.movesCount}`
         case 'MBLD':
-          return `${this.item.attemptsSucceeded}/${this.item.attemptsTotal} ${this.item.timeElapsed}`
+          return `${this.currentValue.attemptsSucceeded}/${this.currentValue.attemptsTotal} ${this.currentValue.timeElapsed}`
         default:
           return ''
       }

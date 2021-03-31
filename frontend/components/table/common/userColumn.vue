@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentItem">
+  <div v-if="currentValue">
     <v-menu
       v-model="open"
       :close-on-content-click="false"
@@ -11,10 +11,10 @@
       <template v-slot:activator="{ on }">
         <v-chip pill small v-on="on">
           <v-avatar left>
-            <v-img v-if="currentItem.avatar" :src="currentItem.avatar"></v-img
+            <v-img v-if="currentValue.avatar" :src="currentValue.avatar"></v-img
             ><v-icon v-else>mdi-account</v-icon>
           </v-avatar>
-          {{ currentItem.name }}
+          {{ currentValue.name }}
         </v-chip>
       </template>
 
@@ -22,12 +22,12 @@
         <v-list>
           <v-list-item>
             <v-list-item-avatar>
-              <v-img v-if="currentItem.avatar" :src="currentItem.avatar" />
+              <v-img v-if="currentValue.avatar" :src="currentValue.avatar" />
               <v-icon v-else>mdi-account</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
               <template>
-                <v-list-item-title>{{ currentItem.name }}</v-list-item-title>
+                <v-list-item-title>{{ currentValue.name }}</v-list-item-title>
                 <v-progress-linear
                   v-if="loading.loadData"
                   indeterminate
@@ -78,7 +78,7 @@
 
 <script>
 import columnMixin from '~/mixins/column'
-import { getNestedProperty, handleError } from '~/services/base'
+import { handleError } from '~/services/base'
 import { executeGiraffeql } from '~/services/giraffeql'
 
 export default {
@@ -95,16 +95,6 @@ export default {
     }
   },
 
-  computed: {
-    // attempt to find the nested "user" using the headerInfo.field, assuming the fieldpath's path prefix is the path to the "user"
-    currentItem() {
-      const fieldpathParts = this.fieldpath.split(/\./)
-      return fieldpathParts.length > 1
-        ? getNestedProperty(this.item, fieldpathParts.slice(0, -1).join('.'))
-        : this.item
-    },
-  },
-
   watch: {
     open() {
       if (!this.open) return
@@ -116,7 +106,7 @@ export default {
     openProfile() {
       const routeData = this.$router.resolve({
         name: 'user',
-        query: { id: this.currentItem.id },
+        query: { id: this.currentValue.id },
       })
       window.open(routeData.href, '_blank')
     },
@@ -143,7 +133,7 @@ export default {
                   id: this.$store.getters['auth/user']?.id,
                 },
                 target: {
-                  id: this.currentItem.id,
+                  id: this.currentValue.id,
                 },
               },
             },
@@ -180,7 +170,7 @@ export default {
             wcaId: true,
             currentUserFollowing: true,
             __args: {
-              id: this.currentItem.id,
+              id: this.currentValue.id,
             },
           },
         })

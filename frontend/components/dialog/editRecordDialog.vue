@@ -28,6 +28,13 @@
       </template>
       <template v-slot:footer-action>
         <v-btn color="blue darken-1" text @click="close()">Close</v-btn>
+        <v-btn
+          v-if="recordInfo.shareOptions && mode === 'view'"
+          color="primary"
+          @click="goToPage()"
+        >
+          <v-icon left>mdi-open-in-new</v-icon> Go To Page</v-btn
+        >
       </template>
     </component>
   </v-dialog>
@@ -115,6 +122,16 @@ export default {
   methods: {
     close() {
       this.$emit('close')
+    },
+    goToPage() {
+      const routeData = this.$router.resolve({
+        name: this.recordInfo.viewRecordRoute,
+        query: {
+          id: this.selectedItem.id,
+          expand: this.$route.query.expand ?? 0,
+        },
+      })
+      window.open(routeData.href, '_blank')
     },
     handleSubmit(data) {
       this.close()

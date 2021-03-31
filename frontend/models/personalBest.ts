@@ -7,6 +7,7 @@ import ResultColumn from '~/components/table/common/resultColumn.vue'
 import PbTypeColumn from '~/components/table/common/pbTypeColumn.vue'
 import { serializeTime } from '~/services/base'
 import EditPersonalBestInterface from '~/components/interface/crud/special/editPersonalBestInterface.vue'
+import ViewRecordTableInterface from '~/components/interface/crud/viewRecordTableInterface.vue'
 
 export const PersonalBest = <RecordInfo<'personalBest'>>{
   typename: 'personalBest',
@@ -22,6 +23,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     'createdBy.name+createdBy.avatar+createdBy.id': {
       text: 'Created By',
+      compoundOptions: {
+        pathPrefix: 'createdBy',
+        primaryField: 'createdBy.name',
+      },
       component: UserColumn,
     },
     'pbClass.id': {
@@ -52,14 +57,24 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     'event.name+event.cubingIcon': {
       text: 'Event',
+      compoundOptions: {
+        pathPrefix: 'event',
+        primaryField: 'event.name',
+      },
       component: EventColumn,
     },
     'pbClass.name+setSize': {
       text: 'PB Type',
       component: PbTypeColumn,
+      compoundOptions: {
+        primaryField: 'pbClass.name',
+      },
     },
     'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod': {
       text: 'Result',
+      compoundOptions: {
+        primaryField: 'score',
+      },
       component: ResultColumn,
     },
     'event.scoreMethod': {
@@ -290,15 +305,15 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   editOptions: undefined,
   viewOptions: {
     fields: [
-      'event.id',
-      'pbClass.id',
-      'setSize',
+      'event.name+event.cubingIcon',
+      'pbClass.name+setSize',
       'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod',
-      'createdBy.name+createdBy.avatar+createdBy.id',
       'happenedOn',
-      'product.id',
+      'product.name',
       'isCurrent',
+      'createdBy.name+createdBy.avatar+createdBy.id',
     ],
+    component: ViewRecordTableInterface,
   },
   deleteOptions: {},
   shareOptions: {},

@@ -190,11 +190,14 @@ export default {
             text: fieldInfo.text ?? headerInfo.field,
             align: headerInfo.align ?? 'left',
             sortable: headerInfo.sortable,
-            value: headerInfo.field.match(/\+/)
-              ? headerInfo.field.split(/\+/)[0]
+            value: fieldInfo.compoundOptions
+              ? fieldInfo.compoundOptions.primaryField
               : headerInfo.field,
             width: headerInfo.width ?? null,
             fieldInfo,
+            path: fieldInfo.compoundOptions
+              ? fieldInfo.compoundOptions.pathPrefix
+              : headerInfo.field,
             // headerInfo,
           }
         })

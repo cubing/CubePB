@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import EditRecordInterface from '~/components/interface/crud/editRecordInterface.vue'
+import ViewRecordInterface from '~/components/interface/crud/viewRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
 import { executeGiraffeql } from '~/services/giraffeql'
 import {
@@ -142,7 +142,7 @@ import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface
 
 export default {
   components: {
-    EditRecordDialog,
+    ViewRecordInterface,
   },
 
   props: {
@@ -182,7 +182,7 @@ export default {
       return !!this.expandTypeObject
     },
     currentInterface() {
-      return this.recordInfo.viewOptions.component || EditRecordInterface
+      return this.recordInfo.viewOptions.component || ViewRecordInterface
     },
     hiddenSubFilters() {
       if (!this.isExpanded) return []

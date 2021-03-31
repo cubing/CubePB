@@ -15,6 +15,10 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
     },
     'user.id+user.name+user.avatar': {
       text: 'User',
+      compoundOptions: {
+        pathPrefix: 'user',
+        primaryField: 'user.id',
+      },
       component: UserColumn,
     },
     'user.id': {},
@@ -22,6 +26,10 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
     'user.avatar': {},
     'target.id+target.name+target.avatar': {
       text: 'User',
+      compoundOptions: {
+        pathPrefix: 'target',
+        primaryField: 'target.id',
+      },
       component: UserColumn,
     },
     'target.id': {},
