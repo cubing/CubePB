@@ -20,7 +20,7 @@ export const pgProductionOptions = {
     database: env.pg.database,
     ...(env.pg.port && { port: env.pg.port }),
   },
-  pool: { min: 0, max: 7 },
+  pool: { min: 0, max: 1 },
 };
 
 export const pgDevOptions = env.pg_dev
@@ -33,7 +33,7 @@ export const pgDevOptions = env.pg_dev
         database: env.pg_dev.database,
         ...(env.pg_dev.port && { port: env.pg_dev.port }),
       },
-      pool: { min: 0, max: 7 },
+      pool: { min: 0, max: 1 },
     }
   : null;
 
