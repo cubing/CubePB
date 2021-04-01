@@ -3,11 +3,7 @@
     <v-layout column justify-center align-center>
       <v-flex xs12 sm8 md6 style="max-width: 600px">
         <div class="text-center pb-5 pt-3">
-          <img
-            src="../static/cubepblogohorizontal.png"
-            alt=""
-            style="width: 75%"
-          />
+          <img src="../static/cubepb-trimmed.png" alt="" style="width: 75%" />
         </div>
         <v-card>
           <v-card-title class="headline">

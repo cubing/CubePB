@@ -64,7 +64,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <nuxt-link to="/">
         <v-img
-          :src="require('../static/cubepblogohorizontal.png')"
+          :src="require('../static/cubepb-trimmed.png')"
           max-height="48"
           max-width="130"
           contain
