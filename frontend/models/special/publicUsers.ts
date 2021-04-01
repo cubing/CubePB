@@ -1,6 +1,6 @@
 import { User } from '..'
 import { PublicPbs } from '.'
-// import ViewPbCardInterface from '~/components/interface/viewPbCardInterface.vue'
+import ViewPbCardInterface from '~/components/interface/viewPbCardInterface.vue'
 
 export const PublicUsers = {
   ...User,
@@ -41,8 +41,28 @@ export const PublicUsers = {
 
   expandTypes: [
     {
+      component: ViewPbCardInterface,
       recordInfo: PublicPbs,
-      name: 'PBs',
+      name: 'PB Card',
+      icon: 'mdi-card-text',
+      lockedFilters: (_that, item) => {
+        return [
+          {
+            field: 'createdBy.id',
+            operator: 'eq',
+            value: item.id,
+          },
+          {
+            field: 'createdBy.isPublic',
+            operator: 'eq',
+            value: true,
+          },
+        ]
+      },
+    },
+    {
+      recordInfo: PublicPbs,
+      name: 'All PBs',
       excludeFilters: ['createdBy.id', 'isCurrent'],
       excludeHeaders: ['createdBy.name+createdBy.avatar+createdBy.id'],
       lockedFilters: (_that, item) => {
@@ -65,10 +85,5 @@ export const PublicUsers = {
         ]
       },
     },
-    /*     {
-      component: ViewPbCardInterface,
-      name: 'PB Card',
-      icon: 'mdi-card-text',
-    }, */
   ],
 }

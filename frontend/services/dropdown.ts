@@ -22,6 +22,7 @@ export const getEvents = memoize(async function (that, _forceReload = false) {
           id: true,
           name: true,
           scoreMethod: true,
+          cubingIcon: true,
         },
       },
       __args: {

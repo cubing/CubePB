@@ -19,6 +19,9 @@ export const Event = <RecordInfo<'event'>>{
     },
     'name+code': {
       text: 'Name',
+      compoundOptions: {
+        primaryField: 'name',
+      },
       component: EventColumn,
     },
     code: {

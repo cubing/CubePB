@@ -64,7 +64,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <nuxt-link to="/">
         <v-img
-          :src="require('../static/cubepb-trimmed.png')"
+          :src="require('../static/cubepblogohorizontal.png')"
           max-height="48"
           max-width="130"
           contain
@@ -216,6 +216,11 @@ export default {
           to: '/my-pbs',
         },
         {
+          icon: 'mdi-card-text',
+          title: 'My PB Card',
+          to: '/my-pb-card',
+        },
+        {
           icon: 'mdi-timetable',
           title: 'My PB Feed',
           to: generateRoute('/my-pb-feed', {
@@ -223,11 +228,6 @@ export default {
             sortDesc: [true],
           }),
         },
-        /*         {
-          icon: 'mdi-card-text',
-          title: 'My PB Card',
-          to: '/my-pb-card',
-        }, */
         {
           icon: 'mdi-card-account-details',
           title: 'My Profile',

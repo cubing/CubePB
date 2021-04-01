@@ -7,6 +7,8 @@
             editable
             icon="mdi-card-text"
             :title="title"
+            :record-info="recordInfo"
+            :locked-filters="lockedFilters"
           ></ViewPbCardInterface>
         </v-col>
       </v-row>
@@ -41,11 +43,6 @@ export default {
               field: 'createdBy.id',
               operator: 'eq',
               value: this.$store.getters['auth/user']?.id,
-            },
-            {
-              field: 'isCurrent',
-              operator: 'eq',
-              value: true,
             },
           ]
         : []

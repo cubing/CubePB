@@ -1,16 +1,24 @@
 <template>
-  <div>
+  <div :class="{ 'expanded-table-bg': isChildComponent }">
     <v-toolbar flat color="accent">
       <v-icon left>{{ icon }}</v-icon>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
+
       <v-spacer></v-spacer>
+      <v-btn
+        v-if="recordInfo.shareOptions && editable"
+        icon
+        @click="copyShareLink()"
+      >
+        <v-icon>mdi-share-variant</v-icon>
+      </v-btn>
       <v-btn icon @click="reset()">
         <v-icon>mdi-refresh</v-icon>
       </v-btn>
     </v-toolbar>
     <v-data-table
       :headers="headers"
-      :items="items"
+      :items="displayItems"
       class="elevation-1"
       :items-per-page="-1"
       dense
@@ -24,12 +32,11 @@
             v-for="(headerItem, i) in headers"
             :key="i"
             :class="headerItem.align ? 'text-' + headerItem.align : null"
-            class="truncate"
           >
             <EventColumn
               v-if="headerItem.value === 'event.name'"
               :item="props.item"
-              :fieldpath="headerItem.value"
+              field-path="event"
             ></EventColumn>
             <span
               v-else
@@ -39,7 +46,6 @@
               <ResultColumn
                 v-if="props.item[headerItem.value]"
                 :item="props.item[headerItem.value]"
-                :fieldpath="headerItem.value"
               ></ResultColumn>
               <v-icon
                 v-if="editable"
@@ -54,6 +60,13 @@
           </td>
         </tr>
       </template>
+      <!--       <template v-slot:[`body.append`]="props">
+        <tr>
+          <td :colspan="headers.length">
+            <v-icon left small>mdi-plus</v-icon> Show More
+          </td>
+        </tr>
+      </template> -->
     </v-data-table>
     <EditRecordDialog
       :status="dialogs.editRecord"
@@ -68,11 +81,15 @@
 
 <script>
 import { executeGiraffeql } from '~/services/giraffeql'
-import { handleError, serializeNestedProperty } from '~/services/base'
+import {
+  handleError,
+  serializeNestedProperty,
+  copyToClipboard,
+} from '~/services/base'
 import EventColumn from '~/components/table/common/eventColumn.vue'
 import ResultColumn from '~/components/table/common/resultColumn.vue'
-import { PersonalBest } from '~/models'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
+import { getEvents } from '~/services/dropdown'
 
 export default {
   components: {
@@ -82,10 +99,6 @@ export default {
   },
 
   props: {
-    editable: {
-      type: Boolean,
-      default: false,
-    },
     title: {
       type: String,
       required: true,
@@ -94,14 +107,35 @@ export default {
       type: String,
       required: true,
     },
+    recordInfo: {
+      required: true,
+    },
+    editable: {
+      type: Boolean,
+      default: false,
+    },
+    pageOptions: {
+      type: Object,
+      default: null,
+    },
+    lockedFilters: {
+      type: Array,
+      default: () => [],
+    },
+    isChildComponent: {
+      type: Boolean,
+      default: false,
+    },
+    dense: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       loading: {
         loadData: false,
       },
-
-      recordInfo: PersonalBest,
 
       dialogs: {
         editRecord: false,
@@ -114,13 +148,13 @@ export default {
           text: 'Event',
           value: 'event.name',
         },
-        { text: 'Single', value: 'single', width: '150px', align: 'right' },
-        { text: 'Mo3', value: 'mo3', width: '150px', align: 'right' },
-        { text: 'Ao5', value: 'ao5', width: '150px', align: 'right' },
-        { text: 'Ao12', value: 'ao12', width: '150px', align: 'right' },
-        { text: 'Ao50', value: 'ao50', width: '150px', align: 'right' },
-        { text: 'Ao100', value: 'ao100', width: '150px', align: 'right' },
-        { text: 'Ao1000', value: 'ao1000', width: '150px', align: 'right' },
+        { text: 'Single', value: 'single', width: '125px', align: 'right' },
+        { text: 'Mo3', value: 'mo3', width: '125px', align: 'right' },
+        { text: 'Ao5', value: 'ao5', width: '125px', align: 'right' },
+        { text: 'Ao12', value: 'ao12', width: '125px', align: 'right' },
+        { text: 'Ao50', value: 'ao50', width: '125px', align: 'right' },
+        { text: 'Ao100', value: 'ao100', width: '125px', align: 'right' },
+        { text: 'Ao1000', value: 'ao1000', width: '125px', align: 'right' },
       ],
       items: [],
 
@@ -149,12 +183,31 @@ export default {
           'pbClass.id': 2,
           setSize: 100,
         },
-        ao100: {
+        ao1000: {
           'pbClass.id': 2,
           setSize: 1000,
         },
       },
+
+      // base events to display
+      eventsArray: [],
     }
+  },
+
+  computed: {
+    displayItems() {
+      return this.editable
+        ? this.items
+        : this.items.filter((itemObject) => itemObject.hasRecords)
+    },
+  },
+
+  watch: {
+    // this triggers when pageOptions get updated on parent element
+    // this also triggers when parent element switches to a different item
+    pageOptions() {
+      this.reset()
+    },
   },
 
   mounted() {
@@ -162,6 +215,26 @@ export default {
   },
 
   methods: {
+    // links to the user profile with this specific component expanded
+    copyShareLink() {
+      const createdById = this.lockedFilters.find(
+        (ele) => ele.field === 'createdBy.id'
+      )?.value
+
+      if (!createdById) return
+
+      const shareUrl =
+        window.location.origin +
+        this.$router.resolve({
+          name: 'user',
+          query: {
+            id: createdById,
+            expand: 0,
+          },
+        }).href
+      copyToClipboard(this, shareUrl)
+    },
+
     openAddRecordDialog(eventId, key) {
       const initializedRecord = {
         'event.id': eventId,
@@ -186,8 +259,91 @@ export default {
     async loadData() {
       this.loading.loadData = true
       try {
+        // get events
+        const events = await getEvents(this)
+
+        // build eventsMap for faster mapping later
+        const eventsMap = new Map()
+
+        // build items
+        const items = events.map((event) => {
+          const itemObject = {
+            event,
+            single: null,
+            mo3: null,
+            ao5: null,
+            ao12: null,
+            ao50: null,
+            ao100: null,
+            ao1000: null,
+            hasRecords: false,
+          }
+
+          eventsMap.set(event.id, itemObject)
+
+          return itemObject
+        })
+
+        const filters = [
+          {
+            'pbClass.id': {
+              eq: 1, // is pbType single
+            },
+            isCurrent: {
+              eq: true,
+            },
+          },
+          {
+            'pbClass.id': {
+              eq: 3, // is mo3
+            },
+            setSize: {
+              eq: 3,
+            },
+            isCurrent: {
+              eq: true,
+            },
+          },
+          {
+            'pbClass.id': {
+              eq: 2, // is aoX
+            },
+            setSize: {
+              in: [5, 12, 50, 100, 1000],
+            },
+            isCurrent: {
+              eq: true,
+            },
+          },
+        ]
+
+        // generate additional filters from lockedFilters
+        const additionalFilters = this.lockedFilters.reduce((total, ele) => {
+          if (!total[ele.field]) total[ele.field] = {}
+
+          // check if there is a parser on the fieldInfo
+          const fieldInfo = this.recordInfo.fields[ele.field]
+
+          // field unknown, abort
+          if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
+
+          // parse '__null' to null first
+          const value = ele.value === '__null' ? null : ele.value
+
+          // apply parseValue function, if any
+          total[ele.field][ele.operator] = fieldInfo.parseValue
+            ? fieldInfo.parseValue(value)
+            : value
+
+          return total
+        }, {})
+
+        filters.forEach((ele) => {
+          Object.assign(ele, additionalFilters)
+        })
+
         const data = await executeGiraffeql(this, {
-          [`getPersonalBestPaginator`]: {
+          getPersonalBestPaginator: {
             edges: {
               node: {
                 id: true,
@@ -202,46 +358,13 @@ export default {
                 },
                 event: {
                   id: true,
-                  name: true,
                   scoreMethod: true,
-                  cubingIcon: true,
                 },
               },
             },
             __args: {
               first: 100,
-              filterBy: [
-                {
-                  'pbClass.id': {
-                    eq: 1, // is pbType single
-                  },
-                  isCurrent: {
-                    eq: true,
-                  },
-                },
-                {
-                  'pbClass.id': {
-                    eq: 3, // is mo3
-                  },
-                  setSize: {
-                    eq: 3,
-                  },
-                  isCurrent: {
-                    eq: true,
-                  },
-                },
-                {
-                  'pbClass.id': {
-                    eq: 2, // is aoX
-                  },
-                  setSize: {
-                    in: [5, 12, 50, 100, 1000],
-                  },
-                  isCurrent: {
-                    eq: true,
-                  },
-                },
-              ],
+              filterBy: filters,
             },
           },
         })
@@ -252,7 +375,7 @@ export default {
         const serializeFields = ['timeElapsed']
 
         serializeFields.forEach((field) => {
-          serializeMap.set(field, PersonalBest.fields[field].serialize)
+          serializeMap.set(field, this.recordInfo.fields[field].serialize)
         })
 
         // apply serialization to results
@@ -262,38 +385,24 @@ export default {
           })
         })
 
-        // get list of unique events
-        const eventsMap = new Map()
-
-        data.edges.forEach((ele) => {
-          if (!eventsMap.has(ele.node.event.id)) {
-            eventsMap.set(ele.node.event.id, {
-              event: ele.node.event,
-              single: null,
-              mo3: null,
-              ao5: null,
-              ao12: null,
-              ao50: null,
-              ao100: null,
-            })
-          }
-        })
-
         // loop through pbs, add to eventsMap
         data.edges.forEach((ele) => {
+          const itemObject = eventsMap.get(ele.node.event.id)
+          // flag the itemObject as hasRecords
+          if (!itemObject.hasRecords) itemObject.hasRecords = true
+
           // if pbClass.id === 1, classify as single
           if (ele.node.pbClass.id === 1) {
-            eventsMap.get(ele.node.event.id).single = ele.node
+            itemObject.single = ele.node
           } else if (ele.node.pbClass.id === 2) {
             // else if pbClass.id === 2, is Avg
-            eventsMap.get(ele.node.event.id)['ao' + ele.node.setSize] = ele.node
+            itemObject['ao' + ele.node.setSize] = ele.node
           } else if (ele.node.pbClass.id === 3) {
             // else if pbClass.id === 3, is Mean
-            eventsMap.get(ele.node.event.id)['mo' + ele.node.setSize] = ele.node
+            itemObject['mo' + ele.node.setSize] = ele.node
           }
         })
-
-        this.items = [...eventsMap.values()]
+        this.items = items
       } catch (err) {
         handleError(this, err)
       }
