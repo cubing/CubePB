@@ -207,6 +207,68 @@
       </template>
       <template v-slot:item="props">
         <tr
+          v-if="props.isMobile"
+          :key="props.item.id"
+          class="v-data-table__mobile-table-row"
+          @click="handleRowClick(props.item)"
+        >
+          <td
+            v-for="(headerItem, i) in headers"
+            :key="i"
+            class="v-data-table__mobile-row"
+          >
+            <div class="v-data-table__mobile-row__header">
+              {{ headerItem.text }}
+            </div>
+            <div class="v-data-table__mobile-row__cell">
+              <div v-if="headerItem.value === null">
+                <nuxt-link
+                  v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
+                  :to="recordInfo.viewRecordRoute + '?id=' + props.item.id"
+                >
+                  <v-icon small icon>mdi-location-enter</v-icon>
+                </nuxt-link>
+                <v-icon
+                  v-if="recordInfo.shareOptions"
+                  class="mr-2"
+                  @click.stop="openEditDialog('share', props.item)"
+                  >mdi-share-variant</v-icon
+                >
+                <v-icon
+                  v-if="recordInfo.viewOptions"
+                  class="mr-2"
+                  @click.stop="openEditDialog('view', props.item)"
+                  >mdi-eye</v-icon
+                >
+                <v-icon
+                  v-if="recordInfo.editOptions"
+                  class="mr-2"
+                  @click.stop="openEditDialog('edit', props.item)"
+                  >mdi-pencil</v-icon
+                >
+                <v-icon
+                  v-if="recordInfo.deleteOptions"
+                  class="mr-2"
+                  @click.stop="openEditDialog('delete', props.item)"
+                  >mdi-delete</v-icon
+                >
+              </div>
+              <div v-else>
+                <component
+                  :is="headerItem.fieldInfo.component"
+                  v-if="headerItem.fieldInfo.component"
+                  :item="props.item"
+                  :field-path="headerItem.path"
+                ></component>
+                <span v-else>
+                  {{ getTableRowData(headerItem, props.item) }}
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr
+          v-else
           :key="props.item.id"
           :class="{
             'expanded-row-bg': props.isExpanded,

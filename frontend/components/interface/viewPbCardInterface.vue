@@ -15,6 +15,7 @@
       <v-btn icon @click="reset()">
         <v-icon>mdi-refresh</v-icon>
       </v-btn>
+      <slot name="header-action"></slot>
     </v-toolbar>
     <v-data-table
       :headers="headers"
@@ -27,7 +28,49 @@
       hide-default-footer
     >
       <template v-slot:item="props">
-        <tr :key="props.item.id">
+        <tr
+          v-if="props.isMobile"
+          :key="props.item.id"
+          class="v-data-table__mobile-table-row"
+        >
+          <td
+            v-for="(headerItem, i) in headers"
+            :key="i"
+            class="v-data-table__mobile-row"
+          >
+            <div class="v-data-table__mobile-row__header">
+              {{ headerItem.text }}
+            </div>
+            <div class="v-data-table__mobile-row__cell">
+              <EventColumn
+                v-if="headerItem.value === 'event.name'"
+                :item="props.item"
+                field-path="event"
+              ></EventColumn>
+              <span
+                v-else
+                class="d-inline-flex"
+                @click="openEditDialog('view', props.item[headerItem.value])"
+              >
+                <ResultColumn
+                  v-if="props.item[headerItem.value]"
+                  :item="props.item[headerItem.value]"
+                ></ResultColumn>
+                <v-icon
+                  v-if="editable"
+                  small
+                  right
+                  @click.stop="
+                    openAddRecordDialog(props.item.event.id, headerItem.value)
+                  "
+                  >mdi-pencil</v-icon
+                >
+              </span>
+            </div>
+          </td>
+        </tr>
+
+        <tr v-else :key="props.item.id">
           <td
             v-for="(headerItem, i) in headers"
             :key="i"

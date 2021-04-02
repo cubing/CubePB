@@ -200,7 +200,7 @@ export default {
   data() {
     return {
       clipped: true,
-      drawer: true,
+      drawer: false,
       fixed: true,
       items: [
         {
@@ -211,14 +211,14 @@ export default {
       ],
       userItems: [
         {
-          icon: 'mdi-timer',
-          title: 'My PBs',
-          to: '/my-pbs',
-        },
-        {
           icon: 'mdi-card-text',
           title: 'My PB Card',
           to: '/my-pb-card',
+        },
+        {
+          icon: 'mdi-timer',
+          title: 'My PBs',
+          to: '/my-pbs',
         },
         {
           icon: 'mdi-timetable',
