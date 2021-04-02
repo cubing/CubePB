@@ -287,6 +287,10 @@ export default {
     },
   },
 
+  mounted() {
+    this.drawer = this.$vuetify.breakpoint.name !== 'xs'
+  },
+
   methods: {
     copyToClipboard(content) {
       return copyToClipboard(this, content)
