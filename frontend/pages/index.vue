@@ -3,7 +3,7 @@
     <v-layout column justify-center align-center>
       <v-flex xs12 sm8 md6 style="max-width: 600px">
         <div class="text-center pb-5 pt-3">
-          <img src="../static/cubepb-trimmed.png" alt="" style="width: 75%" />
+          <img src="../static/cubepb-logo-2.png" alt="" style="width: 75%" />
         </div>
         <v-card>
           <v-card-title class="headline">
@@ -40,7 +40,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn v-if="user" color="primary" nuxt to="/my-pbs"
+            <v-btn v-if="user" color="primary" nuxt to="/my-pb-card"
               >Track My PBs</v-btn
             >
             <v-btn v-else text @click="goToWcaAuth()">
