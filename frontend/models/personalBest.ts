@@ -168,6 +168,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     happenedOn: {
       text: 'Date Happened',
+      hint:
+        'To specify the exact date and time, use format: YYYY-MM-DD 1:23 PM',
       inputType: 'datepicker',
       // default to today.
       default: () => {
@@ -177,7 +179,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
           '-' +
           String(date.getMonth() + 1).padStart(2, '0') +
           '-' +
-          date.getDate()
+          String(date.getDate()).padStart(2, '0')
         )
       },
       // unix timestamp to YYYY-MM-DD
