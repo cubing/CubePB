@@ -21,6 +21,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.string("avatar").nullable();
       table.string("country").nullable();
       table.boolean("is_public").notNullable().defaultTo(true);
+      table.boolean("is_featured").notNullable().defaultTo(false);
       table.integer("role").notNullable().defaultTo(2);
       table.json("permissions").nullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());

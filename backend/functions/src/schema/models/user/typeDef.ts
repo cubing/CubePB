@@ -63,6 +63,11 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
       defaultValue: true,
       sqlOptions: { field: "is_public" },
     }),
+    isFeatured: generateBooleanField({
+      allowNull: false,
+      defaultValue: false,
+      sqlOptions: { field: "is_featured" },
+    }),
     role: generateEnumField({
       scalarDefinition: Scalars.userRole,
       allowNull: false,

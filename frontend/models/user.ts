@@ -61,6 +61,11 @@ export const User = <RecordInfo<'user'>>{
       parseQueryValue: (val) => val === 'true',
       inputType: 'switch',
     },
+    isFeatured: {
+      text: 'Is Featured',
+      parseQueryValue: (val) => val === 'true',
+      inputType: 'switch',
+    },
     createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
@@ -121,6 +126,7 @@ export const User = <RecordInfo<'user'>>{
       'role',
       'permissions',
       'isPublic',
+      'isFeatured',
     ],
   },
   viewOptions: {
@@ -133,6 +139,7 @@ export const User = <RecordInfo<'user'>>{
       'role',
       'permissions',
       'isPublic',
+      'isFeatured',
       'currentUserFollowing',
     ],
     component: ViewUserInterface,

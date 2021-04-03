@@ -1,3 +1,4 @@
+import { AccessControlMap } from "../../../types";
 import { PaginatedService } from "../../core/services";
 import { userRoleKenum } from "../../enums";
 
@@ -19,6 +20,7 @@ export class UserService extends PaginatedService {
     role: {},
     name: {},
     isPublic: {},
+    isFeatured: {},
     "userUserFollowLink/user.id": {},
     "userUserFollowLink/target.id": {},
   };
@@ -33,12 +35,12 @@ export class UserService extends PaginatedService {
     name: {},
   };
 
-  accessControl = {
+  accessControl: AccessControlMap = {
     getMultiple: ({ req, args, query }) => {
       // if role, permissions, all_permissions, or email field requested, must be ADMIN
       if (
         query &&
-        Object.keys(query).some((field) =>
+        Object.keys(<any>query).some((field) =>
           ["role", "permissions", "allPermissions", "email"].includes(field)
         ) &&
         req.user?.role !== userRoleKenum.ADMIN
@@ -63,7 +65,7 @@ export class UserService extends PaginatedService {
       // if role, permissions, all_permissions, or email field requested, must be ADMIN
       if (
         query &&
-        Object.keys(query).some((field) =>
+        Object.keys(<any>query).some((field) =>
           ["role", "permissions", "allPermissions", "email"].includes(field)
         ) &&
         req.user?.role !== userRoleKenum.ADMIN
@@ -88,6 +90,18 @@ export class UserService extends PaginatedService {
       return result.isPublic === true || result.createdBy === req.user?.id;
     },
     // allowed to update if user created the item
-    update: generateItemCreatedByUserGuard(this),
+    update: async (inputs) => {
+      // only allowed to update "isPublic" if user was created by current user (admin will skip this check through A_A permissions)
+      const allowedUpdateFields = ["isPublic"];
+      if (
+        !Object.keys(inputs.args.fields).every((field) =>
+          allowedUpdateFields.includes(field)
+        )
+      ) {
+        return false;
+      }
+
+      return generateItemCreatedByUserGuard(this)(inputs);
+    },
   };
 }

@@ -246,19 +246,28 @@ export default {
       ],
       navItems: [
         {
-          icon: 'mdi-account',
-          title: 'Public Users',
-          to: generateRoute('/public-users', {
+          icon: 'mdi-star',
+          title: 'Latest PBs',
+          to: generateRoute('/public-pbs', {
+            sortBy: ['happenedOn'],
+            sortDesc: [true],
+          }),
+          loginRequired: false,
+        },
+        {
+          icon: 'mdi-account-star',
+          title: 'Featured Users',
+          to: generateRoute('/featured-users', {
             sortBy: ['createdAt'],
             sortDesc: [true],
           }),
           loginRequired: false,
         },
         {
-          icon: 'mdi-star',
-          title: 'Latest PBs',
-          to: generateRoute('/public-pbs', {
-            sortBy: ['happenedOn'],
+          icon: 'mdi-account-details',
+          title: 'User Directory',
+          to: generateRoute('/public-users', {
+            sortBy: ['createdAt'],
             sortDesc: [true],
           }),
           loginRequired: false,

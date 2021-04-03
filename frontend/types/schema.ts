@@ -96,6 +96,7 @@ export type FilterByField<T> = {
     | 'user_delete'
     | 'personalBest_create'
     | 'product_create'
+    | 'userUserFollowLink_get'
   /**Enum stored as is*/ scoreMethod: 'STANDARD' | 'FMC' | 'MBLD'
   userSortByKey: 'id' | 'createdAt' | 'updatedAt'
   userGroupByKey: undefined
@@ -127,6 +128,7 @@ export type FilterByField<T> = {
   'userFilterByField/role': FilterByField<Scalars['userRole']>
   'userFilterByField/name': FilterByField<Scalars['string']>
   'userFilterByField/isPublic': FilterByField<Scalars['boolean']>
+  'userFilterByField/isFeatured': FilterByField<Scalars['boolean']>
   'userFilterByField/userUserFollowLink/user.id': FilterByField<Scalars['id']>
   'userFilterByField/userUserFollowLink/target.id': FilterByField<Scalars['id']>
   userFilterByObject: {
@@ -136,6 +138,7 @@ export type FilterByField<T> = {
     role?: InputTypes['userFilterByField/role']
     name?: InputTypes['userFilterByField/name']
     isPublic?: InputTypes['userFilterByField/isPublic']
+    isFeatured?: InputTypes['userFilterByField/isFeatured']
     'userUserFollowLink/user.id'?: InputTypes['userFilterByField/userUserFollowLink/user.id']
     'userUserFollowLink/target.id'?: InputTypes['userFilterByField/userUserFollowLink/target.id']
   }
@@ -159,6 +162,7 @@ export type FilterByField<T> = {
     avatar?: Scalars['string'] | null
     country?: Scalars['string'] | null
     isPublic?: Scalars['boolean']
+    isFeatured?: Scalars['boolean']
     role?: Scalars['userRole']
     permissions?: Scalars['userPermission'][] | null
   }
@@ -168,6 +172,7 @@ export type FilterByField<T> = {
     avatar?: Scalars['string'] | null
     country?: Scalars['string'] | null
     isPublic?: Scalars['boolean']
+    isFeatured?: Scalars['boolean']
     role?: Scalars['userRole']
     permissions?: Scalars['userPermission'][] | null
   }
@@ -285,6 +290,9 @@ export type FilterByField<T> = {
   >
   'personalBestFilterByField/isCurrent': FilterByField<Scalars['boolean']>
   'personalBestFilterByField/setSize': FilterByField<Scalars['number']>
+  'personalBestFilterByField/createdBy.userUserFollowLink/user.id': FilterByField<
+    Scalars['id']
+  >
   personalBestFilterByObject: {
     id?: InputTypes['personalBestFilterByField/id']
     'createdBy.id'?: InputTypes['personalBestFilterByField/createdBy.id']
@@ -295,6 +303,7 @@ export type FilterByField<T> = {
     happenedOn?: InputTypes['personalBestFilterByField/happenedOn']
     isCurrent?: InputTypes['personalBestFilterByField/isCurrent']
     setSize?: InputTypes['personalBestFilterByField/setSize']
+    'createdBy.userUserFollowLink/user.id'?: InputTypes['personalBestFilterByField/createdBy.userUserFollowLink/user.id']
   }
   personalBestPaginator: {
     first?: Scalars['number']
@@ -510,6 +519,7 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>
   avatar: { Type: Scalars['string'] | null; Args: undefined }
   country: { Type: Scalars['string'] | null; Args: undefined }
   isPublic: { Type: Scalars['boolean']; Args: undefined }
+  isFeatured: { Type: Scalars['boolean']; Args: undefined }
   role: { Type: Scalars['userRole']; Args: undefined }
   permissions: { Type: Scalars['userPermission'][] | null; Args: undefined }
   allPermissions: { Type: Scalars['userPermission'][]; Args: undefined }
