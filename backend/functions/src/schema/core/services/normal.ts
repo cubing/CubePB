@@ -549,10 +549,8 @@ export class NormalService extends BaseService {
       whereObject.fields.push(whereOrObject);
     }
 
-    // set limit to args.first or args.last
-    //parse args.first and ensure it is less than 100
-    const requestedLimit = Number(validatedArgs.first ?? validatedArgs.last);
-    const limit = Math.min(requestedLimit, 100) || 100;
+    // set limit to args.first or args.last, one of which must be provided
+    const limit = Number(validatedArgs.first ?? validatedArgs.last);
 
     // process sort fields
     const orderBy: SqlOrderByObject[] = [];
@@ -584,7 +582,7 @@ export class NormalService extends BaseService {
       sqlParams: {
         where: whereObject,
         orderBy,
-        limit: limit,
+        limit,
         specialParams: {
           currentUserId: req.user?.id,
         },

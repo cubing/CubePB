@@ -75,6 +75,7 @@
             v-for="(headerItem, i) in headers"
             :key="i"
             :class="headerItem.align ? 'text-' + headerItem.align : null"
+            class="truncate"
           >
             <EventColumn
               v-if="headerItem.value === 'event.name'"
@@ -406,7 +407,7 @@ export default {
               },
             },
             __args: {
-              first: 100,
+              first: 500, // at most 7*numEvents required
               filterBy: filters,
             },
           },

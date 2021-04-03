@@ -971,6 +971,14 @@ export function generatePaginatorPivotResolverObject(params: {
                 message: `One of first or last required`,
                 fieldPath,
               });
+
+            // args.first or args.before cannot exceed 500
+            if (Number(args.first ?? args.last) > 500) {
+              throw new GiraffeqlArgsError({
+                message: `Cannot request more than 500 results at a time`,
+                fieldPath,
+              });
+            }
           },
         },
         true

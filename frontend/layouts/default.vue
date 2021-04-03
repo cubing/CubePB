@@ -217,7 +217,7 @@ export default {
         },
         {
           icon: 'mdi-timer',
-          title: 'My PBs',
+          title: 'My PBs (All)',
           to: '/my-pbs',
         },
         {
