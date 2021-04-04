@@ -203,3 +203,20 @@ export function generateRoute(route: string, pageOptions?: any) {
       : '')
   )
 }
+
+export function goToPage(that, routeName, item, openInNew = false) {
+  const routeObject = {
+    name: routeName,
+    query: {
+      id: item.id,
+      expand: that.$route.query.expand ?? 0,
+    },
+  }
+
+  if (openInNew) {
+    const routeData = that.$router.resolve(routeObject)
+    window.open(routeData.href, '_blank')
+  } else {
+    that.$router.push(routeObject)
+  }
+}

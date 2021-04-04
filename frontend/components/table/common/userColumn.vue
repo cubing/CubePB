@@ -51,15 +51,9 @@
 
         <v-divider></v-divider>
         <v-card-actions>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn icon v-on="on" @click="openProfile()">
-                <v-icon>mdi-open-in-new</v-icon>
-              </v-btn>
-            </template>
-            <span>Go to Profile</span>
-          </v-tooltip>
           <v-spacer></v-spacer>
+          <v-btn color="primary" @click="openProfile()"> Open Profile </v-btn>
+
           <template v-if="currentUser">
             <v-btn
               color="primary"
@@ -78,7 +72,7 @@
 
 <script>
 import columnMixin from '~/mixins/column'
-import { handleError } from '~/services/base'
+import { handleError, goToPage } from '~/services/base'
 import { executeGiraffeql } from '~/services/giraffeql'
 
 export default {
@@ -104,11 +98,7 @@ export default {
 
   methods: {
     openProfile() {
-      const routeData = this.$router.resolve({
-        name: 'user',
-        query: { id: this.currentValue.id },
-      })
-      window.open(routeData.href, '_blank')
+      goToPage(this, 'user', this.currentValue, true)
     },
 
     openWCAProfile(wcaId) {

@@ -217,54 +217,120 @@
             :key="i"
             class="v-data-table__mobile-row"
           >
-            <div class="v-data-table__mobile-row__header">
-              {{ headerItem.text }}
+            <div
+              v-if="headerItem.value === null"
+              class="text-center"
+              style="width: 100%"
+            >
+              <v-menu bottom offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn block text v-bind="attrs" v-on="on"> Actions </v-btn>
+                </template>
+
+                <v-list dense class="expanded-table-bg">
+                  <v-list-item
+                    v-if="recordInfo.enterOptions"
+                    key="enter"
+                    @click="goToPage(props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-location-enter</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Go To Page</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.shareOptions"
+                    key="share"
+                    @click="openEditDialog('share', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-share-variant</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Share</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.viewOptions"
+                    key="view"
+                    @click="openEditDialog('view', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-eye</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>View</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.editOptions"
+                    key="edit"
+                    @click="openEditDialog('edit', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Edit</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.deleteOptions"
+                    key="delete"
+                    @click="openEditDialog('delete', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-delete</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Delete</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </div>
-            <div class="v-data-table__mobile-row__cell">
-              <div v-if="headerItem.value === null">
-                <nuxt-link
-                  v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
-                  :to="recordInfo.viewRecordRoute + '?id=' + props.item.id"
-                >
-                  <v-icon small icon>mdi-location-enter</v-icon>
-                </nuxt-link>
-                <v-icon
-                  v-if="recordInfo.shareOptions"
-                  class="mr-2"
-                  @click.stop="openEditDialog('share', props.item)"
-                  >mdi-share-variant</v-icon
-                >
-                <v-icon
-                  v-if="recordInfo.viewOptions"
-                  class="mr-2"
-                  @click.stop="openEditDialog('view', props.item)"
-                  >mdi-eye</v-icon
-                >
-                <v-icon
-                  v-if="recordInfo.editOptions"
-                  class="mr-2"
-                  @click.stop="openEditDialog('edit', props.item)"
-                  >mdi-pencil</v-icon
-                >
-                <v-icon
-                  v-if="recordInfo.deleteOptions"
-                  class="mr-2"
-                  @click.stop="openEditDialog('delete', props.item)"
-                  >mdi-delete</v-icon
-                >
+            <template v-else>
+              <div class="v-data-table__mobile-row__header">
+                {{ headerItem.text }}
               </div>
-              <div v-else>
-                <component
-                  :is="headerItem.fieldInfo.component"
-                  v-if="headerItem.fieldInfo.component"
-                  :item="props.item"
-                  :field-path="headerItem.path"
-                ></component>
-                <span v-else>
-                  {{ getTableRowData(headerItem, props.item) }}
-                </span>
+              <div class="v-data-table__mobile-row__cell">
+                <div v-if="headerItem.value === null">
+                  <nuxt-link
+                    v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
+                    :to="recordInfo.viewRecordRoute + '?id=' + props.item.id"
+                  >
+                    <v-icon small icon>mdi-location-enter</v-icon>
+                  </nuxt-link>
+                  <v-icon
+                    v-if="recordInfo.shareOptions"
+                    class="mr-2"
+                    @click.stop="openEditDialog('share', props.item)"
+                    >mdi-share-variant</v-icon
+                  >
+                  <v-icon
+                    v-if="recordInfo.viewOptions"
+                    class="mr-2"
+                    @click.stop="openEditDialog('view', props.item)"
+                    >mdi-eye</v-icon
+                  >
+                  <v-icon
+                    v-if="recordInfo.editOptions"
+                    class="mr-2"
+                    @click.stop="openEditDialog('edit', props.item)"
+                    >mdi-pencil</v-icon
+                  >
+                  <v-icon
+                    v-if="recordInfo.deleteOptions"
+                    class="mr-2"
+                    @click.stop="openEditDialog('delete', props.item)"
+                    >mdi-delete</v-icon
+                  >
+                </div>
+                <div v-else>
+                  <component
+                    :is="headerItem.fieldInfo.component"
+                    v-if="headerItem.fieldInfo.component"
+                    :item="props.item"
+                    :field-path="headerItem.path"
+                  ></component>
+                  <span v-else>
+                    {{ getTableRowData(headerItem, props.item) }}
+                  </span>
+                </div>
               </div>
-            </div>
+            </template>
           </td>
         </tr>
         <tr
@@ -332,36 +398,66 @@
             class="truncate"
           >
             <div v-if="headerItem.value === null">
-              <nuxt-link
-                v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
-                :to="recordInfo.viewRecordRoute + '?id=' + props.item.id"
-              >
-                <v-icon small icon>mdi-location-enter</v-icon>
-              </nuxt-link>
-              <v-icon
-                v-if="recordInfo.shareOptions"
-                small
-                @click.stop="openEditDialog('share', props.item)"
-                >mdi-share-variant</v-icon
-              >
-              <v-icon
-                v-if="recordInfo.viewOptions"
-                small
-                @click.stop="openEditDialog('view', props.item)"
-                >mdi-eye</v-icon
-              >
-              <v-icon
-                v-if="recordInfo.editOptions"
-                small
-                @click.stop="openEditDialog('edit', props.item)"
-                >mdi-pencil</v-icon
-              >
-              <v-icon
-                v-if="recordInfo.deleteOptions"
-                small
-                @click.stop="openEditDialog('delete', props.item)"
-                >mdi-delete</v-icon
-              >
+              <v-menu left offset-x>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon small v-bind="attrs" v-on="on"
+                    >mdi-dots-vertical</v-icon
+                  >
+                </template>
+
+                <v-list dense>
+                  <v-list-item
+                    v-if="recordInfo.enterOptions"
+                    key="enter"
+                    @click="goToPage(props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-location-enter</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Go To Page</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.shareOptions"
+                    key="share"
+                    @click="openEditDialog('share', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-share-variant</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Share</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.viewOptions"
+                    key="view"
+                    @click="openEditDialog('view', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-eye</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>View</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.editOptions"
+                    key="edit"
+                    @click="openEditDialog('edit', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Edit</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="recordInfo.deleteOptions"
+                    key="delete"
+                    @click="openEditDialog('delete', props.item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-delete</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Delete</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </div>
             <span v-else>
               <component
@@ -393,7 +489,13 @@
             :dense="dense"
             @pageOptions-updated="handleSubPageOptionsUpdated"
             @record-changed="reset({ resetExpanded: false })"
-          ></component>
+          >
+            <template v-slot:header-action>
+              <v-btn icon @click="closeExpandedItems()">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </component>
         </td>
       </template>
       <template v-slot:no-data>No records</template>

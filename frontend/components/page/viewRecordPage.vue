@@ -143,6 +143,7 @@ import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface
 export default {
   components: {
     ViewRecordInterface,
+    EditRecordDialog,
   },
 
   props: {
@@ -231,7 +232,7 @@ export default {
     // must independently verify existence of item
     this.loadRecord().then(() => {
       // if expand query param set, set the initial expandTypeObject
-      if (this.$route.query.expand) {
+      if (this.$route.query.expand !== undefined) {
         this.setExpandTypeObject(this.$route.query.expand)
       }
     })

@@ -15,6 +15,7 @@ import {
   downloadCSV,
   handleError,
   serializeNestedProperty,
+  goToPage,
 } from '~/services/base'
 
 export default {
@@ -205,7 +206,7 @@ export default {
           text: 'Action',
           sortable: false,
           value: null,
-          width: '110px',
+          width: '50px',
           ...this.recordInfo.paginationOptions.headerActionOptions,
         })
     },
@@ -304,6 +305,10 @@ export default {
       this.tableOptionsUpdatedTrigger = trigger
     },
 
+    goToPage() {
+      goToPage(this, this.recordInfo.viewRecordRoute, ...arguments)
+    },
+
     handleTableOptionsUpdated() {
       this.$nextTick(() => {
         switch (this.tableOptionsUpdatedTrigger) {
@@ -384,6 +389,10 @@ export default {
           sortDesc: expandTypeObject.initialSortOptions?.sortDesc ?? [],
         }
       }
+    },
+
+    closeExpandedItems() {
+      this.expandedItems.pop()
     },
 
     handleRowClick(item) {
