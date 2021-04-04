@@ -11,7 +11,6 @@
       :footer-props="footerOptions"
       :dense="dense"
       :expanded.sync="expandedItems"
-      :show-expand="hasNested"
       :single-expand="hasNested"
       @update:options="handleTableOptionsUpdated"
       @update:sort-by="setTableOptionsUpdatedTrigger('sort')"
@@ -278,6 +277,20 @@
                     </v-list-item-icon>
                     <v-list-item-title>Delete</v-list-item-title>
                   </v-list-item>
+                  <v-divider v-if="hasNested"></v-divider>
+                  <v-list-item
+                    v-for="(item, i) in recordInfo.expandTypes"
+                    :key="i"
+                    dense
+                    @click="openExpandDialog(props, item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>{{ item.icon || item.recordInfo.icon }}</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>{{
+                      item.name || item.recordInfo.name
+                    }}</v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
             </div>
@@ -341,56 +354,6 @@
           }"
           @click="handleRowClick(props.item)"
         >
-          <td v-if="hasNested">
-            <v-btn
-              v-if="recordInfo.expandTypes.length === 1"
-              icon
-              small
-              @click.stop="
-                toggleItemExpanded(
-                  props,
-                  props.isExpanded ? null : recordInfo.expandTypes[0]
-                )
-              "
-            >
-              <v-icon
-                >mdi-chevron-{{ props.isExpanded ? 'up' : 'down' }}</v-icon
-              >
-            </v-btn>
-
-            <v-menu v-else-if="!props.isExpanded" bottom left offset-x>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn icon small v-bind="attrs" v-on="on">
-                  <v-icon>mdi-chevron-down</v-icon>
-                </v-btn>
-              </template>
-
-              <v-list dense>
-                <v-list-item
-                  v-for="(item, i) in recordInfo.expandTypes"
-                  :key="i"
-                  dense
-                  @click="toggleItemExpanded(props, item)"
-                >
-                  <v-list-item-icon>
-                    <v-icon>{{ item.icon || item.recordInfo.icon }}</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>{{
-                    item.name || item.recordInfo.name
-                  }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-
-            <v-btn
-              v-else
-              icon
-              small
-              @click.stop="toggleItemExpanded(props, null)"
-            >
-              <v-icon>mdi-chevron-up</v-icon>
-            </v-btn>
-          </td>
           <td
             v-for="(headerItem, i) in headers"
             :key="i"
@@ -456,6 +419,20 @@
                     </v-list-item-icon>
                     <v-list-item-title>Delete</v-list-item-title>
                   </v-list-item>
+                  <v-divider v-if="hasNested"></v-divider>
+                  <v-list-item
+                    v-for="(item, i) in recordInfo.expandTypes"
+                    :key="i"
+                    dense
+                    @click="toggleItemExpanded(props, item)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>{{ item.icon || item.recordInfo.icon }}</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>{{
+                      item.name || item.recordInfo.name
+                    }}</v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
             </div>
@@ -508,6 +485,29 @@
       @close="dialogs.editRecord = false"
       @handleSubmit="handleListChange()"
     ></EditRecordDialog>
+    <v-dialog v-model="dialogs.expandRecord">
+      <component
+        :is="childInterfaceComponent"
+        v-if="dialogs.expandRecord && expandTypeObject"
+        :record-info="expandTypeObject.recordInfo"
+        :icon="expandTypeObject.icon"
+        :title="expandTypeObject.name"
+        :hidden-headers="expandTypeObject.excludeHeaders"
+        :locked-filters="lockedSubFilters"
+        :page-options="subPageOptions"
+        :hidden-filters="hiddenSubFilters"
+        is-child-component
+        :dense="dense"
+        @pageOptions-updated="handleSubPageOptionsUpdated"
+        @record-changed="reset({ resetExpanded: false })"
+      >
+        <template v-slot:header-action>
+          <v-btn icon @click="dialogs.expandRecord = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </template>
+      </component>
+    </v-dialog>
   </div>
 </template>
 

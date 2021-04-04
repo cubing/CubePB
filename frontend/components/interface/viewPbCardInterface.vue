@@ -5,6 +5,7 @@
       <v-toolbar-title>{{ title }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
+      <HelpButton v-if="editable"></HelpButton>
       <v-btn
         v-if="recordInfo.shareOptions && editable"
         icon
@@ -49,17 +50,25 @@
               ></EventColumn>
               <span
                 v-else
-                class="d-inline-flex"
                 @click="openEditDialog('view', props.item[headerItem.value])"
               >
                 <ResultColumn
                   v-if="props.item[headerItem.value]"
+                  class="d-inline-flex"
                   :item="props.item[headerItem.value]"
                 ></ResultColumn>
                 <v-icon
+                  v-if="props.item[headerItem.value] && editable"
+                  small
+                  color="pink"
+                  @click.stop="
+                    openEditDialog('delete', props.item[headerItem.value])
+                  "
+                  >mdi-close</v-icon
+                >
+                <v-icon
                   v-if="editable"
                   small
-                  right
                   @click.stop="
                     openAddRecordDialog(props.item.event.id, headerItem.value)
                   "
@@ -71,30 +80,32 @@
         </tr>
 
         <tr v-else :key="props.item.id">
+          <td key="event" class="truncate">
+            <EventColumn :item="props.item" field-path="event"></EventColumn>
+          </td>
           <td
-            v-for="(headerItem, i) in headers"
+            v-for="(headerItem, i) in pbTypeHeaders"
             :key="i"
             :class="headerItem.align ? 'text-' + headerItem.align : null"
-            class="truncate"
           >
-            <EventColumn
-              v-if="headerItem.value === 'event.name'"
-              :item="props.item"
-              field-path="event"
-            ></EventColumn>
-            <span
-              v-else
-              class="d-inline-flex"
-              @click="openEditDialog('view', props.item[headerItem.value])"
-            >
+            <span @click="openEditDialog('view', props.item[headerItem.value])">
               <ResultColumn
                 v-if="props.item[headerItem.value]"
                 :item="props.item[headerItem.value]"
               ></ResultColumn>
+              <div v-else>&nbsp;</div>
+              <v-icon
+                v-if="props.item[headerItem.value] && editable"
+                small
+                color="pink"
+                @click.stop="
+                  openEditDialog('delete', props.item[headerItem.value])
+                "
+                >mdi-close</v-icon
+              >
               <v-icon
                 v-if="editable"
                 small
-                right
                 @click.stop="
                   openAddRecordDialog(props.item.event.id, headerItem.value)
                 "
@@ -133,6 +144,7 @@ import {
 import EventColumn from '~/components/table/common/eventColumn.vue'
 import ResultColumn from '~/components/table/common/resultColumn.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
+import HelpButton from '~/components/help/viewPbCardInterface/helpButton.vue'
 import { getEvents } from '~/services/dropdown'
 
 export default {
@@ -140,6 +152,7 @@ export default {
     EventColumn,
     ResultColumn,
     EditRecordDialog,
+    HelpButton,
   },
 
   props: {
@@ -243,6 +256,10 @@ export default {
       return this.editable
         ? this.items
         : this.items.filter((itemObject) => itemObject.hasRecords)
+    },
+
+    pbTypeHeaders() {
+      return this.headers.slice(1)
     },
   },
 

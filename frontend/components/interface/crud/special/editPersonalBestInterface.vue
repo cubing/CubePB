@@ -69,6 +69,15 @@ export default {
         return null
       }
     },
+
+    timeElapsed() {
+      try {
+        return this.getInputValue('timeElapsed')
+      } catch {
+        return null
+      }
+    },
+
     visibleInputsArray() {
       return this.inputsArray.filter((ele) => {
         // if no event, only show event input
@@ -124,6 +133,56 @@ export default {
       } else {
         this.setInputValue('setSize', val.setSize)
       }
+    },
+    timeElapsed(val) {
+      if (!val) return
+
+      // if pasted value matches the correct format, don't do anything
+      if (val.match(/^(\d+:)?\d{1,2}\.\d{2}$/)) return
+
+      // if val is 1 or more digits only, parse
+      if (val.match(/^\d+$/)) {
+        return this.setInputValue('timeElapsed', this.parseTimeString(val))
+      }
+
+      // if val is 1 digit off from a correct string, must be due to a keyboard action. parse
+      if (val.match(/^(\d+:)?\d{1,2}\.\d{1,3}$/)) {
+        return this.setInputValue('timeElapsed', this.parseTimeString(val))
+      }
+    },
+  },
+
+  methods: {
+    // remove : and ., then apply them at appropriate places
+    parseTimeString(str) {
+      const strParts = [...str.replace(/\./, '').replace(/:/, '')]
+
+      // if length <= 2, pad with 0s so min length is 3
+      while (strParts.length < 3) {
+        strParts.unshift('0')
+      }
+
+      // if length > 2, insert the "." before the 2nd last digit
+      strParts.splice(-2, 0, '.')
+
+      // get rid of any excess leading 0s
+      if (strParts.length === 5 && strParts[0] === '0') {
+        strParts.shift()
+      }
+
+      // if length is greater than 5, add the ":"
+      // and get rid of any leading 0s
+      if (strParts.length > 5) {
+        strParts.splice(-5, 0, ':')
+        while (strParts[0] === '0') {
+          strParts.shift()
+        }
+      }
+
+      return strParts.join('')
+    },
+    test(str) {
+      console.log(str)
     },
   },
 }

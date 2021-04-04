@@ -246,7 +246,7 @@ export default {
       ],
       navItems: [
         {
-          icon: 'mdi-star',
+          icon: 'mdi-seal',
           title: 'Latest PBs',
           to: generateRoute('/public-pbs', {
             sortBy: ['happenedOn'],

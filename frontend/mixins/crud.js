@@ -90,6 +90,7 @@ export default {
 
       dialogs: {
         editRecord: false,
+        expandRecord: false,
         selectedItem: null,
         editMode: 'view',
       },
@@ -142,6 +143,7 @@ export default {
 
       // expandable
       expandedItems: [],
+      expandedItem: null,
       subPageOptions: null,
       expandTypeObject: null,
     }
@@ -203,7 +205,7 @@ export default {
           }
         })
         .concat({
-          text: 'Action',
+          text: 'Actions',
           sortable: false,
           value: null,
           width: '50px',
@@ -219,18 +221,18 @@ export default {
 
     // expanded
     lockedSubFilters() {
-      if (!this.expandedItems.length) return []
+      if (!this.expandedItem) return []
 
       // is there a lockedFilters generator on the expandTypeObject? if so, use that
       if (this.expandTypeObject.lockedFilters) {
-        return this.expandTypeObject.lockedFilters(this, this.expandedItems[0])
+        return this.expandTypeObject.lockedFilters(this, this.expandedItem)
       }
 
       return [
         {
           field: this.recordInfo.typename.toLowerCase() + '.id',
           operator: 'eq',
-          value: this.expandedItems[0].id,
+          value: this.expandedItem.id,
         },
       ]
     },
@@ -257,6 +259,13 @@ export default {
   },
 
   watch: {
+    '$vuetify.breakpoint.name'(value) {
+      if (value === 'xs') {
+        // when switching to mobile view, un-expand all
+        this.closeExpandedItems()
+      }
+    },
+
     // this should trigger mainly when switching routes on admin pages
     recordInfo() {
       this.recordInfoChanged = true
@@ -376,11 +385,30 @@ export default {
     toggleItemExpanded(props, expandTypeObject) {
       this.expandTypeObject = expandTypeObject
 
+      this.expandedItem = props.item
+
       // if switching to different expandRecordInfo when already expanded, do not toggle expand
       if (!props.isExpanded || !expandTypeObject)
         props.expand(!props.isExpanded)
 
       // when item expanded, reset the pageOptions
+      if (expandTypeObject) {
+        this.subPageOptions = {
+          search: null,
+          filters: expandTypeObject.initialFilters ?? [],
+          sortBy: expandTypeObject.initialSortOptions?.sortBy ?? [],
+          sortDesc: expandTypeObject.initialSortOptions?.sortDesc ?? [],
+        }
+      }
+    },
+
+    // same as toggleItemExpanded, but for mobile views
+    openExpandDialog(props, expandTypeObject) {
+      this.expandTypeObject = expandTypeObject
+      this.expandedItem = props.item
+
+      this.dialogs.expandRecord = true
+
       if (expandTypeObject) {
         this.subPageOptions = {
           search: null,

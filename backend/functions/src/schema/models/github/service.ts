@@ -39,7 +39,9 @@ export class GithubService extends BaseService {
     try {
       // args should be validated already
       const validatedArgs = <any>args;
-      const response = await sendGraphqlRequest(`
+
+      if (env.github.organization) {
+        const response = await sendGraphqlRequest(`
 query { 
   viewer { 
     organization(login: "${env.github.organization}") {
@@ -65,9 +67,39 @@ query {
 }
     `);
 
-      return response.viewer.organization.repository.releases.edges.map(
-        (edge) => edge.node
-      );
+        return response.viewer.organization.repository.releases.edges.map(
+          (edge) => edge.node
+        );
+      } else {
+        // if no organization specified, lookup repository directly
+        const response = await sendGraphqlRequest(`
+query { 
+  viewer { 
+    repository(name: "${env.github.repository}") {
+      releases(first: ${validatedArgs.first}, orderBy: {
+        field: CREATED_AT,
+        direction: DESC
+      }) {
+        edges {
+          node {
+            id
+            tagName
+            name
+            descriptionHTML
+            isLatest
+            createdAt
+          }
+        }
+      }
+    }
+  }
+}
+    `);
+
+        return response.viewer.repository.releases.edges.map(
+          (edge) => edge.node
+        );
+      }
     } catch (err) {
       throw new GiraffeqlBaseError({
         message:
@@ -89,7 +121,8 @@ query {
       // args should be validated already
       const validatedArgs = <any>args;
 
-      const response = await sendGraphqlRequest(`
+      if (env.github.organization) {
+        const response = await sendGraphqlRequest(`
 query { 
   viewer { 
     organization(login: "${env.github.organization}") {
@@ -103,7 +136,23 @@ query {
 }
     `);
 
-      return response.viewer.organization.repository.latestRelease?.tagName;
+        return response.viewer.organization.repository.latestRelease?.tagName;
+      } else {
+        // if no organization specified, lookup repository directly
+        const response = await sendGraphqlRequest(`
+query { 
+  viewer { 
+    repository(name: "${env.github.repository}") {
+      latestRelease {
+        tagName
+      }
+    }
+  }
+}
+    `);
+
+        return response.viewer.repository.latestRelease?.tagName;
+      }
     } catch (err) {
       throw new GiraffeqlBaseError({
         message:
