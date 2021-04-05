@@ -8,7 +8,7 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
   name: 'UserUserFollowLink',
   pluralName: 'UserUserFollowLinks',
   icon: 'mdi-view-grid',
-  // renderItem: (item) => item.name,
+  renderItem: (item) => item.name,
   fields: {
     id: {
       text: 'ID',
@@ -75,9 +75,7 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
     fields: ['user.id', 'target.id'],
   },
   editOptions: undefined,
-  viewOptions: {
-    fields: ['user.id', 'target.id'],
-  },
+  viewOptions: undefined,
   deleteOptions: {},
   shareOptions: undefined,
 
