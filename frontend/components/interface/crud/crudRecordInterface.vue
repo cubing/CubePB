@@ -85,6 +85,7 @@
                 prepend-icon="mdi-magnify"
                 clearable
                 @change="filterChanged = true"
+                @keyup.enter="updatePageOptions()"
               ></v-text-field>
             </v-col>
             <v-col

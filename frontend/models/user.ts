@@ -67,7 +67,7 @@ export const User = <RecordInfo<'user'>>{
       inputType: 'switch',
     },
     createdAt: {
-      text: 'Created At',
+      text: 'Joined At',
       component: TimeagoColumn,
     },
     updatedAt: {
