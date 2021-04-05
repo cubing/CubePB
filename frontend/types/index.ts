@@ -140,7 +140,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
 
   enterOptions?: {}
 
-  expandTypes?: {
+  expandTypes: {
     // recordInfo is required unless it is a custom component
     recordInfo?: RecordInfo<any>
     component?: any

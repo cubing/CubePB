@@ -19,7 +19,32 @@
             cols="12"
             class="py-0"
           >
-            <GenericInput :item="item" :mode="mode"></GenericInput>
+            <v-text-field
+              v-if="item.field === 'timeElapsed'"
+              v-model="item.value"
+              :label="
+                (item.fieldInfo.text || item.field) +
+                (item.fieldInfo.optional ? ' (optional)' : '')
+              "
+              :readonly="item.readonly || mode === 'view'"
+              :rules="item.fieldInfo.inputRules"
+              :hint="item.fieldInfo.hint"
+              :append-icon="
+                item.value === null
+                  ? 'mdi-null'
+                  : item.readonly || mode === 'view'
+                  ? null
+                  : 'mdi-close'
+              "
+              persistent-hint
+              filled
+              dense
+              class="py-0"
+              @keypress="isNumber($event)"
+              @click:append="item.value = null"
+            ></v-text-field>
+
+            <GenericInput v-else :item="item" :mode="mode"></GenericInput>
           </v-col>
         </v-row>
       </v-container>
@@ -153,6 +178,15 @@ export default {
   },
 
   methods: {
+    isNumber(evt) {
+      const charCode = evt.which ? evt.which : evt.keyCode
+      if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        evt.preventDefault()
+      } else {
+        return true
+      }
+    },
+
     // remove : and ., then apply them at appropriate places
     parseTimeString(str) {
       const strParts = [...str.replace(/\./, '').replace(/:/, '')]
@@ -180,9 +214,6 @@ export default {
       }
 
       return strParts.join('')
-    },
-    test(str) {
-      console.log(str)
     },
   },
 }

@@ -36,13 +36,6 @@
                   </v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-btn
-                    v-if="recordInfo.shareOptions"
-                    icon
-                    @click="openEditDialog('share')"
-                  >
-                    <v-icon>mdi-share-variant</v-icon>
-                  </v-btn>
-                  <v-btn
                     v-if="recordInfo.editOptions"
                     icon
                     @click="openEditDialog('edit')"
@@ -56,21 +49,47 @@
                   >
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
-                  <v-menu
-                    v-if="
-                      recordInfo.expandTypes &&
-                      recordInfo.expandTypes.length > 0
-                    "
-                    right
-                    offset-x
-                  >
+                  <v-menu left offset-x>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn icon v-bind="attrs" v-on="on">
-                        <v-icon>mdi-chevron-right</v-icon>
-                      </v-btn>
+                      <v-icon v-bind="attrs" v-on="on"
+                        >mdi-dots-vertical</v-icon
+                      >
                     </template>
 
                     <v-list dense>
+                      <v-list-item
+                        v-if="recordInfo.shareOptions"
+                        key="share"
+                        @click="openEditDialog('share')"
+                      >
+                        <v-list-item-icon>
+                          <v-icon>mdi-share-variant</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Share</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        v-if="recordInfo.editOptions"
+                        key="edit"
+                        @click="openEditDialog('edit')"
+                      >
+                        <v-list-item-icon>
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Edit</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        v-if="recordInfo.deleteOptions"
+                        key="delete"
+                        @click="openEditDialog('delete')"
+                      >
+                        <v-list-item-icon>
+                          <v-icon>mdi-delete</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Delete</v-list-item-title>
+                      </v-list-item>
+                      <v-divider
+                        v-if="recordInfo.expandTypes.length > 0"
+                      ></v-divider>
                       <v-list-item
                         v-for="(item, i) in recordInfo.expandTypes"
                         :key="i"

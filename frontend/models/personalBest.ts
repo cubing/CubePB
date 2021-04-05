@@ -110,6 +110,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     timeElapsed: {
       text: 'Time',
+      hint: 'Type in the numbers only, the numbers will be auto-formatted',
       inputRules: [
         (value) => {
           const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
@@ -319,4 +320,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   },
   deleteOptions: {},
   shareOptions: {},
+
+  expandTypes: [],
 }
