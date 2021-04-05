@@ -291,6 +291,7 @@ export default {
       this.syncFilters()
       this.reset({
         resetCursor: true,
+        resetSort: true,
       })
     },
   },

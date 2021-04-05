@@ -34,7 +34,9 @@
                         : item.field
                     "
                   ></component>
-                  <span v-else>{{ currentItem[item.field] }}</span>
+                  <span v-else>{{
+                    getNestedProperty(currentItem, item.field)
+                  }}</span>
                 </td>
               </tr>
             </tbody>
@@ -60,9 +62,13 @@
 
 <script>
 import editRecordInterfaceMixin from '~/mixins/editRecordInterface'
+import { getNestedProperty } from '~/services/base'
 
 export default {
   mixins: [editRecordInterfaceMixin],
+  methods: {
+    getNestedProperty,
+  },
 }
 </script>
 
