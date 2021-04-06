@@ -246,6 +246,15 @@ export default {
       ],
       navItems: [
         {
+          icon: 'mdi-podium',
+          title: 'Fastest PBs',
+          to: generateRoute('/public-pbs', {
+            sortBy: ['score'],
+            sortDesc: [false],
+          }),
+          loginRequired: false,
+        },
+        {
           icon: 'mdi-seal',
           title: 'Latest PBs',
           to: generateRoute('/public-pbs', {

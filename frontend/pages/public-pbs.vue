@@ -66,10 +66,14 @@ export default {
   },
   methods: {
     applyPresetRoute(event) {
+      // get the original sortBy/sortDesc
+      const originalPageOptions = this.$route.query.pageOptions
+        ? JSON.parse(atob(decodeURIComponent(this.$route.query.pageOptions)))
+        : null
+
       this.$router.push(
         generateRoute(this.$route.path, {
-          sortBy: ['happenedOn'],
-          sortDesc: [true],
+          ...originalPageOptions,
           filters: [
             {
               field: 'event.id',
