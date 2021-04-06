@@ -5,6 +5,7 @@ import {
 import { unsubscribeChannels } from '~/services/pusher'
 import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
+import SearchDialog from '~/components/dialog/searchDialog.vue'
 import {
   collapseObject,
   getNestedProperty,
@@ -21,6 +22,7 @@ import {
 export default {
   components: {
     EditRecordDialog,
+    SearchDialog,
   },
 
   props: {
@@ -313,6 +315,11 @@ export default {
     generateTimeAgoString,
     setTableOptionsUpdatedTrigger(trigger) {
       this.tableOptionsUpdatedTrigger = trigger
+    },
+
+    handleSearchDialogSubmit(searchInput) {
+      this.searchInput = searchInput
+      this.updatePageOptions()
     },
 
     goToPage() {

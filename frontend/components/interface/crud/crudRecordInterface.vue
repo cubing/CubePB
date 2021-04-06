@@ -41,6 +41,11 @@
             New {{ recordInfo.name }}
           </v-btn>
           <v-divider v-if="hasFilters" class="mx-4" inset vertical></v-divider>
+          <SearchDialog
+            v-if="recordInfo.paginationOptions.hasSearch"
+            @handleSubmit="handleSearchDialogSubmit"
+          ></SearchDialog>
+          <v-spacer></v-spacer>
           <v-btn
             v-if="hasFilters"
             icon
@@ -54,7 +59,6 @@
               <v-icon>mdi-filter-menu</v-icon>
             </v-badge>
           </v-btn>
-          <v-spacer></v-spacer>
           <v-btn
             v-if="recordInfo.paginationOptions.downloadOptions"
             icon
