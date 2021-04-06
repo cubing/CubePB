@@ -3,7 +3,15 @@
     <v-layout column justify-center align-center>
       <v-flex xs12 sm8 md6 style="max-width: 600px">
         <div class="text-center pb-5 pt-3">
-          <img src="../static/cubepb-logo-2.png" alt="" style="width: 75%" />
+          <img
+            :src="
+              require($vuetify.theme.dark
+                ? '../static/cubepb-logo-2.png'
+                : '../static/cubepb-logo-2-b.png')
+            "
+            alt=""
+            style="max-width: 75%"
+          />
         </div>
         <v-card>
           <v-card-title class="headline">

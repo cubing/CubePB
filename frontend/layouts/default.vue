@@ -64,7 +64,11 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <nuxt-link to="/">
         <v-img
-          :src="require('../static/cubepb-logo-2.png')"
+          :src="
+            require($vuetify.theme.dark
+              ? '../static/cubepb-logo-2.png'
+              : '../static/cubepb-logo-2-b.png')
+          "
           max-height="48"
           max-width="130"
           contain
