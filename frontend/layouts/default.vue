@@ -255,6 +255,13 @@ export default {
           to: generateRoute('/public-pbs', {
             sortBy: ['score'],
             sortDesc: [false],
+            filters: [
+              {
+                field: 'event.id',
+                operator: 'eq',
+                value: 4, // 3x3x3 on prod db
+              },
+            ],
           }),
           loginRequired: false,
         },

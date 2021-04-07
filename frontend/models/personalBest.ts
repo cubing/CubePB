@@ -67,7 +67,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'PB Type',
       component: PbTypeColumn,
       compoundOptions: {
-        primaryField: 'pbClass.name',
+        primaryField: 'setSize',
       },
     },
     'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod': {
@@ -264,7 +264,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     headers: [
       {
         field: 'event.name+event.cubingIcon',
-        sortable: true,
         width: '200px',
       },
       {
