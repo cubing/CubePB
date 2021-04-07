@@ -9,7 +9,7 @@
       top
     >
       <template v-slot:activator="{ on }">
-        <v-chip pill small v-on="on">
+        <v-chip pill style="max-width: 200px" small v-on="on">
           <v-avatar left>
             <v-img v-if="currentValue.avatar" :src="currentValue.avatar"></v-img
             ><v-icon v-else>mdi-account</v-icon>
