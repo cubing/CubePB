@@ -154,7 +154,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
           return (
             !value ||
             regEx.test(value) ||
-            'Invalid Time Format, up to 2 decimal places allowed'
+            'Invalid format, up to 2 decimal places allowed'
           )
         },
       ],
@@ -187,7 +187,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       serialize: (val: number) =>
         val && new Date(val * 1000).toISOString().substring(0, 10),
       // YYYY-MM-DD to unix timestamp
-      parseValue: (val: string) => val && new Date(val).getTime() / 1000,
+      parseValue: (val: string) => {
+        // null or falsey values not allowed
+        if (!val) throw new Error(`Invalid value for Date Happened`)
+        return new Date(val).getTime() / 1000
+      },
     },
     'createdBy.id': {
       text: 'Created By',

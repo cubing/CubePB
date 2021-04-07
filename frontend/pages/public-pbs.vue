@@ -173,26 +173,28 @@ export default {
       this.$router.push(
         generateRoute(this.$route.path, {
           ...originalPageOptions,
-          filters: originalPageOptions.filters
-            .filter(
-              (filterObject) => !excludeFilterKeys.includes(filterObject.field)
-            )
-            .concat(
-              attributes
-                ? [
-                    {
-                      field: 'pbClass.id',
-                      operator: 'eq',
-                      value: attributes['pbClass.id'],
-                    },
-                    {
-                      field: 'setSize',
-                      operator: 'eq',
-                      value: attributes.setSize,
-                    },
-                  ]
-                : []
-            ),
+          filters: (originalPageOptions.filters
+            ? originalPageOptions.filters.filter(
+                (filterObject) =>
+                  !excludeFilterKeys.includes(filterObject.field)
+              )
+            : []
+          ).concat(
+            attributes
+              ? [
+                  {
+                    field: 'pbClass.id',
+                    operator: 'eq',
+                    value: attributes['pbClass.id'],
+                  },
+                  {
+                    field: 'setSize',
+                    operator: 'eq',
+                    value: attributes.setSize,
+                  },
+                ]
+              : []
+          ),
         })
       )
     },
