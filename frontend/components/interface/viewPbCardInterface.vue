@@ -42,7 +42,7 @@
             <div class="v-data-table__mobile-row__header">
               {{ headerItem.text }}
             </div>
-            <div class="v-data-table__mobile-row__cell">
+            <div class="v-data-table__mobile-row__cell truncate-mobile-row">
               <EventColumn
                 v-if="headerItem.value === 'event.name'"
                 :item="props.item"

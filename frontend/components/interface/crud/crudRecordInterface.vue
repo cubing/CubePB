@@ -303,7 +303,7 @@
               <div class="v-data-table__mobile-row__header">
                 {{ headerItem.text }}
               </div>
-              <div class="v-data-table__mobile-row__cell">
+              <div class="v-data-table__mobile-row__cell truncate-mobile-row">
                 <div v-if="headerItem.value === null">
                   <nuxt-link
                     v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
