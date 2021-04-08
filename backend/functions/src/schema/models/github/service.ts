@@ -1,5 +1,5 @@
 import { BaseService } from "../../core/services";
-import { permissionsCheck } from "../../helpers/permissions";
+import { permissionsCheck } from "../../core/helpers/permissions";
 import { ServiceFunctionInputs } from "../../../types";
 import { env } from "../../../config";
 import axios from "axios";

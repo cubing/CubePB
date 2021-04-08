@@ -1,6 +1,6 @@
 import { BaseService, EnumPaginatorService } from ".";
 import { ServiceFunctionInputs } from "../../../types";
-import { generateEnumRootResolver } from "../../helpers/rootResolver";
+import { generateEnumRootResolver } from "../helpers/rootResolver";
 import { GiraffeqlRootResolverType } from "giraffeql";
 
 export class EnumService extends BaseService {

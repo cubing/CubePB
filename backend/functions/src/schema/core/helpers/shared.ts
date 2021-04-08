@@ -1,4 +1,4 @@
-import { StringKeyObject } from "../../types";
+import { StringKeyObject } from "../../../types";
 export function getUnixTimestamp(): number {
   return new Date().getTime();
 }

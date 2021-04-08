@@ -8,7 +8,7 @@ import {
   generateStringField,
   generateTypenameField,
   generateEnumField,
-} from "../../helpers/typeDef";
+} from "../../core/helpers/typeDef";
 import * as Scalars from "../../scalars";
 
 export default new GiraffeqlObjectType(<ObjectTypeDefinition>{

@@ -1,7 +1,7 @@
 import {
   generateKenumScalarDefinition,
   generateEnumScalarDefinition,
-} from "../helpers/scalar";
+} from "../core/helpers/scalar";
 import { userRoleKenum, userPermissionEnum, scoreMethodEnum } from "../enums";
 
 import { BaseScalars, GiraffeqlScalarType } from "giraffeql";

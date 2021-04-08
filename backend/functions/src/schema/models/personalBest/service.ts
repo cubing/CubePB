@@ -1,7 +1,7 @@
 import { PaginatedService } from "../../core/services";
-import { permissionsCheck } from "../../helpers/permissions";
-import * as Resolver from "../../helpers/resolver";
-import * as sqlHelper from "../../helpers/sql";
+import { permissionsCheck } from "../../core/helpers/permissions";
+import * as Resolver from "../../core/helpers/resolver";
+import * as sqlHelper from "../../core/helpers/sql";
 import { ServiceFunctionInputs } from "../../../types";
 import { GiraffeqlBaseError } from "giraffeql";
 import { scoreMethodEnum } from "../../enums";

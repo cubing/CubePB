@@ -2,7 +2,7 @@ import { AccessControlMap } from "../../../types";
 import { PaginatedService } from "../../core/services";
 import { userRoleKenum } from "../../enums";
 
-import { generateItemCreatedByUserGuard } from "../../helpers/permissions";
+import { generateItemCreatedByUserGuard } from "../../core/helpers/permissions";
 
 export class UserService extends PaginatedService {
   defaultTypename = "user";

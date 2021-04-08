@@ -9,7 +9,7 @@ import {
   GiraffeqlObjectType,
   GiraffeqlInputFieldType,
 } from "giraffeql";
-import { NormalService, PaginatedService, EnumService } from "../core/services";
+import { NormalService, PaginatedService, EnumService } from "../services";
 import { generatePaginatorPivotResolverObject } from "../helpers/typeDef";
 import { capitalizeString, isObject } from "../helpers/shared";
 type BaseRootResolverTypes =

@@ -1,4 +1,4 @@
-import { Enum } from "../helpers/enum";
+import { Enum } from "../core/helpers/enum";
 
 export class userPermissionEnum extends Enum {
   static readonly A_A = new userPermissionEnum("A_A");

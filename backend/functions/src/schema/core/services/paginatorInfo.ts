@@ -1,6 +1,6 @@
 import { NormalService, SimpleService } from ".";
-import * as Resolver from "../../helpers/resolver";
-import { itemNotFoundError } from "../../helpers/error";
+import * as Resolver from "../helpers/resolver";
+import { itemNotFoundError } from "../helpers/error";
 import { generatePaginatorInfoTypeDef } from "../generators";
 import { ServiceFunctionInputs } from "../../../types";
 import { lookupSymbol, GiraffeqlObjectType } from "giraffeql";

@@ -5,7 +5,7 @@ import {
   BaseService,
 } from "../services";
 
-import { generateTypenameField } from "../../helpers/typeDef";
+import { generateTypenameField } from "../helpers/typeDef";
 import type { ObjectTypeDefinition } from "giraffeql";
 import { PaginatorData } from "../../../types";
 

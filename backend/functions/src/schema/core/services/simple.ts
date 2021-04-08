@@ -1,7 +1,7 @@
 import { BaseService } from ".";
 import { GiraffeqlObjectType } from "giraffeql";
-import * as Resolver from "../../helpers/resolver";
-import * as errorHelper from "../../helpers/error";
+import * as Resolver from "../helpers/resolver";
+import * as errorHelper from "../helpers/error";
 import { ServiceFunctionInputs } from "../../../types";
 
 export class SimpleService extends BaseService {

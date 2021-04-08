@@ -1,5 +1,5 @@
-import { getPusher } from "../../utils/pusher";
-import { NormalService } from "../core/services";
+import { getPusher } from "../../../utils/pusher";
+import { NormalService } from "../services";
 
 import * as randomstring from "randomstring";
 

@@ -7,7 +7,7 @@ import {
   generateCreatedByField,
   generateStringField,
   generateTypenameField,
-} from "../../helpers/typeDef";
+} from "../../core/helpers/typeDef";
 
 export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: Product.typename,

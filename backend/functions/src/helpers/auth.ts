@@ -4,7 +4,7 @@ import { User } from "../schema/services";
 import { userRoleKenum, userPermissionEnum } from "../schema/enums";
 import { userRoleToPermissionsMap } from "../schema/helpers/permissions";
 import type { ContextUser } from "../types";
-import * as sqlHelper from "../schema/helpers/sql";
+import * as sqlHelper from "../schema/core/helpers/sql";
 
 export async function validateToken(auth: string): Promise<ContextUser> {
   if (auth.split(" ")[0] !== "Bearer") {

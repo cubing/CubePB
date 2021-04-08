@@ -1,12 +1,12 @@
 import { SimpleService } from "../../core/services";
 // import * as bcrypt from "bcryptjs";
-import * as errorHelper from "../../helpers/error";
+import * as errorHelper from "../../core/helpers/error";
 import { User } from "../../services";
 import { env } from "../../../config";
 import axios from "axios";
 import { ServiceFunctionInputs } from "../../../types";
-import * as sqlHelper from "../../helpers/sql";
-import * as Resolver from "../../helpers/resolver";
+import * as sqlHelper from "../../core/helpers/sql";
+import * as Resolver from "../../core/helpers/resolver";
 import { userRoleKenum } from "../../enums";
 
 export class AuthService extends SimpleService {

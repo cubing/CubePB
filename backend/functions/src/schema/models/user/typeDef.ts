@@ -13,7 +13,7 @@ import {
   generateBooleanField,
   generateArrayField,
   generateTypenameField,
-} from "../../helpers/typeDef";
+} from "../../core/helpers/typeDef";
 import * as Scalars from "../../scalars";
 import { userRoleToPermissionsMap } from "../../helpers/permissions";
 import { userRoleKenum } from "../../enums";

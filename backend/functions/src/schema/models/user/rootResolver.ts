@@ -1,5 +1,5 @@
 import { User } from "../../services";
-import { generateBaseRootResolvers } from "../../helpers/rootResolver";
+import { generateBaseRootResolvers } from "../../core/helpers/rootResolver";
 import { GiraffeqlRootResolverType } from "giraffeql";
 
 export default {

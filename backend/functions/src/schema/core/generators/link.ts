@@ -7,7 +7,7 @@ import {
   generateCreatedByField,
   generateJoinableField,
   generateTypenameField,
-} from "../../helpers/typeDef";
+} from "../helpers/typeDef";
 import { ObjectTypeDefinition, ObjectTypeDefinitionField } from "giraffeql";
 
 type ServicesObjectMap = {

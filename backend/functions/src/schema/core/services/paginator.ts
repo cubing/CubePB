@@ -1,7 +1,7 @@
 import { SimpleService, PaginatedService } from ".";
 
-import * as Resolver from "../../helpers/resolver";
-import { itemNotFoundError } from "../../helpers/error";
+import * as Resolver from "../helpers/resolver";
+import { itemNotFoundError } from "../helpers/error";
 import { generatePaginatorTypeDef } from "../generators";
 import { PaginatorData, ServiceFunctionInputs } from "../../../types";
 

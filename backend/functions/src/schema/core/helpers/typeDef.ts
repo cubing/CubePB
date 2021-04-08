@@ -14,16 +14,13 @@ import {
   GiraffeqlInputFieldType,
   ArrayOptions,
   inputTypeDefs,
-  ObjectTypeDefinition,
 } from "giraffeql";
-import { knex } from "../../utils/knex";
+import { knex } from "../../../utils/knex";
 import * as Resolver from "./resolver";
 import { deepAssign, isObject, snakeToCamel } from "./shared";
-import { BaseService, NormalService, PaginatedService } from "../core/services";
-import { linkDefs } from "../links";
-import * as Scalars from "../scalars";
-import type { ObjectTypeDefSqlOptions, SqlType } from "../../types";
-import { FieldObject } from "../core/services/normal";
+import { BaseService, NormalService, PaginatedService } from "../services";
+import * as Scalars from "../../scalars";
+import type { ObjectTypeDefSqlOptions, SqlType } from "../../../types";
 
 type GenerateFieldParams = {
   name?: string;

@@ -21,7 +21,7 @@ import {
   SqlSelectQueryObject,
   SqlWhereObject,
 } from "./sql";
-import { CustomResolverFunction } from "../../types";
+import { CustomResolverFunction } from "../../../types";
 
 import { isObject } from "../helpers/shared";
 import type { Request } from "express";

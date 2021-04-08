@@ -2,10 +2,10 @@ import { LinkService } from "../../core/services";
 import {
   generateUserRoleGuard,
   permissionsCheck,
-} from "../../helpers/permissions";
+} from "../../core/helpers/permissions";
 import { userRoleKenum } from "../../enums";
 import { ServiceFunctionInputs, AccessControlMap } from "../../../types";
-import * as Resolver from "../../helpers/resolver";
+import * as Resolver from "../../core/helpers/resolver";
 import { User } from "../../services";
 
 export class UserUserFollowLinkService extends LinkService {

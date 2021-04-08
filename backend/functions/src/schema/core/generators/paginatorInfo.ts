@@ -1,9 +1,9 @@
 import { BaseService, NormalService } from "../services";
 
 import * as Scalars from "../../scalars";
-import { atob } from "../../helpers/shared";
+import { atob } from "../helpers/shared";
 import type { ObjectTypeDefinition } from "giraffeql";
-import { generateTypenameField } from "../../helpers/typeDef";
+import { generateTypenameField } from "../helpers/typeDef";
 import { PaginatorData } from "../../../types";
 
 export function generatePaginatorInfoTypeDef(

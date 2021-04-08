@@ -1,5 +1,5 @@
 import { Event } from "../../services";
-import { generateBaseRootResolvers } from "../../helpers/rootResolver";
+import { generateBaseRootResolvers } from "../../core/helpers/rootResolver";
 
 export default {
   ...generateBaseRootResolvers(Event, [

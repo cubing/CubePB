@@ -9,7 +9,7 @@ import {
   generateTypenameField,
   generateTextField,
   generateIntegerField,
-} from "../../helpers/typeDef";
+} from "../../core/helpers/typeDef";
 
 export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: PersonalBestClass.typename,

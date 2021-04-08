@@ -17,7 +17,7 @@ import {
   generateBooleanField,
   generateCreatedByField,
   generateDecimalField,
-} from "../../helpers/typeDef";
+} from "../../core/helpers/typeDef";
 
 export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: PersonalBest.typename,

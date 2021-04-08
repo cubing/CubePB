@@ -1,5 +1,5 @@
 import { PersonalBestClass } from "../../services";
-import { generateBaseRootResolvers } from "../../helpers/rootResolver";
+import { generateBaseRootResolvers } from "../../core/helpers/rootResolver";
 
 export default {
   ...generateBaseRootResolvers(PersonalBestClass, [

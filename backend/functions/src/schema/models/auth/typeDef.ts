@@ -1,7 +1,7 @@
 import { User, Auth } from "../../services";
 
 import * as jwt from "jsonwebtoken";
-import { generateTypenameField } from "../../helpers/typeDef";
+import { generateTypenameField } from "../../core/helpers/typeDef";
 import { env } from "../../../config";
 import { ObjectTypeDefinition, GiraffeqlObjectType } from "giraffeql";
 import * as Scalars from "../../scalars";

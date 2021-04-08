@@ -1,4 +1,4 @@
-import * as errorHelper from "../../helpers/error";
+import * as errorHelper from "../helpers/error";
 import { BaseService } from ".";
 import {
   fetchTableRows,
@@ -6,11 +6,11 @@ import {
   SqlSelectQueryObject,
   SqlWhereFieldOperator,
   SqlWhereObject,
-} from "../../helpers/sql";
-import { permissionsCheck } from "../../helpers/permissions";
-import { handleJqlSubscription } from "../../helpers/subscription";
+} from "../helpers/sql";
+import { permissionsCheck } from "../helpers/permissions";
+import { handleJqlSubscription } from "../helpers/subscription";
 
-import * as Resolver from "../../helpers/resolver";
+import * as Resolver from "../helpers/resolver";
 
 import {
   GiraffeqlObjectType,
@@ -28,7 +28,7 @@ import {
 
 import { ServiceFunctionInputs } from "../../../types";
 
-import { btoa, isObject } from "../../helpers/shared";
+import { btoa, isObject } from "../helpers/shared";
 
 export type FieldObject = {
   field?: string;
