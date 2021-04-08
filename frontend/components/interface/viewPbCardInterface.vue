@@ -135,11 +135,11 @@
 </template>
 
 <script>
-import { executeGiraffeql } from '~/services/giraffeql'
 import {
   handleError,
   serializeNestedProperty,
   copyToClipboard,
+  collectPaginatorData,
 } from '~/services/base'
 import EventColumn from '~/components/table/common/eventColumn.vue'
 import ResultColumn from '~/components/table/common/resultColumn.vue'
@@ -403,32 +403,29 @@ export default {
           Object.assign(ele, additionalFilters)
         })
 
-        const data = await executeGiraffeql(this, {
-          getPersonalBestPaginator: {
-            edges: {
-              node: {
-                id: true,
-                timeElapsed: true,
-                movesCount: true,
-                attemptsSucceeded: true,
-                attemptsTotal: true,
-                setSize: true,
-                pbClass: {
-                  id: true,
-                  name: true,
-                },
-                event: {
-                  id: true,
-                  scoreMethod: true,
-                },
-              },
+        const results = await collectPaginatorData(
+          this,
+          'getPersonalBestPaginator',
+          {
+            id: true,
+            timeElapsed: true,
+            movesCount: true,
+            attemptsSucceeded: true,
+            attemptsTotal: true,
+            setSize: true,
+            pbClass: {
+              id: true,
+              name: true,
             },
-            __args: {
-              first: 500, // at most 7*numEvents required
-              filterBy: filters,
+            event: {
+              id: true,
+              scoreMethod: true,
             },
           },
-        })
+          {
+            filterBy: filters,
+          }
+        )
 
         // create a map field -> serializeFn for fast serialization
         const serializeMap = new Map()
@@ -440,27 +437,27 @@ export default {
         })
 
         // apply serialization to results
-        data.edges.forEach((ele) => {
+        results.forEach((ele) => {
           serializeMap.forEach((serialzeFn, field) => {
-            serializeNestedProperty(ele.node, field, serialzeFn)
+            serializeNestedProperty(ele, field, serialzeFn)
           })
         })
 
         // loop through pbs, add to eventsMap
-        data.edges.forEach((ele) => {
-          const itemObject = eventsMap.get(ele.node.event.id)
+        results.forEach((ele) => {
+          const itemObject = eventsMap.get(ele.event.id)
           // flag the itemObject as hasRecords
           if (!itemObject.hasRecords) itemObject.hasRecords = true
 
           // if pbClass.id === 1, classify as single
-          if (ele.node.pbClass.id === 1) {
-            itemObject.single = ele.node
-          } else if (ele.node.pbClass.id === 2) {
+          if (ele.pbClass.id === 1) {
+            itemObject.single = ele
+          } else if (ele.pbClass.id === 2) {
             // else if pbClass.id === 2, is Avg
-            itemObject['ao' + ele.node.setSize] = ele.node
-          } else if (ele.node.pbClass.id === 3) {
+            itemObject['ao' + ele.setSize] = ele
+          } else if (ele.pbClass.id === 3) {
             // else if pbClass.id === 3, is Mean
-            itemObject['mo' + ele.node.setSize] = ele.node
+            itemObject['mo' + ele.setSize] = ele
           }
         })
         this.items = items

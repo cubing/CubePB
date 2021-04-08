@@ -1,4 +1,5 @@
 import { executeGiraffeql } from '~/services/giraffeql'
+import { collectPaginatorData } from '~/services/base'
 
 function memoize(memoizedFn) {
   const cache = {}
@@ -14,24 +15,13 @@ function memoize(memoizedFn) {
   }
 }
 
-export const getEvents = memoize(async function (that, _forceReload = false) {
-  const data = await executeGiraffeql<'getEventPaginator'>(that, {
-    getEventPaginator: {
-      edges: {
-        node: {
-          id: true,
-          name: true,
-          scoreMethod: true,
-          cubingIcon: true,
-        },
-      },
-      __args: {
-        first: 100,
-      },
-    },
+export const getEvents = memoize(function (that, _forceReload = false) {
+  return collectPaginatorData(that, 'getEventPaginator', {
+    id: true,
+    name: true,
+    scoreMethod: true,
+    cubingIcon: true,
   })
-
-  return data.edges.map((edge) => edge.node)
 })
 
 export const getProducts = memoize(async function (that, _forceReload = false) {
@@ -52,26 +42,15 @@ export const getProducts = memoize(async function (that, _forceReload = false) {
   return data.edges.map((edge) => edge.node)
 })
 
-export const getPersonalBestClasses = memoize(async function (
+export const getPersonalBestClasses = memoize(function (
   that,
   _forceReload = false
 ) {
-  const data = await executeGiraffeql<'getPersonalBestClassPaginator'>(that, {
-    getPersonalBestClassPaginator: {
-      edges: {
-        node: {
-          id: true,
-          name: true,
-          setSize: true,
-        },
-      },
-      __args: {
-        first: 100,
-      },
-    },
+  return collectPaginatorData(that, 'getPersonalBestClassPaginator', {
+    id: true,
+    name: true,
+    setSize: true,
   })
-
-  return data.edges.map((edge) => edge.node)
 })
 
 export const getUserRoles = memoize(async function (

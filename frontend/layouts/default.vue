@@ -336,7 +336,6 @@ export default {
       return (
         allowedRoles.includes(this.$store.getters['auth/user']?.role) ||
         allowedPermissions.some((ele) =>
-          // eslint-disable-next-line camelcase
           this.$store.getters['auth/user']?.allPermissions.includes(ele)
         )
       )

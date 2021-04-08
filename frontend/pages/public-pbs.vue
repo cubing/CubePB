@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-center pt-3">
+    <v-container fluid class="text-center pb-0">
       <v-progress-circular
         v-if="loading.presets"
         indeterminate
@@ -19,8 +19,8 @@
           {{ item.name }}
         </v-chip>
 
-        <v-divider />
-        <div class="pt-2">PB Types</div>
+        <v-divider class="my-2" />
+        <div>PB Types</div>
         <v-chip
           v-for="item in pbTypes"
           :key="item.text"
@@ -30,7 +30,7 @@
           {{ item.text }}
         </v-chip>
       </div>
-    </div>
+    </v-container>
     <CrudRecordPage
       :record-info="recordInfo"
       :locked-filters="lockedFilters"

@@ -1,5 +1,6 @@
 import { format } from 'timeago.js'
 import { convertArrayToCSV } from 'convert-array-to-csv'
+import { executeGiraffeql } from '~/services/giraffeql'
 
 type StringKeyObject = { [x: string]: any }
 
@@ -219,4 +220,52 @@ export function goToPage(that, routeName, item, openInNew = false) {
   } else {
     that.$router.push(routeObject)
   }
+}
+
+export function getPaginatorData(that, operation, query, args) {
+  return executeGiraffeql(that, <any>{
+    [operation]: {
+      paginatorInfo: {
+        total: true,
+        startCursor: true,
+        endCursor: true,
+      },
+      edges: {
+        node: query,
+        cursor: true,
+      },
+      __args: args,
+    },
+  })
+}
+
+// executes a giraffeql paginated operation 100 rows at a time until no more results are returned
+export async function collectPaginatorData(
+  that,
+  operation,
+  query,
+  args = {},
+  fetchRows = 100
+) {
+  let afterCursor: string | undefined
+
+  const allResults: any[] = []
+
+  let hasMore = true
+  while (hasMore) {
+    const data = <any>await getPaginatorData(that, operation, query, {
+      ...args,
+      first: fetchRows,
+      after: afterCursor,
+    })
+
+    afterCursor = data.paginatorInfo.endCursor
+
+    // if results returned is less than fetchRows, no more results
+    if (data.edges.length < fetchRows) hasMore = false
+
+    allResults.push(...data.edges.map((ele) => ele.node))
+  }
+
+  return allResults
 }

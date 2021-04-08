@@ -17,6 +17,8 @@ import {
   handleError,
   serializeNestedProperty,
   goToPage,
+  getPaginatorData,
+  collectPaginatorData,
 } from '~/services/base'
 
 export default {
@@ -444,23 +446,113 @@ export default {
     async exportData() {
       this.loading.exportData = true
       try {
-        // fetch data
-        const results = await this.getRecords(false)
+        // create a map field -> serializeFn for fast serialization
+        const serializeMap = new Map()
 
-        const data = results.edges
-          .map((ele) => ele.node)
-          .map((item) => {
-            const returnItem = {}
-            this.headers.forEach((headerObject) => {
-              if (headerObject.value) {
-                returnItem[headerObject.value] = this.getTableRowData(
-                  headerObject,
-                  item
-                )
-              }
-            })
-            return returnItem
+        const query = collapseObject(
+          this.recordInfo.paginationOptions.headers
+            .concat(
+              (this.recordInfo.requiredFields ?? []).map((field) => ({
+                field,
+              }))
+            )
+            .reduce(
+              (total, headerInfo) => {
+                const fieldInfo = this.recordInfo.fields[headerInfo.field]
+
+                // field unknown, abort
+                if (!fieldInfo)
+                  throw new Error('Unknown field: ' + headerInfo.field)
+
+                // if field has '+', add all of the fields
+                if (headerInfo.field.match(/\+/)) {
+                  headerInfo.field.split(/\+/).forEach((field) => {
+                    total[field] = true
+                    // assuming all fields are valid
+                    serializeMap.set(
+                      field,
+                      this.recordInfo.fields[field].serialize
+                    )
+                  })
+                } else {
+                  total[headerInfo.field] = true
+                  serializeMap.set(headerInfo.field, fieldInfo.serialize)
+                }
+                return total
+              },
+              { id: true } // always add id
+            )
+        )
+
+        const args = {
+          [this.positivePageDelta ? 'first' : 'last']: this.options
+            .itemsPerPage,
+          ...(this.options.page > 1 &&
+            this.positivePageDelta && {
+              after: this.currentPaginatorInfo.endCursor,
+            }),
+          ...(!this.positivePageDelta && {
+            before: this.currentPaginatorInfo.startCursor,
+          }),
+          sortBy: this.options.sortBy,
+          sortDesc: this.options.sortDesc,
+          filterBy: [
+            this.filters.concat(this.lockedFilters).reduce((total, ele) => {
+              if (!total[ele.field]) total[ele.field] = {}
+
+              // check if there is a parser on the fieldInfo
+              const fieldInfo = this.recordInfo.fields[ele.field]
+
+              // field unknown, abort
+              if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
+
+              // parse '__null' to null first
+              const value = ele.value === '__null' ? null : ele.value
+
+              // apply parseValue function, if any
+              total[ele.field][ele.operator] = fieldInfo.parseValue
+                ? fieldInfo.parseValue(value)
+                : value
+
+              return total
+            }, {}),
+          ],
+          ...(this.search && { search: this.search }),
+          ...(this.groupBy && { groupBy: this.groupBy }),
+        }
+
+        // fetch data
+        const results = await collectPaginatorData(
+          this,
+          'get' + this.capitalizedType + 'Paginator',
+          query,
+          args
+        )
+
+        // remove any undefined serializeMap elements
+        serializeMap.forEach((val, key) => {
+          if (val === undefined) serializeMap.delete(key)
+        })
+
+        // apply serialization to results
+        results.forEach((ele) => {
+          serializeMap.forEach((serialzeFn, field) => {
+            serializeNestedProperty(ele, field, serialzeFn)
           })
+        })
+
+        const data = results.map((item) => {
+          const returnItem = {}
+          this.headers.forEach((headerObject) => {
+            if (headerObject.value) {
+              returnItem[headerObject.value] = this.getTableRowData(
+                headerObject,
+                item
+              )
+            }
+          })
+          return returnItem
+        })
 
         if (data.length < 1) {
           throw new Error('No results to export')
@@ -531,120 +623,102 @@ export default {
       }
     },
 
-    async getRecords(paginated = true) {
-      const paginationArgs = paginated
-        ? {
-            [this.positivePageDelta ? 'first' : 'last']: this.options
-              .itemsPerPage,
-            ...(this.options.page > 1 &&
-              this.positivePageDelta && {
-                after: this.currentPaginatorInfo.endCursor,
-              }),
-            ...(!this.positivePageDelta && {
-              before: this.currentPaginatorInfo.startCursor,
-            }),
-          }
-        : {
-            first: 100, // first 100 rows only
-          }
-
-      // create a map field -> serializeFn for fast serialization
-      const serializeMap = new Map()
-
-      const data = await executeGiraffeql(this, {
-        ['get' + this.capitalizedType + 'Paginator']: {
-          paginatorInfo: {
-            total: true,
-            startCursor: true,
-            endCursor: true,
-          },
-          edges: {
-            node: collapseObject(
-              this.recordInfo.paginationOptions.headers
-                .concat(
-                  (this.recordInfo.requiredFields ?? []).map((field) => ({
-                    field,
-                  }))
-                )
-                .reduce(
-                  (total, headerInfo) => {
-                    const fieldInfo = this.recordInfo.fields[headerInfo.field]
-
-                    // field unknown, abort
-                    if (!fieldInfo)
-                      throw new Error('Unknown field: ' + headerInfo.field)
-
-                    // if field has '+', add all of the fields
-                    if (headerInfo.field.match(/\+/)) {
-                      headerInfo.field.split(/\+/).forEach((field) => {
-                        total[field] = true
-                        // assuming all fields are valid
-                        serializeMap.set(
-                          field,
-                          this.recordInfo.fields[field].serialize
-                        )
-                      })
-                    } else {
-                      total[headerInfo.field] = true
-                      serializeMap.set(headerInfo.field, fieldInfo.serialize)
-                    }
-                    return total
-                  },
-                  { id: true } // always add id
-                )
-            ),
-            cursor: true,
-          },
-          __args: {
-            ...paginationArgs,
-            sortBy: this.options.sortBy,
-            sortDesc: this.options.sortDesc,
-            filterBy: [
-              this.filters.concat(this.lockedFilters).reduce((total, ele) => {
-                if (!total[ele.field]) total[ele.field] = {}
-
-                // check if there is a parser on the fieldInfo
-                const fieldInfo = this.recordInfo.fields[ele.field]
-
-                // field unknown, abort
-                if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
-
-                // parse '__null' to null first
-                const value = ele.value === '__null' ? null : ele.value
-
-                // apply parseValue function, if any
-                total[ele.field][ele.operator] = fieldInfo.parseValue
-                  ? fieldInfo.parseValue(value)
-                  : value
-
-                return total
-              }, {}),
-            ],
-            ...(this.search && { search: this.search }),
-            ...(this.groupBy && { groupBy: this.groupBy }),
-          },
-        },
-      })
-
-      // remove any undefined serializeMap elements
-      serializeMap.forEach((val, key) => {
-        if (val === undefined) serializeMap.delete(key)
-      })
-
-      // apply serialization to results
-      data.edges.forEach((ele) => {
-        serializeMap.forEach((serialzeFn, field) => {
-          serializeNestedProperty(ele.node, field, serialzeFn)
-        })
-      })
-
-      return data
-    },
-
     async loadData() {
       this.loading.loadData = true
       try {
-        const results = await this.getRecords()
+        // create a map field -> serializeFn for fast serialization
+        const serializeMap = new Map()
+
+        const query = collapseObject(
+          this.recordInfo.paginationOptions.headers
+            .concat(
+              (this.recordInfo.requiredFields ?? []).map((field) => ({
+                field,
+              }))
+            )
+            .reduce(
+              (total, headerInfo) => {
+                const fieldInfo = this.recordInfo.fields[headerInfo.field]
+
+                // field unknown, abort
+                if (!fieldInfo)
+                  throw new Error('Unknown field: ' + headerInfo.field)
+
+                // if field has '+', add all of the fields
+                if (headerInfo.field.match(/\+/)) {
+                  headerInfo.field.split(/\+/).forEach((field) => {
+                    total[field] = true
+                    // assuming all fields are valid
+                    serializeMap.set(
+                      field,
+                      this.recordInfo.fields[field].serialize
+                    )
+                  })
+                } else {
+                  total[headerInfo.field] = true
+                  serializeMap.set(headerInfo.field, fieldInfo.serialize)
+                }
+                return total
+              },
+              { id: true } // always add id
+            )
+        )
+
+        const args = {
+          [this.positivePageDelta ? 'first' : 'last']: this.options
+            .itemsPerPage,
+          ...(this.options.page > 1 &&
+            this.positivePageDelta && {
+              after: this.currentPaginatorInfo.endCursor,
+            }),
+          ...(!this.positivePageDelta && {
+            before: this.currentPaginatorInfo.startCursor,
+          }),
+          sortBy: this.options.sortBy,
+          sortDesc: this.options.sortDesc,
+          filterBy: [
+            this.filters.concat(this.lockedFilters).reduce((total, ele) => {
+              if (!total[ele.field]) total[ele.field] = {}
+
+              // check if there is a parser on the fieldInfo
+              const fieldInfo = this.recordInfo.fields[ele.field]
+
+              // field unknown, abort
+              if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
+
+              // parse '__null' to null first
+              const value = ele.value === '__null' ? null : ele.value
+
+              // apply parseValue function, if any
+              total[ele.field][ele.operator] = fieldInfo.parseValue
+                ? fieldInfo.parseValue(value)
+                : value
+
+              return total
+            }, {}),
+          ],
+          ...(this.search && { search: this.search }),
+          ...(this.groupBy && { groupBy: this.groupBy }),
+        }
+
+        const results = await getPaginatorData(
+          this,
+          'get' + this.capitalizedType + 'Paginator',
+          query,
+          args
+        )
+
+        // remove any undefined serializeMap elements
+        serializeMap.forEach((val, key) => {
+          if (val === undefined) serializeMap.delete(key)
+        })
+
+        // apply serialization to results
+        results.edges.forEach((ele) => {
+          serializeMap.forEach((serialzeFn, field) => {
+            serializeNestedProperty(ele.node, field, serialzeFn)
+          })
+        })
 
         this.records = results.edges.map((ele) => ele.node)
 
