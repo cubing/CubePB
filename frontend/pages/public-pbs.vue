@@ -11,7 +11,7 @@
           v-for="(item, i) in events"
           :key="i"
           class="ma-2"
-          @click="applyPresetRoute(item)"
+          @click="applyEventPreset(item)"
         >
           <v-avatar left>
             <span class="cubing-icon" :class="item.cubingIcon"></span>
@@ -141,22 +141,31 @@ export default {
     this.loadPresets()
   },
   methods: {
-    applyPresetRoute(event) {
+    applyEventPreset(event) {
       // get the original sortBy/sortDesc
       const originalPageOptions = this.$route.query.pageOptions
         ? JSON.parse(atob(decodeURIComponent(this.$route.query.pageOptions)))
         : null
 
+      // replace event.id filters with new ones
+      const excludeFilterKeys = ['event.id']
+
       this.$router.push(
         generateRoute(this.$route.path, {
           ...originalPageOptions,
-          filters: [
+          filters: (originalPageOptions.filters
+            ? originalPageOptions.filters.filter(
+                (filterObject) =>
+                  !excludeFilterKeys.includes(filterObject.field)
+              )
+            : []
+          ).concat([
             {
               field: 'event.id',
               operator: 'eq',
               value: event.id,
             },
-          ],
+          ]),
         })
       )
     },

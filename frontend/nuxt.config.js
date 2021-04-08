@@ -32,7 +32,7 @@ export default {
       },
       {
         property: 'og:image',
-        content: 'https://cubepb.com/_nuxt/img/cubepb-logo-2.71bfc74.png',
+        content: 'https://cubepb.com/_nuxt/img/cubepb-logo-2-b.2c3896b.png',
       },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],

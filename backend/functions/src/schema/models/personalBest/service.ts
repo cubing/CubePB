@@ -205,10 +205,10 @@ export class PersonalBestService extends PaginatedService {
 
         validatedArgs.movesCount = null;
         // rightmost 7 rights are for time (), lower is better
-        // remaining digits are for the score (x -1*1E8), higher is better
+        // remaining digits are for the score (x -1*1E7), higher is better
         score =
           validatedArgs.timeElapsed +
-          -100000000 *
+          -10000000 *
             ((validatedArgs.attemptsTotal - validatedArgs.attemptsSucceeded) *
               -1 +
               validatedArgs.attemptsSucceeded * 1);
