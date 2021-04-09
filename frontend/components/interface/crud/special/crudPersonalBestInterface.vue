@@ -575,6 +575,7 @@ export default {
               text: 'Rank',
               sortable: false,
               value: 'rank',
+              align: 'right',
               width: '50px',
             },
           ]
