@@ -2,7 +2,7 @@ import { PaginatedService } from "../../core/services";
 import { permissionsCheck } from "../../core/helpers/permissions";
 import * as Resolver from "../../core/helpers/resolver";
 import * as sqlHelper from "../../core/helpers/sql";
-import { ServiceFunctionInputs } from "../../../types";
+import { AccessControlMap, ServiceFunctionInputs } from "../../../types";
 import { GiraffeqlBaseError } from "giraffeql";
 import { scoreMethodEnum } from "../../enums";
 
@@ -44,7 +44,7 @@ export class PersonalBestService extends PaginatedService {
 
   groupByFieldsMap = {};
 
-  accessControl = {
+  accessControl: AccessControlMap = {
     get: async ({ args, fieldPath }) => {
       // check the createdBy.isPublic to see if true
       const result = await this.lookupRecord(
@@ -59,7 +59,15 @@ export class PersonalBestService extends PaginatedService {
       return result["createdBy.isPublic"] === true;
     },
 
-    getMultiple: ({ req, args }) => {
+    getMultiple: ({ req, args, query }) => {
+      // not allowing querying for ranks in this view, as the query will be too costly
+      if (
+        query &&
+        Object.keys(<any>query).some((field) => ["ranking"].includes(field))
+      ) {
+        return false;
+      }
+
       // filterBy must have createdBy.isPublic === true
       // OR filterBy must have createdBy.id === req.user.id
       if (
@@ -89,7 +97,7 @@ export class PersonalBestService extends PaginatedService {
         args,
         fieldPath
       );
-      return req.user.id === result["createdBy.id"];
+      return req.user?.id === result["createdBy.id"];
     },
   };
 

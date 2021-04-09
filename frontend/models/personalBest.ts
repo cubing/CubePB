@@ -92,6 +92,9 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     score: {
       text: 'Score',
     },
+    ranking: {
+      text: 'Rank',
+    },
     'product.id': {
       text: 'Cube',
       // getOptions: getProducts, // not preloading these
@@ -320,6 +323,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'event.name+event.cubingIcon',
       'pbClass.name+setSize',
       'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod',
+      'ranking',
       'happenedOn',
       'product.name',
       'isCurrent',

@@ -1,9 +1,14 @@
 import { MyPbs } from '.'
-
+import CrudPersonalBestInterface from '~/components/interface/crud/special/crudPersonalBestInterface.vue'
 // MyPbs except no delete or add
 
 const PublicPbs = <any>{
   ...MyPbs,
+  paginationOptions: {
+    ...MyPbs.paginationOptions,
+    interfaceComponent: CrudPersonalBestInterface,
+  },
+
   deleteOptions: undefined,
   addOptions: undefined,
   expandTypes: undefined,

@@ -261,6 +261,16 @@ export default {
                 operator: 'eq',
                 value: 4, // 3x3x3 on prod db
               },
+              {
+                field: 'pbClass.id',
+                operator: 'eq',
+                value: 1, // pbClass single on prod db
+              },
+              {
+                field: 'setSize',
+                operator: 'eq',
+                value: 1,
+              },
             ],
           }),
           loginRequired: false,
