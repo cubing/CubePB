@@ -336,6 +336,9 @@
                     >mdi-delete</v-icon
                   >
                 </div>
+                <div v-else-if="headerItem.value === 'rank'">
+                  {{ renderRank(props.index) }}
+                </div>
                 <div v-else>
                   <component
                     :is="headerItem.fieldInfo.component"
