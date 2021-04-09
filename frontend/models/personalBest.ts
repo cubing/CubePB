@@ -279,7 +279,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       },
       {
         field: 'pbClass.name+setSize',
-        sortable: true,
         width: '150px',
       },
       {
