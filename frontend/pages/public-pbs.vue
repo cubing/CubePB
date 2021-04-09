@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container fluid class="text-center pb-0">
+    <v-container fluid class="text-center pb-0" style="max-width: 1920px">
       <v-progress-circular
         v-if="loading.presets"
         indeterminate

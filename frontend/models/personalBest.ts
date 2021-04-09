@@ -190,7 +190,14 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       parseValue: (val: string) => {
         // null or falsey values not allowed
         if (!val) throw new Error(`Invalid value for Date Happened`)
-        return new Date(val).getTime() / 1000
+
+        const msTimestamp = new Date(val).getTime()
+        // date cannot be to far in the future
+        if (msTimestamp > new Date().getTime() + 1000 * 60 * 60 * 24) {
+          throw new Error(`Date Happened cannot be in the future`)
+        }
+
+        return msTimestamp / 1000
       },
     },
     'createdBy.id': {

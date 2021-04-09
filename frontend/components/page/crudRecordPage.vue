@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid style="max-width: 1920px">
     <v-layout column justify-left align-left>
       <v-row>
         <v-col cols="12">
