@@ -251,7 +251,7 @@ export default {
       navItems: [
         {
           icon: 'mdi-podium',
-          title: 'Fastest PBs',
+          title: 'Leaderboard',
           to: generateRoute('/public-pbs', {
             sortBy: ['score'],
             sortDesc: [false],

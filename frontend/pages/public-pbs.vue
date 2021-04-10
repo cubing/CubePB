@@ -5,31 +5,32 @@
         v-if="loading.presets"
         indeterminate
       ></v-progress-circular>
-      <div v-else>
-        <div>Events</div>
-        <v-chip
-          v-for="(item, i) in events"
-          :key="i"
-          class="ma-2"
-          @click="applyEventPreset(item)"
-        >
-          <v-avatar left>
-            <span class="cubing-icon" :class="item.cubingIcon"></span>
-          </v-avatar>
-          {{ item.name }}
-        </v-chip>
-
-        <v-divider class="my-2" />
-        <div>PB Types</div>
-        <v-chip
-          v-for="item in pbTypes"
-          :key="item.text"
-          class="ma-2"
-          @click="applyPbPreset(item.attributes)"
-        >
-          {{ item.text }}
-        </v-chip>
-      </div>
+      <v-row v-else justify="center" class="pt-3">
+        <v-col :key="-1" cols="12" lg="3" class="pb-0">
+          <v-autocomplete
+            v-model="inputs.event"
+            :items="events"
+            item-text="name"
+            item-value="id"
+            label="Event"
+            filled
+            return-object
+            @change="applyEventPreset"
+          ></v-autocomplete>
+        </v-col>
+        <v-col :key="-2" cols="12" lg="3" class="pb-0">
+          <v-autocomplete
+            v-model="inputs.pbType"
+            :items="pbTypes"
+            item-text="text"
+            label="PB Type"
+            clearable
+            filled
+            return-object
+            @change="applyPbPreset"
+          ></v-autocomplete>
+        </v-col>
+      </v-row>
     </v-container>
     <CrudRecordPage
       :record-info="recordInfo"
@@ -73,6 +74,11 @@ export default {
         },
       ],
       title: 'Public PBs',
+      inputs: {
+        event: null,
+        pbType: null,
+      },
+
       events: [],
       pbTypes: [
         {
@@ -124,10 +130,6 @@ export default {
             setSize: 1000,
           },
         },
-        {
-          text: 'All',
-          attributes: null,
-        },
       ],
 
       loading: {
@@ -135,11 +137,16 @@ export default {
       },
     }
   },
+  watch: {
+    '$route.query.pageOptions'() {
+      this.loadPresets()
+    },
+  },
 
   mounted() {
-    // load first 18 events only
     this.loadPresets()
   },
+
   methods: {
     applyEventPreset(event) {
       // get the original sortBy/sortDesc
@@ -170,7 +177,7 @@ export default {
       )
     },
 
-    applyPbPreset(attributes) {
+    applyPbPreset(pbType) {
       // get the original sortBy/sortDesc/filters
       const originalPageOptions = this.$route.query.pageOptions
         ? JSON.parse(atob(decodeURIComponent(this.$route.query.pageOptions)))
@@ -189,17 +196,17 @@ export default {
               )
             : []
           ).concat(
-            attributes
+            pbType
               ? [
                   {
                     field: 'pbClass.id',
                     operator: 'eq',
-                    value: attributes['pbClass.id'],
+                    value: pbType.attributes['pbClass.id'],
                   },
                   {
                     field: 'setSize',
                     operator: 'eq',
-                    value: attributes.setSize,
+                    value: pbType.attributes.setSize,
                   },
                 ]
               : []
@@ -211,9 +218,45 @@ export default {
     async loadPresets() {
       this.loading.presets = true
 
-      const events = await getEvents(this)
+      this.events = await getEvents(this)
 
-      this.events = events.slice(0, 18)
+      // populate dropdown inputs
+      const originalPageOptions = this.$route.query.pageOptions
+        ? JSON.parse(atob(decodeURIComponent(this.$route.query.pageOptions)))
+        : null
+
+      // determine if a preset was applied
+      if (originalPageOptions.filters) {
+        const eventFilterObject = originalPageOptions.filters.find(
+          (filterObject) => filterObject.field === 'event.id'
+        )
+
+        if (eventFilterObject) {
+          this.inputs.event = this.events.find(
+            (event) => event.id === eventFilterObject.value
+          )
+        } else {
+          this.inputs.event = null
+        }
+
+        const setSizeFilterObject = originalPageOptions.filters.find(
+          (filterObject) => filterObject.field === 'setSize'
+        )
+
+        const pbClassFilterObject = originalPageOptions.filters.find(
+          (filterObject) => filterObject.field === 'pbClass.id'
+        )
+
+        if (setSizeFilterObject && pbClassFilterObject) {
+          this.inputs.pbType = this.pbTypes.find(
+            (pbType) =>
+              pbType.attributes.setSize === setSizeFilterObject.value &&
+              pbType.attributes['pbClass.id'] === pbClassFilterObject.value
+          )
+        } else {
+          this.inputs.pbType = null
+        }
+      }
 
       this.loading.presets = false
     },

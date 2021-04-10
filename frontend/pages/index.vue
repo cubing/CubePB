@@ -48,8 +48,9 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn v-if="user" color="primary" nuxt to="/my-pb-card"
-              >Track My PBs</v-btn
+            <v-btn v-if="user" color="primary" nuxt to="/my-pb-card">
+              <v-icon left> mdi-card-text </v-icon>
+              Track My PBs</v-btn
             >
             <v-btn v-else text @click="goToWcaAuth()">
               <img
@@ -61,8 +62,9 @@
               Login
             </v-btn>
 
-            <v-btn color="primary" nuxt :to="latestPbsRoute"
-              >View Latest PBs</v-btn
+            <v-btn color="primary" nuxt :to="fastestPbsRoute">
+              <v-icon left> mdi-podium </v-icon>
+              Leaderboard</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -89,10 +91,27 @@ export default {
       user: 'auth/user',
     }),
 
-    latestPbsRoute() {
+    fastestPbsRoute() {
       return generateRoute('/public-pbs', {
-        sortBy: ['happenedOn'],
-        sortDesc: [true],
+        sortBy: ['score'],
+        sortDesc: [false],
+        filters: [
+          {
+            field: 'event.id',
+            operator: 'eq',
+            value: 4, // 3x3x3 on prod db
+          },
+          {
+            field: 'pbClass.id',
+            operator: 'eq',
+            value: 1, // pbClass single on prod db
+          },
+          {
+            field: 'setSize',
+            operator: 'eq',
+            value: 1,
+          },
+        ],
       })
     },
   },
