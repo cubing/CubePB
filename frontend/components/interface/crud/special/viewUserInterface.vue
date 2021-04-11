@@ -27,7 +27,6 @@
                 >{{ item.value ? 'Following' : 'Follow' }}</v-btn
               >
             </div>
-
             <GenericInput v-else :item="item" :mode="mode"></GenericInput>
           </v-col>
         </v-row>

@@ -58,10 +58,7 @@ export default {
   },
   computed: {
     interfaceComponent() {
-      return (
-        this.recordInfo.paginationOptions.interfaceComponent ||
-        CrudRecordInterface
-      )
+      return CrudRecordInterface
     },
 
     capitalizedTypename() {

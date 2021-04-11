@@ -491,8 +491,6 @@
 import crudMixin from '~/mixins/crud'
 
 export default {
-  name: 'CrudRecordInterface',
-
   mixins: [crudMixin],
 }
 </script>

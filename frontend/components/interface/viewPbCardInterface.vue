@@ -70,9 +70,17 @@
                   v-if="editable"
                   small
                   @click.stop="
-                    openAddRecordDialog(props.item.event.id, headerItem.value)
+                    openEditDialog('edit', props.item[headerItem.value])
                   "
                   >mdi-pencil</v-icon
+                >
+                <v-icon
+                  v-if="editable"
+                  small
+                  @click.stop="
+                    openAddRecordDialog(props.item.event.id, headerItem.value)
+                  "
+                  >mdi-plus</v-icon
                 >
               </span>
             </div>
@@ -107,9 +115,17 @@
                 v-if="editable"
                 small
                 @click.stop="
-                  openAddRecordDialog(props.item.event.id, headerItem.value)
+                  openEditDialog('edit', props.item[headerItem.value])
                 "
                 >mdi-pencil</v-icon
+              >
+              <v-icon
+                v-if="editable"
+                small
+                @click.stop="
+                  openAddRecordDialog(props.item.event.id, headerItem.value)
+                "
+                >mdi-plus</v-icon
               >
             </span>
           </td>

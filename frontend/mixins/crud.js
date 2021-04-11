@@ -3,7 +3,6 @@ import {
   executeGiraffeqlSubscription,
 } from '~/services/giraffeql'
 import { unsubscribeChannels } from '~/services/pusher'
-import CrudRecordInterface from '~/components/interface/crud/crudRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
 import SearchDialog from '~/components/dialog/searchDialog.vue'
 import {
@@ -22,6 +21,8 @@ import {
 } from '~/services/base'
 
 export default {
+  name: 'CrudRecordInterface',
+
   components: {
     EditRecordDialog,
     SearchDialog,
@@ -167,7 +168,7 @@ export default {
         ? this.expandTypeObject.component ||
             this.expandTypeObject.recordInfo.paginationOptions
               .interfaceComponent ||
-            CrudRecordInterface
+            'CrudRecordInterface'
         : null
     },
     capitalizedType() {

@@ -16,7 +16,7 @@
     "convert-array-to-csv": "^2.0.0",
     "core-js": "^3.6.5",
     "js-cookie": "^2.2.1",
-    "nuxt": "^2.14.6",
+    "nuxt": "^2.15.4",
     "pusher-js": "^7.0.1",
     "timeago.js": "^4.0.2",
     "vuedraggable": "^2.24.3"
