@@ -151,6 +151,7 @@
         <a @click="openLink('https://thecubicle.com')">TheCubicle.com</a></span
       >
       <v-spacer></v-spacer>
+      <nuxt-link to="/legal/privacy" class="mr-2"> Privacy & Terms </nuxt-link>
       <v-icon
         small
         class="mr-2"

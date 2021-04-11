@@ -40,7 +40,12 @@
             <v-icon left>mdi-plus</v-icon>
             New {{ recordInfo.name }}
           </v-btn>
-          <v-divider v-if="hasFilters" class="mx-4" inset vertical></v-divider>
+          <v-divider
+            v-if="recordInfo.paginationOptions.hasSearch"
+            class="mx-4"
+            inset
+            vertical
+          ></v-divider>
           <SearchDialog
             v-if="recordInfo.paginationOptions.hasSearch"
             @handleSubmit="handleSearchDialogSubmit"
