@@ -324,7 +324,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     component: EditPersonalBestInterface,
   },
   editOptions: {
-    fields: ['publicComments'],
+    fields: ['publicComments', 'product.id'],
   },
   viewOptions: {
     fields: [

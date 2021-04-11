@@ -21,7 +21,7 @@
             <span class="headline">{{ title }}</span>
           </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-menu left offset-x>
+          <v-menu v-if="computedMode !== 'add'" left offset-x>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
             </template>

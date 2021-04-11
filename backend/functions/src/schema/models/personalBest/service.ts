@@ -87,9 +87,11 @@ export class PersonalBestService extends PaginatedService {
     },
 
     update: async ({ req, args, fieldPath }) => {
-      // can only update the publicComments field as non-admin
+      // can only update certain field as non-admin
       if (
-        Object.keys(args.fields).some((field) => field !== "publicComments")
+        Object.keys(args.fields).some(
+          (field) => !["publicComments", "product"].includes(field)
+        )
       ) {
         return false;
       }
