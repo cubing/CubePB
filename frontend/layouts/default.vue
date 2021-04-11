@@ -223,7 +223,10 @@ export default {
         {
           icon: 'mdi-timer',
           title: 'My PBs (All)',
-          to: '/my-pbs',
+          to: generateRoute('/my-pbs', {
+            sortBy: ['happenedOn'],
+            sortDesc: [true],
+          }),
         },
         {
           icon: 'mdi-timetable',
@@ -245,7 +248,7 @@ export default {
         },
         {
           icon: 'mdi-account-switch',
-          title: 'Users I Follow',
+          title: 'Following',
           to: '/my-follows',
         },
       ],
