@@ -103,7 +103,7 @@ export class PersonalBestService extends PaginatedService {
             field: "createdBy.id",
           },
         ],
-        args,
+        args.item,
         fieldPath
       );
       return req.user?.id === result["createdBy.id"];
