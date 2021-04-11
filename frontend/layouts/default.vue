@@ -248,7 +248,7 @@ export default {
         },
         {
           icon: 'mdi-account-switch',
-          title: 'Following',
+          title: 'Following Me',
           to: '/my-follows',
         },
       ],
