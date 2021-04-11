@@ -67,7 +67,7 @@
                   >mdi-close</v-icon
                 >
                 <v-icon
-                  v-if="editable"
+                  v-if="props.item[headerItem.value] && editable"
                   small
                   @click.stop="
                     openEditDialog('edit', props.item[headerItem.value])
@@ -112,7 +112,7 @@
                 >mdi-close</v-icon
               >
               <v-icon
-                v-if="editable"
+                v-if="props.item[headerItem.value] && editable"
                 small
                 @click.stop="
                   openEditDialog('edit', props.item[headerItem.value])
