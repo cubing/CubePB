@@ -227,6 +227,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       parseQueryValue: (val) => val === 'true',
     },
     'createdBy.userUserFollowLink/user.id': {},
+    publicComments: {
+      text: 'Public Comments',
+      inputType: 'textarea',
+      hint: 'You can add free-form solve reconstruction or other notes here',
+    },
     createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
@@ -314,10 +319,13 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'attemptsSucceeded',
       'attemptsTotal',
       'product.id',
+      'publicComments',
     ],
     component: EditPersonalBestInterface,
   },
-  editOptions: undefined,
+  editOptions: {
+    fields: ['publicComments'],
+  },
   viewOptions: {
     fields: [
       'event.name+event.cubingIcon',
@@ -325,6 +333,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod',
       'ranking',
       'happenedOn',
+      'publicComments',
       'product.name',
       'isCurrent',
       'createdBy.name+createdBy.avatar+createdBy.id',

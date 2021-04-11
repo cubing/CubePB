@@ -17,6 +17,7 @@ import {
   generateBooleanField,
   generateCreatedByField,
   generateDecimalField,
+  generateTextField,
 } from "../../core/helpers/typeDef";
 import * as Scalars from "../../scalars";
 import * as Resolver from "../../core/helpers/resolver";
@@ -80,6 +81,12 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
       allowNull: false,
       typeDefOptions: { addable: false, updateable: false },
       sqlOptions: { field: "is_current" },
+    }),
+    publicComments: generateTextField({
+      allowNull: true,
+      sqlOptions: {
+        field: "public_comments",
+      },
     }),
     ranking: {
       type: Scalars.number,

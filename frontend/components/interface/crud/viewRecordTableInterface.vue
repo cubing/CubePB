@@ -34,7 +34,7 @@
                         : item.field
                     "
                   ></component>
-                  <span v-else>{{
+                  <span v-else style="white-space: break-spaces">{{
                     getNestedProperty(currentItem, item.field)
                   }}</span>
                 </td>

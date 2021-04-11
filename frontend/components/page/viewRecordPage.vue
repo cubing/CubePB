@@ -35,20 +35,6 @@
                     {{ recordInfo.name }}
                   </v-toolbar-title>
                   <v-spacer></v-spacer>
-                  <v-btn
-                    v-if="recordInfo.editOptions"
-                    icon
-                    @click="openEditDialog('edit')"
-                  >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    v-if="recordInfo.deleteOptions"
-                    icon
-                    @click="openEditDialog('delete')"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
                   <v-menu left offset-x>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon v-bind="attrs" v-on="on"

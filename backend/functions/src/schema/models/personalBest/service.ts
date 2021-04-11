@@ -86,6 +86,27 @@ export class PersonalBestService extends PaginatedService {
       return false;
     },
 
+    update: async ({ req, args, fieldPath }) => {
+      // can only update the publicComments field as non-admin
+      if (
+        Object.keys(args.fields).some((field) => field !== "publicComments")
+      ) {
+        return false;
+      }
+
+      // must be creator of the PB to update it
+      const result = await this.lookupRecord(
+        [
+          {
+            field: "createdBy.id",
+          },
+        ],
+        args,
+        fieldPath
+      );
+      return req.user?.id === result["createdBy.id"];
+    },
+
     delete: async ({ req, args, fieldPath }) => {
       // must be creator of the PB to delete it
       const result = await this.lookupRecord(

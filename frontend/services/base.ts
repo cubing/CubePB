@@ -205,12 +205,18 @@ export function generateRoute(route: string, pageOptions?: any) {
   )
 }
 
-export function goToPage(that, routeName, item, openInNew = false) {
+export function goToPage(
+  that,
+  routeName,
+  item,
+  openInNew = false,
+  expandIndex = 0
+) {
   const routeObject = {
     name: routeName,
     query: {
       id: item.id,
-      expand: that.$route.query.expand ?? 0,
+      expand: expandIndex ?? 0,
     },
   }
 

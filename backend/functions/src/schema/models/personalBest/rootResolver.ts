@@ -7,6 +7,6 @@ export default {
     "getMultiple",
     "delete",
     "create",
-    // "update",
+    "update",
   ]),
 };

@@ -309,49 +309,15 @@
                 {{ headerItem.text }}
               </div>
               <div class="v-data-table__mobile-row__cell truncate-mobile-row">
-                <div v-if="headerItem.value === null">
-                  <nuxt-link
-                    v-if="recordInfo.enterOptions && recordInfo.viewRecordRoute"
-                    :to="recordInfo.viewRecordRoute + '?id=' + props.item.id"
-                  >
-                    <v-icon small icon>mdi-location-enter</v-icon>
-                  </nuxt-link>
-                  <v-icon
-                    v-if="recordInfo.shareOptions"
-                    class="mr-2"
-                    @click.stop="openEditDialog('share', props.item)"
-                    >mdi-share-variant</v-icon
-                  >
-                  <v-icon
-                    v-if="recordInfo.viewOptions"
-                    class="mr-2"
-                    @click.stop="openEditDialog('view', props.item)"
-                    >mdi-eye</v-icon
-                  >
-                  <v-icon
-                    v-if="recordInfo.editOptions"
-                    class="mr-2"
-                    @click.stop="openEditDialog('edit', props.item)"
-                    >mdi-pencil</v-icon
-                  >
-                  <v-icon
-                    v-if="recordInfo.deleteOptions"
-                    class="mr-2"
-                    @click.stop="openEditDialog('delete', props.item)"
-                    >mdi-delete</v-icon
-                  >
-                </div>
-                <div v-else>
-                  <component
-                    :is="headerItem.fieldInfo.component"
-                    v-if="headerItem.fieldInfo.component"
-                    :item="props.item"
-                    :field-path="headerItem.path"
-                  ></component>
-                  <span v-else>
-                    {{ getTableRowData(headerItem, props.item) }}
-                  </span>
-                </div>
+                <component
+                  :is="headerItem.fieldInfo.component"
+                  v-if="headerItem.fieldInfo.component"
+                  :item="props.item"
+                  :field-path="headerItem.path"
+                ></component>
+                <span v-else>
+                  {{ getTableRowData(headerItem, props.item) }}
+                </span>
               </div>
             </template>
           </td>

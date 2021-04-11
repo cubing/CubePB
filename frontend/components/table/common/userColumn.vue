@@ -35,9 +35,10 @@
                 <template v-else-if="currentUser">
                   <v-list-item-subtitle
                     >WCA ID:
-                    <a @click="openWCAProfile(currentUser.wcaId)">{{
-                      currentUser.wcaId
-                    }}</a></v-list-item-subtitle
+                    <a @click="openWCAProfile(currentUser.wcaId)"
+                      >{{ currentUser.wcaId }}
+                      <v-icon small>mdi-open-in-new</v-icon>
+                    </a></v-list-item-subtitle
                   >
                   <v-list-item-subtitle
                     >Nationality:
@@ -52,7 +53,10 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" @click="openProfile()"> Open Profile </v-btn>
+          <v-btn color="primary" @click="openProfile()">
+            <v-icon left>mdi-open-in-new</v-icon>
+            Open Profile
+          </v-btn>
 
           <template v-if="currentUser">
             <v-btn

@@ -1,6 +1,6 @@
 import { MyPbs } from '.'
 import CrudPersonalBestInterface from '~/components/interface/crud/special/crudPersonalBestInterface.vue'
-// MyPbs except no delete or add
+// MyPbs except no delete, edit, or add
 
 const PublicPbs = <any>{
   ...MyPbs,
@@ -11,6 +11,7 @@ const PublicPbs = <any>{
 
   deleteOptions: undefined,
   addOptions: undefined,
+  editOptions: undefined,
   expandTypes: undefined,
 }
 
