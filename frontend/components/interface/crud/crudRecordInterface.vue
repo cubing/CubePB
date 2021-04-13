@@ -46,10 +46,18 @@
             inset
             vertical
           ></v-divider>
+
           <SearchDialog
             v-if="recordInfo.paginationOptions.hasSearch"
+            v-model="searchInput"
             @handleSubmit="handleSearchDialogSubmit"
-          ></SearchDialog>
+          >
+            <template slot="icon">
+              <v-badge :value="!!search" dot color="secondary">
+                <v-icon>mdi-magnify</v-icon>
+              </v-badge>
+            </template>
+          </SearchDialog>
           <v-spacer></v-spacer>
           <v-btn
             v-if="hasFilters"
@@ -491,6 +499,8 @@
 import crudMixin from '~/mixins/crud'
 
 export default {
+  name: 'CrudRecordInterface',
+
   mixins: [crudMixin],
 }
 </script>

@@ -35,7 +35,9 @@
                 <template v-else-if="currentUser">
                   <v-list-item-subtitle
                     >WCA ID:
-                    <a @click="openWCAProfile(currentUser.wcaId)"
+                    <a
+                      v-if="currentUser.wcaId"
+                      @click="openWCAProfile(currentUser.wcaId)"
                       >{{ currentUser.wcaId }}
                       <v-icon small>mdi-open-in-new</v-icon>
                     </a></v-list-item-subtitle
