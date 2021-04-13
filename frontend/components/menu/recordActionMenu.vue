@@ -15,7 +15,7 @@
         @click="goToPage(true)"
       >
         <v-list-item-icon>
-          <v-icon>mdi-open-in-new</v-icon>
+          <v-icon>mdi-newspaper-variant-outline</v-icon>
         </v-list-item-icon>
         <v-list-item-title
           >Go To Page

@@ -12,6 +12,7 @@ const PublicPbs = <any>{
   deleteOptions: undefined,
   addOptions: undefined,
   editOptions: undefined,
+  copyOptions: undefined,
   expandTypes: undefined,
 }
 

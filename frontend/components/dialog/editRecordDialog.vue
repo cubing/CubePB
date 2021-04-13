@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="status"
-    scrollable
-    max-width="800px"
-    :persistent="computedMode !== 'view'"
-  >
+  <v-dialog v-model="status" scrollable max-width="800px" persistent>
     <component
       :is="interfaceComponent"
       v-if="status"
