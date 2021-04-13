@@ -19,7 +19,7 @@
             cols="12"
             class="py-0"
           >
-            <GenericInput :item="item" :mode="mode"></GenericInput>
+            <GenericInput :item="item"></GenericInput>
           </v-col>
         </v-row>
       </v-container>

@@ -11,7 +11,7 @@
         <Draggable
           v-model="item.value"
           class="layout row wrap"
-          :disabled="mode === 'view'"
+          :disabled="item.readonly"
         >
           <v-flex
             v-for="(imageUrl, imageIndex) in item.value"
@@ -19,7 +19,7 @@
             :class="'xs3'"
           >
             <v-card flat>
-              <v-system-bar v-if="mode !== 'view'" lights-out>
+              <v-system-bar v-if="!item.readonly" lights-out>
                 <v-icon @click="void 0">mdi-arrow-all</v-icon>
                 <v-spacer></v-spacer>
                 <v-btn icon @click.native="removeFileByIndex(item, imageIndex)">
@@ -76,7 +76,7 @@
       ></v-img>
       <v-icon v-else>mdi-file-image</v-icon>
       <v-file-input
-        v-if="!item.readonly && mode !== 'view'"
+        v-if="!item.readonly"
         v-model="item.input"
         :append-icon="item.value ? 'mdi-close' : null"
         :clearable="false"
@@ -120,7 +120,7 @@
         <v-icon v-else>mdi-account</v-icon></v-avatar
       >
       <v-file-input
-        v-if="!item.readonly && mode !== 'view'"
+        v-if="!item.readonly"
         v-model="item.input"
         :append-icon="item.value ? 'mdi-close' : null"
         :clearable="false"
@@ -451,20 +451,11 @@ export default {
       type: Object,
       required: true,
     },
-
-    // must be add, edit, or view
-    mode: {
-      type: String,
-      required: true,
-      validator: (value) => {
-        return ['add', 'edit', 'view', 'delete', 'share'].includes(value)
-      },
-    },
   },
 
   computed: {
     isReadonly() {
-      return this.item.readonly || this.mode === 'view'
+      return this.item.readonly
     },
   },
   methods: {

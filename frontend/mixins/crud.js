@@ -5,6 +5,7 @@ import {
 import { unsubscribeChannels } from '~/services/pusher'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
 import SearchDialog from '~/components/dialog/searchDialog.vue'
+import RecordActionMenu from '~/components/menu/recordActionMenu.vue'
 import {
   collapseObject,
   getNestedProperty,
@@ -26,6 +27,7 @@ export default {
   components: {
     EditRecordDialog,
     SearchDialog,
+    RecordActionMenu,
   },
 
   props: {

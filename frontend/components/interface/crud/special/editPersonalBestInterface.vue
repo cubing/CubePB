@@ -44,7 +44,7 @@
               @click:append="item.value = null"
             ></v-text-field>
 
-            <GenericInput v-else :item="item" :mode="mode"></GenericInput>
+            <GenericInput v-else :item="item"></GenericInput>
           </v-col>
         </v-row>
       </v-container>

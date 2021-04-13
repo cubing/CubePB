@@ -342,6 +342,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   },
   deleteOptions: {},
   shareOptions: {},
+  copyOptions: {
+    fields: ['event.id', 'pbClass.id', 'setSize'],
+    component: EditPersonalBestInterface,
+  },
 
   expandTypes: [],
 }

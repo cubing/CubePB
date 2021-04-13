@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="500">
+  <v-dialog v-model="dialog" width="500" scrollable>
     <template v-slot:activator="{ on, attrs }">
       <v-btn icon v-bind="attrs" v-on="on">
         <v-icon>mdi-help</v-icon>
@@ -8,7 +8,7 @@
     <v-card>
       <v-card-title class="headline"> How to Use This Page </v-card-title>
 
-      <v-card-text>
+      <v-card-text style="max-height: 600px">
         This page shows all of the events alongside several commonly-used PB
         types, like Single, Ao5, Ao12, etc.
         <br /><br />
@@ -23,9 +23,8 @@
         If you notice an error with one of the PBs that you have entered (for
         example, a typo), you can remove that PB by clicking the
         <v-icon small color="pink">mdi-close</v-icon> button.
+        <v-divider></v-divider>
       </v-card-text>
-
-      <v-divider></v-divider>
 
       <v-card-actions>
         <v-spacer></v-spacer>

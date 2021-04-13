@@ -46,7 +46,6 @@
             inset
             vertical
           ></v-divider>
-
           <SearchDialog
             v-if="recordInfo.paginationOptions.hasSearch"
             v-model="searchInput"
@@ -239,78 +238,19 @@
               class="text-center"
               style="width: 100%"
             >
-              <v-menu bottom offset-y>
+              <RecordActionMenu
+                :record-info="recordInfo"
+                :item="props.item"
+                expand-mode="emit"
+                bottom
+                offset-y
+                @handle-action-click="openEditDialog"
+                @handle-expand-click="openExpandDialog(props, ...$event)"
+              >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn block text v-bind="attrs" v-on="on"> Actions </v-btn>
                 </template>
-
-                <v-list dense class="expanded-table-bg">
-                  <v-list-item
-                    v-if="recordInfo.enterOptions"
-                    key="enter"
-                    @click="goToPage(props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-location-enter</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Go To Page</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.shareOptions"
-                    key="share"
-                    @click="openEditDialog('share', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-share-variant</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Share</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.viewOptions"
-                    key="view"
-                    @click="openEditDialog('view', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-eye</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>View</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.editOptions"
-                    key="edit"
-                    @click="openEditDialog('edit', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Edit</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.deleteOptions"
-                    key="delete"
-                    @click="openEditDialog('delete', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-delete</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Delete</v-list-item-title>
-                  </v-list-item>
-                  <v-divider v-if="hasNested"></v-divider>
-                  <v-list-item
-                    v-for="(item, i) in recordInfo.expandTypes"
-                    :key="i"
-                    dense
-                    @click="openExpandDialog(props, item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>{{ item.icon || item.recordInfo.icon }}</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>{{
-                      item.name || item.recordInfo.name
-                    }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
+              </RecordActionMenu>
             </div>
             <template v-else>
               <div class="v-data-table__mobile-row__header">
@@ -345,80 +285,21 @@
             class="truncate"
           >
             <div v-if="headerItem.value === null">
-              <v-menu left offset-x>
+              <RecordActionMenu
+                :record-info="recordInfo"
+                :item="props.item"
+                expand-mode="emit"
+                left
+                offset-x
+                @handle-action-click="openEditDialog"
+                @handle-expand-click="toggleItemExpanded(props, ...$event)"
+              >
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon small v-bind="attrs" v-on="on"
                     >mdi-dots-vertical</v-icon
                   >
                 </template>
-
-                <v-list dense>
-                  <v-list-item
-                    v-if="recordInfo.enterOptions"
-                    key="enter"
-                    @click="goToPage(props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-location-enter</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Go To Page</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.shareOptions"
-                    key="share"
-                    @click="openEditDialog('share', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-share-variant</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Share</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.viewOptions"
-                    key="view"
-                    @click="openEditDialog('view', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-eye</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>View</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.editOptions"
-                    key="edit"
-                    @click="openEditDialog('edit', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Edit</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="recordInfo.deleteOptions"
-                    key="delete"
-                    @click="openEditDialog('delete', props.item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>mdi-delete</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Delete</v-list-item-title>
-                  </v-list-item>
-                  <v-divider v-if="hasNested"></v-divider>
-                  <v-list-item
-                    v-for="(item, i) in recordInfo.expandTypes"
-                    :key="i"
-                    dense
-                    @click="toggleItemExpanded(props, item)"
-                  >
-                    <v-list-item-icon>
-                      <v-icon>{{ item.icon || item.recordInfo.icon }}</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>{{
-                      item.name || item.recordInfo.name
-                    }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
+              </RecordActionMenu>
             </div>
             <span v-else>
               <component

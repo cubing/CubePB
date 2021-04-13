@@ -24,12 +24,12 @@ export default {
       required: true,
     },
 
-    // must be add, edit, or view
+    // must be add, edit, view, or copy
     mode: {
       type: String,
       required: true,
       validator: (value) => {
-        return ['add', 'edit', 'view'].includes(value)
+        return ['add', 'edit', 'view', 'copy'].includes(value)
       },
     },
 
@@ -66,13 +66,17 @@ export default {
     },
     title() {
       return (
-        (this.mode === 'add' ? 'New' : this.mode === 'edit' ? 'Edit' : 'View') +
+        ((this.mode === 'add') | (this.mode === 'copy')
+          ? 'New'
+          : this.mode === 'edit'
+          ? 'Edit'
+          : 'View') +
         ' ' +
         this.recordInfo.name
       )
     },
     icon() {
-      return this.mode === 'add'
+      return this.mode === 'add' || this.mode === 'copy'
         ? 'mdi-plus'
         : this.mode === 'edit'
         ? 'mdi-pencil'
@@ -200,9 +204,9 @@ export default {
             : value
         }
 
-        // add mode
+        // add/copy mode
         let query
-        if (this.mode === 'add') {
+        if (this.mode === 'add' || this.mode === 'copy') {
           query = {
             [this.recordInfo.addOptions.operationName ??
             'create' + this.capitalizedType]: {
@@ -229,7 +233,9 @@ export default {
         this.$notifier.showSnackbar({
           message:
             this.recordInfo.name +
-            (this.mode === 'add' ? ' Added' : ' Updated'),
+            (this.mode === 'add' || this.mode === 'copy'
+              ? ' Added'
+              : ' Updated'),
           variant: 'success',
         })
 
@@ -247,7 +253,9 @@ export default {
         const serializeMap = new Map()
 
         const fields =
-          this.mode === 'edit'
+          this.mode === 'copy'
+            ? this.recordInfo.copyOptions.fields
+            : this.mode === 'edit'
             ? this.recordInfo.editOptions.fields
             : this.recordInfo.viewOptions.fields
         const data = await executeGiraffeql(this, {
@@ -297,8 +305,12 @@ export default {
           serializeNestedProperty(data, field, serialzeFn)
         })
 
+        // if copy mode, load all add fields
+        const inputFields =
+          this.mode === 'copy' ? this.recordInfo.addOptions.fields : fields
+
         // build inputs Array
-        this.inputsArray = fields.map((fieldKey) => {
+        this.inputsArray = inputFields.map((fieldKey) => {
           const fieldInfo = this.recordInfo.fields[fieldKey]
 
           // field unknown, abort
@@ -312,6 +324,12 @@ export default {
             fieldInfo,
             value: fieldValue, // already serialized
             options: [],
+            readonly:
+              this.mode === 'view'
+                ? true
+                : this.mode === 'copy'
+                ? fields.includes(fieldKey)
+                : false,
           }
 
           // if inputType === 'server-autocomplete', only populate the options with the specific entry, if any, and if inputObject.value not null

@@ -35,64 +35,17 @@
                     {{ recordInfo.name }}
                   </v-toolbar-title>
                   <v-spacer></v-spacer>
-                  <v-menu left offset-x>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </template>
-
-                    <v-list dense>
-                      <v-list-item
-                        v-if="recordInfo.shareOptions"
-                        key="share"
-                        @click="openEditDialog('share')"
-                      >
-                        <v-list-item-icon>
-                          <v-icon>mdi-share-variant</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>Share</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        v-if="recordInfo.editOptions"
-                        key="edit"
-                        @click="openEditDialog('edit')"
-                      >
-                        <v-list-item-icon>
-                          <v-icon>mdi-pencil</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>Edit</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        v-if="recordInfo.deleteOptions"
-                        key="delete"
-                        @click="openEditDialog('delete')"
-                      >
-                        <v-list-item-icon>
-                          <v-icon>mdi-delete</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>Delete</v-list-item-title>
-                      </v-list-item>
-                      <v-divider
-                        v-if="recordInfo.expandTypes.length > 0"
-                      ></v-divider>
-                      <v-list-item
-                        v-for="(item, i) in recordInfo.expandTypes"
-                        :key="i"
-                        dense
-                        @click="toggleExpand(i)"
-                      >
-                        <v-list-item-icon>
-                          <v-icon>{{
-                            item.icon || item.recordInfo.icon
-                          }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>{{
-                          item.name || item.recordInfo.name
-                        }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
+                  <RecordActionMenu
+                    :record-info="recordInfo"
+                    :item="selectedItem"
+                    hide-view
+                    hide-enter
+                    expand-mode="emit"
+                    left
+                    offset-x
+                    @handle-action-click="openEditDialog"
+                    @handle-expand-click="handleExpandClick"
+                  ></RecordActionMenu>
                 </v-toolbar>
               </template>
             </component>
@@ -136,6 +89,7 @@
 <script>
 import ViewRecordInterface from '~/components/interface/crud/viewRecordInterface.vue'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
+import RecordActionMenu from '~/components/menu/recordActionMenu.vue'
 import { executeGiraffeql } from '~/services/giraffeql'
 import {
   capitalizeString,
@@ -149,6 +103,7 @@ export default {
   components: {
     ViewRecordInterface,
     EditRecordDialog,
+    RecordActionMenu,
   },
 
   props: {
@@ -247,6 +202,10 @@ export default {
     handleSubmit() {
       this.loadRecord()
       this.$emit('handle-submit')
+    },
+
+    handleExpandClick(_expandTypeObject, index) {
+      this.toggleExpand(index)
     },
 
     toggleExpand(index) {

@@ -133,6 +133,13 @@ export type RecordInfo<T extends keyof MainTypes> = {
     // operationName?: string
   }
 
+  copyOptions?: {
+    // required: fields that should be copied
+    fields: string[]
+    // custom component
+    component?: any
+  }
+
   shareOptions?: {
     // custom component
     component?: any
