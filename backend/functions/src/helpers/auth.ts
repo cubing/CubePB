@@ -1,6 +1,6 @@
 import { env } from "../config";
 import * as jwt from "jsonwebtoken";
-import { User } from "../schema/services";
+import { User, ApiKey } from "../schema/services";
 import { userRoleKenum, userPermissionEnum } from "../schema/enums";
 import { userRoleToPermissionsMap } from "../schema/helpers/permissions";
 import type { ContextUser } from "../types";
@@ -57,6 +57,85 @@ export async function validateToken(auth: string): Promise<ContextUser> {
 
     return contextUser;
   } catch (err) {
+    const message = "Token error: " + (err.message || err.name);
+    throw new Error(message);
+  }
+}
+
+export async function validateApiKey(auth: string): Promise<ContextUser> {
+  if (!auth) {
+    throw new Error("Invalid Api Key");
+  }
+
+  try {
+    // lookup user by API key
+    const apiKeyResults = await sqlHelper.fetchTableRows({
+      select: [
+        { field: "permissions" },
+        { field: "user.id" },
+        { field: "user.role" },
+        { field: "user.permissions" },
+      ],
+      from: ApiKey.typename,
+      where: {
+        fields: [{ field: "code", value: auth }],
+      },
+    });
+
+    if (apiKeyResults.length < 1) {
+      throw new Error("Invalid Api Key");
+    }
+
+    const role = userRoleKenum.fromIndex(apiKeyResults[0]["user.role"]);
+
+    const originalUserPermissions: userPermissionEnum[] = (
+      apiKeyResults[0]["user.permissions"] ?? []
+    )
+      .map((ele) => userPermissionEnum.fromName(ele))
+      .concat(userRoleToPermissionsMap[role.name] ?? []);
+
+    let finalPermissions = originalUserPermissions;
+
+    if (
+      apiKeyResults[0]["permissions"] &&
+      apiKeyResults[0]["permissions"].length > 0
+    ) {
+      const requestedPermissionsSet: Set<userPermissionEnum> = new Set(
+        apiKeyResults[0]["permissions"]
+          ? apiKeyResults[0]["permissions"].map((ele) =>
+              userPermissionEnum.fromName(ele)
+            )
+          : []
+      );
+
+      // check if all requestedPermissions are indeed allowed
+
+      // if user has A_A, skip this
+      if (!originalUserPermissions.includes(userPermissionEnum.A_A)) {
+        requestedPermissionsSet.forEach((ele) => {
+          // if user does not have the specific requested permission, see if they have the wildcard for that permission
+          if (!originalUserPermissions.includes(ele)) {
+            const wildcardKey = ele.name.split("_")[0] + "_x";
+            if (
+              !originalUserPermissions.includes(userPermissionEnum[wildcardKey])
+            ) {
+              requestedPermissionsSet.delete(ele);
+              // failing that, remove the permission from the set
+            }
+          }
+        });
+      }
+
+      finalPermissions = [...requestedPermissionsSet];
+    }
+
+    return {
+      id: apiKeyResults[0]["user.id"],
+      role,
+      permissions: finalPermissions,
+    };
+  } catch (err) {
+    console.log(err);
     const message = "Token error: " + (err.message || err.name);
     throw new Error(message);
   }

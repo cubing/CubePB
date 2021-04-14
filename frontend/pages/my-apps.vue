@@ -2,33 +2,33 @@
   <CrudRecordPage
     :record-info="recordInfo"
     :locked-filters="lockedFilters"
-    :hidden-headers="hiddenHeaders"
-    :title="title"
+    :hidden-filters="hiddenFilters"
     :head="head"
+    :title="title"
     :icon="icon"
   ></CrudRecordPage>
 </template>
 
 <script>
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
-import { PublicFollows } from '~/models/special'
+import { MyApiKeys } from '~/models/special'
 
 export default {
   middleware: ['router-auth'],
+
   components: {
     CrudRecordPage,
   },
 
   data() {
     return {
-      recordInfo: PublicFollows,
-      hiddenHeaders: ['user.id+user.name+user.avatar'],
-      // override
+      recordInfo: MyApiKeys,
       head: {
-        title: "Users I'm Following",
+        title: 'My Apps',
       },
-      icon: 'mdi-account-switch',
-      title: 'Following',
+      hiddenFilters: [],
+      title: 'My Apps',
+      icon: 'mdi-view-grid-plus',
     }
   },
   computed: {

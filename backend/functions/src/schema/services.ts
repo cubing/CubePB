@@ -8,6 +8,7 @@ import { ProductService } from "./models/product/service";
 import { PersonalBestClassService } from "./models/personalBestClass/service";
 import { PersonalBestService } from "./models/personalBest/service";
 import { GithubService } from "./models/github/service";
+import { ApiKeyService } from "./models/apiKey/service";
 
 import { UserUserFollowLinkService } from "./links/userUserFollowLink/service";
 
@@ -17,6 +18,7 @@ export const Product = new ProductService();
 export const Auth = new AuthService();
 export const PersonalBestClass = new PersonalBestClassService();
 export const PersonalBest = new PersonalBestService();
+export const ApiKey = new ApiKeyService();
 export const Github = new GithubService();
 
 export const UserUserFollowLink = new UserUserFollowLinkService(

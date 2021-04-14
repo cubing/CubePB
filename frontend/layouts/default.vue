@@ -248,8 +248,13 @@ export default {
         },
         {
           icon: 'mdi-account-switch',
-          title: 'Following Me',
+          title: 'Following',
           to: '/my-follows',
+        },
+        {
+          icon: 'mdi-view-grid-plus',
+          title: 'My Apps',
+          to: '/my-apps',
         },
       ],
       navItems: [

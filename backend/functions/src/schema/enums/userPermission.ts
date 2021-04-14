@@ -16,6 +16,8 @@ export class userPermissionEnum extends Enum {
 
   static readonly product_create = new userPermissionEnum("product_create");
 
+  static readonly apiKey_create = new userPermissionEnum("apiKey_create");
+
   static readonly userUserFollowLink_get = new userPermissionEnum(
     "userUserFollowLink_get"
   );

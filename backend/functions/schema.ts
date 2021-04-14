@@ -1,7 +1,6 @@
 // Query builder (Typescript version >= 4.1.3 required)
 /* const queryResult = executeGiraffeql({
   // Start typing here to get hints
-  
 }); */
 
 export function executeGiraffeql<Key extends keyof Root>(
@@ -99,6 +98,7 @@ export type FilterByField<T> = {
     | "user_delete"
     | "personalBest_create"
     | "product_create"
+    | "apiKey_create"
     | "userUserFollowLink_get";
   /**Enum stored as is*/ scoreMethod: "STANDARD" | "FMC" | "MBLD";
   userSortByKey: "id" | "createdAt" | "updatedAt";
@@ -120,6 +120,8 @@ export type FilterByField<T> = {
     | "happenedOn"
     | "isCurrent";
   personalBestGroupByKey: undefined;
+  apiKeySortByKey: "id" | "createdAt";
+  apiKeyGroupByKey: undefined;
   userUserFollowLinkSortByKey: "createdAt";
   userUserFollowLinkGroupByKey: undefined;
 };
@@ -331,6 +333,50 @@ export type FilterByField<T> = {
     happenedOn: Scalars["unixTimestamp"];
     timeElapsed?: Scalars["number"] | null;
     movesCount?: Scalars["number"] | null;
+    publicComments?: Scalars["string"] | null;
+  };
+  updatePersonalBestFields: {
+    pbClass?: InputTypes["personalBestClass"];
+    event?: InputTypes["event"];
+    setSize?: Scalars["number"];
+    attemptsSucceeded?: Scalars["number"] | null;
+    attemptsTotal?: Scalars["number"] | null;
+    product?: InputTypes["product"] | null;
+    happenedOn?: Scalars["unixTimestamp"];
+    timeElapsed?: Scalars["number"] | null;
+    movesCount?: Scalars["number"] | null;
+    publicComments?: Scalars["string"] | null;
+  };
+  updatePersonalBest: {
+    item: InputTypes["personalBest"];
+    fields: InputTypes["updatePersonalBestFields"];
+  };
+  apiKey: { id?: Scalars["id"] };
+  "apiKeyFilterByField/id": FilterByField<Scalars["id"]>;
+  apiKeyFilterByObject: { id?: InputTypes["apiKeyFilterByField/id"] };
+  apiKeyPaginator: {
+    first?: Scalars["number"];
+    last?: Scalars["number"];
+    after?: Scalars["string"];
+    before?: Scalars["string"];
+    sortBy?: Scalars["apiKeySortByKey"][];
+    sortDesc?: Scalars["boolean"][];
+    filterBy?: InputTypes["apiKeyFilterByObject"][];
+    groupBy?: Scalars["apiKeyGroupByKey"][];
+  };
+  createApiKey: {
+    name: Scalars["string"];
+    user: InputTypes["user"];
+    permissions?: Scalars["userPermission"][] | null;
+  };
+  updateApiKeyFields: {
+    name?: Scalars["string"];
+    user?: InputTypes["user"];
+    permissions?: Scalars["userPermission"][] | null;
+  };
+  updateApiKey: {
+    item: InputTypes["apiKey"];
+    fields: InputTypes["updateApiKeyFields"];
   };
   /**Input object for getRepositoryReleases*/ getRepositoryReleases: {
     first: Scalars["number"];
@@ -384,6 +430,11 @@ export type FilterByField<T> = {
     Typename: "personalBestPaginator";
     Type: GetType<PersonalBestPaginator>;
   };
+  apiKeyEdge: { Typename: "apiKeyEdge"; Type: GetType<ApiKeyEdge> };
+  apiKeyPaginator: {
+    Typename: "apiKeyPaginator";
+    Type: GetType<ApiKeyPaginator>;
+  };
   userUserFollowLinkEdge: {
     Typename: "userUserFollowLinkEdge";
     Type: GetType<UserUserFollowLinkEdge>;
@@ -413,6 +464,7 @@ export type FilterByField<T> = {
     Type: GetType<PersonalBestClass>;
   };
   personalBest: { Typename: "personalBest"; Type: GetType<PersonalBest> };
+  apiKey: { Typename: "apiKey"; Type: GetType<ApiKey> };
 };
 /**PaginatorInfo Type*/ export type PaginatorInfo = {
   /**The typename of the record*/ __typename: {
@@ -468,6 +520,15 @@ export type PersonalBestEdge = Edge<PersonalBest>;
   };
   paginatorInfo: { Type: PaginatorInfo; Args: undefined };
   edges: { Type: PersonalBestEdge[]; Args: undefined };
+};
+export type ApiKeyEdge = Edge<ApiKey>;
+/**Paginator*/ export type ApiKeyPaginator = {
+  /**The typename of the record*/ __typename: {
+    Type: Scalars["string"];
+    Args: [Scalars["number"]];
+  };
+  paginatorInfo: { Type: PaginatorInfo; Args: undefined };
+  edges: { Type: ApiKeyEdge[]; Args: undefined };
 };
 export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
 /**Paginator*/ export type UserUserFollowLinkPaginator = {
@@ -635,6 +696,31 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Args: undefined;
   };
   isCurrent: { Type: Scalars["boolean"]; Args: undefined };
+  publicComments: { Type: Scalars["string"] | null; Args: undefined };
+  /**The numerical score rank of this PB given its event, pbClass, and setSize, among public PBs only*/ ranking: {
+    Type: Scalars["number"] | null;
+    Args: undefined;
+  };
+  /**When the record was created*/ createdAt: {
+    Type: Scalars["unixTimestamp"];
+    Args: undefined;
+  };
+  /**When the record was last updated*/ updatedAt: {
+    Type: Scalars["unixTimestamp"] | null;
+    Args: undefined;
+  };
+  createdBy: { Type: User; Args: undefined };
+};
+/**API Key Type*/ export type ApiKey = {
+  /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
+  /**The typename of the record*/ __typename: {
+    Type: Scalars["string"];
+    Args: [Scalars["number"]];
+  };
+  name: { Type: Scalars["string"]; Args: undefined };
+  code: { Type: Scalars["string"]; Args: undefined };
+  user: { Type: User; Args: undefined };
+  permissions: { Type: Scalars["userPermission"][] | null; Args: undefined };
   /**When the record was created*/ createdAt: {
     Type: Scalars["unixTimestamp"];
     Args: undefined;
@@ -704,6 +790,18 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Type: PersonalBest;
     Args: InputTypes["createPersonalBest"];
   };
+  updatePersonalBest: {
+    Type: PersonalBest;
+    Args: InputTypes["updatePersonalBest"];
+  };
+  getApiKey: { Type: ApiKey; Args: InputTypes["apiKey"] };
+  getApiKeyPaginator: {
+    Type: ApiKeyPaginator;
+    Args: InputTypes["apiKeyPaginator"];
+  };
+  deleteApiKey: { Type: ApiKey; Args: InputTypes["apiKey"] };
+  createApiKey: { Type: ApiKey; Args: InputTypes["createApiKey"] };
+  updateApiKey: { Type: ApiKey; Args: InputTypes["updateApiKey"] };
   getRepositoryReleases: {
     Type: Scalars["unknown"][];
     Args: InputTypes["getRepositoryReleases"];

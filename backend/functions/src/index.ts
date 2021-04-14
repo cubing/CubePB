@@ -7,7 +7,7 @@ import { env, giraffeqlOptions } from "./config";
 
 import { initializePusher } from "./utils/pusher";
 import { handlePusherAuth } from "./helpers/pusher";
-import { validateToken } from "./helpers/auth";
+import { validateToken, validateApiKey } from "./helpers/auth";
 import { CustomSchemaGenerator } from "./helpers/schema";
 
 const app = express();
@@ -21,9 +21,15 @@ const allowedOrigins = [
 // extract the user ID from all requests.
 app.use(async function (req, res, next) {
   try {
-    if (req.headers.authorization) {
+    // if api key provided, attempt to validate using that
+    const apiKey = req.get("x-api-key");
+    if (apiKey) {
+      req.user = await validateApiKey(apiKey);
+    } else if (req.headers.authorization) {
       req.user = await validateToken(req.headers.authorization);
     }
+
+    console.log(req.user);
 
     // handle origins -- only accepting string type origins.
     const origin =
