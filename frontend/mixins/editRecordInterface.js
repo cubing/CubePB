@@ -316,9 +316,17 @@ export default {
           // field unknown, abort
           if (!fieldInfo) throw new Error('Unknown field: ' + fieldKey)
 
-          const fieldValue = fieldInfo.hidden
-            ? null
-            : getNestedProperty(data, fieldKey)
+          let fieldValue
+
+          // if copy mode and fieldKey not in original fields, use default
+          if (this.mode === 'copy' && !fields.includes(fieldKey)) {
+            fieldValue = fieldInfo.default ? fieldInfo.default(this) : null
+          } else {
+            fieldValue = fieldInfo.hidden
+              ? null
+              : getNestedProperty(data, fieldKey)
+          }
+
           const inputObject = {
             field: fieldKey.split(/\+/)[0],
             fieldInfo,

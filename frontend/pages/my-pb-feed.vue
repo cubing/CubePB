@@ -24,10 +24,10 @@ export default {
     return {
       recordInfo: PublicPbs,
       head: {
-        title: 'PBs By Users I Follow',
+        title: 'My PB Feed',
       },
       hiddenFilters: ['isCurrent'],
-      title: 'PBs By Users I Follow',
+      title: 'My PB Feed',
       icon: 'mdi-timetable',
     }
   },

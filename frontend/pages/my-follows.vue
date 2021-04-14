@@ -25,10 +25,10 @@ export default {
       hiddenHeaders: ['user.id+user.name+user.avatar'],
       // override
       head: {
-        title: 'Following Me',
+        title: 'Following',
       },
       icon: 'mdi-account-switch',
-      title: 'Following Me',
+      title: 'Following',
     }
   },
   computed: {
