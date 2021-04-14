@@ -5,8 +5,8 @@ import CopyableColumn from '~/components/table/common/copyableColumn.vue'
 export const ApiKey = <RecordInfo<'apiKey'>>{
   typename: 'apiKey',
   pluralTypename: 'apiKeys',
-  name: 'Api Key',
-  pluralName: 'Api Keys',
+  name: 'API Key',
+  pluralName: 'API Keys',
   icon: 'mdi-view-grid-plus',
   renderItem: (item) => item.name,
   fields: {
