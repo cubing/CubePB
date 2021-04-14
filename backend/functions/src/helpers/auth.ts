@@ -135,7 +135,6 @@ export async function validateApiKey(auth: string): Promise<ContextUser> {
       permissions: finalPermissions,
     };
   } catch (err) {
-    console.log(err);
     const message = "Token error: " + (err.message || err.name);
     throw new Error(message);
   }

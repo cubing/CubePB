@@ -136,6 +136,11 @@ export class PersonalBestService extends PaginatedService {
     // args should be validated already
     const validatedArgs = <any>args;
 
+    // if happenedOn is null, set it to current unix timestamp
+    if (!validatedArgs.happenedOn) {
+      validatedArgs.happenedOn = new Date().getTime() / 1000;
+    }
+
     // get event.scoreMethod
     const eventRecords = await sqlHelper.fetchTableRows({
       select: [

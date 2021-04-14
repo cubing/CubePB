@@ -172,11 +172,12 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     },
     happenedOn: {
       text: 'Date Happened',
+      optional: true,
       hint:
-        'To specify the exact date and time, use format: YYYY-MM-DD 1:23 PM',
+        'Leave this blank to set to current date. To specify the exact date and time, use format: YYYY-MM-DD 1:23 PM',
       inputType: 'datepicker',
       // default to today.
-      default: () => {
+      /*       default: () => {
         const date = new Date()
         return (
           date.getFullYear() +
@@ -185,14 +186,14 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
           '-' +
           String(date.getDate()).padStart(2, '0')
         )
-      },
+      }, */
       // unix timestamp to YYYY-MM-DD
       serialize: (val: number) =>
         val && new Date(val * 1000).toISOString().substring(0, 10),
       // YYYY-MM-DD to unix timestamp
       parseValue: (val: string) => {
         // null or falsey values not allowed
-        if (!val) throw new Error(`Invalid value for Date Happened`)
+        if (!val) return undefined
 
         const msTimestamp = new Date(val).getTime()
         // date cannot be to far in the future

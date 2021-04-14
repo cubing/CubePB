@@ -330,7 +330,7 @@ export type FilterByField<T> = {
     attemptsSucceeded?: Scalars["number"] | null;
     attemptsTotal?: Scalars["number"] | null;
     product?: InputTypes["product"] | null;
-    happenedOn: Scalars["unixTimestamp"];
+    happenedOn?: Scalars["unixTimestamp"] | null;
     timeElapsed?: Scalars["number"] | null;
     movesCount?: Scalars["number"] | null;
     publicComments?: Scalars["string"] | null;
@@ -342,7 +342,7 @@ export type FilterByField<T> = {
     attemptsSucceeded?: Scalars["number"] | null;
     attemptsTotal?: Scalars["number"] | null;
     product?: InputTypes["product"] | null;
-    happenedOn?: Scalars["unixTimestamp"];
+    happenedOn?: Scalars["unixTimestamp"] | null;
     timeElapsed?: Scalars["number"] | null;
     movesCount?: Scalars["number"] | null;
     publicComments?: Scalars["string"] | null;
@@ -353,7 +353,11 @@ export type FilterByField<T> = {
   };
   apiKey: { id?: Scalars["id"] };
   "apiKeyFilterByField/id": FilterByField<Scalars["id"]>;
-  apiKeyFilterByObject: { id?: InputTypes["apiKeyFilterByField/id"] };
+  "apiKeyFilterByField/user.id": FilterByField<Scalars["id"]>;
+  apiKeyFilterByObject: {
+    id?: InputTypes["apiKeyFilterByField/id"];
+    "user.id"?: InputTypes["apiKeyFilterByField/user.id"];
+  };
   apiKeyPaginator: {
     first?: Scalars["number"];
     last?: Scalars["number"];
@@ -686,7 +690,7 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Args: undefined;
   };
   product: { Type: Product | null; Args: undefined };
-  happenedOn: { Type: Scalars["unixTimestamp"]; Args: undefined };
+  happenedOn: { Type: Scalars["unixTimestamp"] | null; Args: undefined };
   /**The amount of ms time elapsed for the pb attempt*/ timeElapsed: {
     Type: Scalars["number"] | null;
     Args: undefined;

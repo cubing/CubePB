@@ -22,7 +22,7 @@
             . The API Key needs to be passed as a header with the key
             <span class="preformatted">x-api-key</span>
             . The request body must be sent as JSON. Official documentation of
-            all the API functiaonlity is not currently available, but you can
+            all the API functionality is not currently available, but you can
             see what the JSON body looks like for various kinds of actions by
             looking at the Request Payload in the developer console of your
             browser while performing those actions on the site. For help

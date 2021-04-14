@@ -21,6 +21,7 @@ import {
 } from "../../core/helpers/typeDef";
 import * as Scalars from "../../scalars";
 import * as Resolver from "../../core/helpers/resolver";
+import { knex } from "../../../utils/knex";
 
 export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
   name: PersonalBest.typename,
@@ -65,6 +66,7 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
     }),
     happenedOn: generateUnixTimestampField({
       allowNull: false,
+      defaultValue: knex.fn.now(), // not really setting via DB. default is calculated manually in the createRecord function
       sqlOptions: { field: "happened_on" },
     }),
     timeElapsed: generateIntegerField({

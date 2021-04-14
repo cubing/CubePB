@@ -64,7 +64,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.integer("attempts_succeeded").nullable();
       table.integer("attempts_total").nullable();
       table.integer("product").nullable();
-      table.dateTime("happened_on").notNullable();
+      table.dateTime("happened_on").nullable();
       table.integer("time_elapsed").nullable();
       table.decimal("moves_count").nullable();
       table.boolean("is_current").notNullable();
