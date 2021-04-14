@@ -29,8 +29,6 @@ app.use(async function (req, res, next) {
       req.user = await validateToken(req.headers.authorization);
     }
 
-    console.log(req.user);
-
     // handle origins -- only accepting string type origins.
     const origin =
       Array.isArray(allowedOrigins) && allowedOrigins.length
