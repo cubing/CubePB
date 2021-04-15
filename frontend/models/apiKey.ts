@@ -21,7 +21,8 @@ export const ApiKey = <RecordInfo<'apiKey'>>{
       component: CopyableColumn,
     },
     permissions: {
-      text: 'Permissions (optional)',
+      text: 'Permissions',
+      optional: true,
       hint: 'Only use this to specify custom permissions, comma-separated',
       serialize: (val: string[]) => val && val.join(','),
       parseValue: (val: string) =>
