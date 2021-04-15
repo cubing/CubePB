@@ -192,8 +192,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         val && new Date(val * 1000).toISOString().substring(0, 10),
       // YYYY-MM-DD to unix timestamp
       parseValue: (val: string) => {
-        // null or falsey values not allowed
-        if (!val) return undefined
+        // if falsey, default to current unix timestamp
+        if (!val) return new Date().getTime() / 1000
 
         const msTimestamp = new Date(val).getTime()
         // date cannot be to far in the future
