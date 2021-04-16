@@ -21,6 +21,7 @@
           >
             <v-text-field
               v-if="item.field === 'timeElapsed'"
+              ref="timeElapsed"
               v-model="item.value"
               :label="
                 (item.fieldInfo.text || item.field) +
@@ -175,6 +176,15 @@ export default {
         return this.setInputValue('timeElapsed', this.parseTimeString(val))
       }
     },
+  },
+
+  mounted() {
+    // focus the time field if the event and pbClass are set
+    if (this.event && this.pbClass) {
+      setTimeout(() => {
+        this.$refs.timeElapsed[0].focus()
+      }, 0)
+    }
   },
 
   methods: {
