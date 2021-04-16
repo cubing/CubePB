@@ -195,7 +195,16 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         // if falsey, default to current unix timestamp
         if (!val) return new Date().getTime() / 1000
 
-        const msTimestamp = new Date(val).getTime()
+        let dateString = val
+
+        // if only date specified, automatically append current time
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          const currentDate = new Date()
+
+          dateString += ` ${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`
+        }
+
+        const msTimestamp = new Date(dateString).getTime()
         // date cannot be to far in the future
         if (msTimestamp > new Date().getTime() + 1000 * 60 * 60 * 24) {
           throw new Error(`Date Happened cannot be in the future`)
