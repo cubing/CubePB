@@ -27,7 +27,7 @@ export default {
       },
       title: 'My PBs',
       hiddenFilters: ['createdBy.id', 'isCurrent'],
-      hiddenHeaders: ['createdBy.name+createdBy.avatar'],
+      hiddenHeaders: ['createdBy.name+createdBy.avatar+createdBy.id'],
     }
   },
 

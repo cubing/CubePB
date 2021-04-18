@@ -139,7 +139,7 @@ export default {
   },
   watch: {
     '$route.query.pageOptions'() {
-      this.loadPresets()
+      this.syncFilters()
     },
   },
 
@@ -160,7 +160,7 @@ export default {
       this.$router.push(
         generateRoute(this.$route.path, {
           ...originalPageOptions,
-          filters: (originalPageOptions.filters
+          filters: (originalPageOptions?.filters
             ? originalPageOptions.filters.filter(
                 (filterObject) =>
                   !excludeFilterKeys.includes(filterObject.field)
@@ -189,7 +189,7 @@ export default {
       this.$router.push(
         generateRoute(this.$route.path, {
           ...originalPageOptions,
-          filters: (originalPageOptions.filters
+          filters: (originalPageOptions?.filters
             ? originalPageOptions.filters.filter(
                 (filterObject) =>
                   !excludeFilterKeys.includes(filterObject.field)
@@ -220,7 +220,11 @@ export default {
 
       this.events = await getEvents(this)
 
-      // populate dropdown inputs
+      this.loading.presets = false
+    },
+
+    // syncs preset inputs with filters
+    syncFilters() {
       const originalPageOptions = this.$route.query.pageOptions
         ? JSON.parse(atob(decodeURIComponent(this.$route.query.pageOptions)))
         : null
@@ -257,8 +261,6 @@ export default {
           this.inputs.pbType = null
         }
       }
-
-      this.loading.presets = false
     },
   },
 }

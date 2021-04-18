@@ -700,13 +700,9 @@ function validateFieldPath(
 // returns resolver object instead of a typeDef because it is also used to generate the rootResolver
 export function generatePaginatorPivotResolverObject(params: {
   pivotService: PaginatedService;
-  currentService?: NormalService;
+  filterByField?: string;
 }) {
-  const { pivotService, currentService } = params;
-
-  const filterByField = currentService
-    ? currentService.typename.toLowerCase() + ".id"
-    : null;
+  const { pivotService, filterByField } = params;
 
   // if filterByField, ensure that filterByField is a valid filterField on pivotService
   if (filterByField && !pivotService.filterFieldsMap[filterByField]) {
@@ -718,18 +714,24 @@ export function generatePaginatorPivotResolverObject(params: {
   // generate sortByKey ScalarDefinition
   const sortByScalarDefinition: ScalarDefinition = {
     name: pivotService.typename + "SortByKey",
-    types: Object.entries(pivotService.sortFieldsMap).map(([key, value]) => {
-      // ensure the path exists
-      validateFieldPath(pivotService.getTypeDef(), value.field ?? key);
-
-      return `"${key}"`;
-    }),
+    types: [],
     parseValue: (value) => {
       if (typeof value !== "string" || !(value in pivotService.sortFieldsMap))
         throw true;
       return value;
     },
   };
+
+  process.nextTick(() => {
+    sortByScalarDefinition.types = Object.entries(
+      pivotService.sortFieldsMap
+    ).map(([key, value]) => {
+      // ensure the path exists
+      validateFieldPath(pivotService.getTypeDef(), value.field ?? key);
+
+      return `"${key}"`;
+    });
+  });
 
   const groupByScalarDefinition: ScalarDefinition = {
     name: pivotService.typename + "GroupByKey",
