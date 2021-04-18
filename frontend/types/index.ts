@@ -113,6 +113,10 @@ export type RecordInfo<T extends keyof MainTypes> = {
     component?: any
     // if not createX, the custom create operation name
     operationName?: string
+    // replacement icon
+    icon?: string
+    // replacement text
+    text?: string
   }
 
   deleteOptions?: {
@@ -138,6 +142,11 @@ export type RecordInfo<T extends keyof MainTypes> = {
     fields: string[]
     // custom component
     component?: any
+
+    // replacement icon
+    icon?: string
+    // replacement text
+    text?: string
   }
 
   shareOptions?: {

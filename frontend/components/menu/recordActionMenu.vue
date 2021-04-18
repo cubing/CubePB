@@ -48,9 +48,11 @@
         @click="openEditDialog('edit')"
       >
         <v-list-item-icon>
-          <v-icon>mdi-pencil</v-icon>
+          <v-icon>{{ recordInfo.editOptions.icon || 'mdi-pencil' }}</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Edit</v-list-item-title>
+        <v-list-item-title>{{
+          recordInfo.editOptions.text || 'Edit'
+        }}</v-list-item-title>
       </v-list-item>
       <v-list-item
         v-if="recordInfo.copyOptions"
@@ -58,9 +60,13 @@
         @click="openEditDialog('copy')"
       >
         <v-list-item-icon>
-          <v-icon>mdi-content-copy</v-icon>
+          <v-icon>
+            {{ recordInfo.copyOptions.icon || 'mdi-content-copy' }}</v-icon
+          >
         </v-list-item-icon>
-        <v-list-item-title>Duplicate</v-list-item-title>
+        <v-list-item-title>{{
+          recordInfo.copyOptions.text || 'Duplicate'
+        }}</v-list-item-title>
       </v-list-item>
       <v-list-item
         v-if="recordInfo.deleteOptions"

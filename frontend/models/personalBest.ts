@@ -335,6 +335,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   },
   editOptions: {
     fields: ['publicComments', 'product.id'],
+    icon: 'mdi-comment-edit',
+    text: 'Comments',
   },
   viewOptions: {
     fields: [
@@ -355,6 +357,8 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   copyOptions: {
     fields: ['event.id', 'pbClass.id', 'setSize'],
     component: EditPersonalBestInterface,
+    icon: 'mdi-plus',
+    text: 'New PB',
   },
 
   expandTypes: [],

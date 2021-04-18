@@ -152,13 +152,15 @@ export default {
 
   watch: {
     pbClass(val) {
-      if (!isObject(val)) return
-      // eslint-disable-next-line camelcase
-      if (!val?.setSize) {
-        this.setInputValue('setSize', null)
-      } else {
-        this.setInputValue('setSize', val.setSize)
+      if (isObject(val)) {
+        if (!val?.setSize) {
+          this.setInputValue('setSize', null)
+        } else {
+          this.setInputValue('setSize', val.setSize)
+        }
       }
+
+      if (val && this.getInputValue('setSize')) this.focusTimeElapsedInput()
     },
     timeElapsed(val) {
       if (!val) return
@@ -181,13 +183,17 @@ export default {
   mounted() {
     // focus the time field if the event and pbClass are set
     if (this.event && this.pbClass) {
-      setTimeout(() => {
-        this.$refs.timeElapsed[0].focus()
-      }, 0)
+      this.focusTimeElapsedInput()
     }
   },
 
   methods: {
+    focusTimeElapsedInput() {
+      setTimeout(() => {
+        this.$refs.timeElapsed[0].focus()
+      }, 0)
+    },
+
     isNumber(evt) {
       const charCode = evt.which ? evt.which : evt.keyCode
       if (charCode > 31 && (charCode < 48 || charCode > 57)) {
