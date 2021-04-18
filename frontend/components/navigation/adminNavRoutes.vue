@@ -41,7 +41,7 @@ export default {
           permissions: [],
           items: Object.values(models).map((recordInfo) => ({
             title: capitalizeString(recordInfo.pluralTypename),
-            to: '/admin?type=' + recordInfo.typename,
+            to: '/a/crud?type=' + recordInfo.typename,
           })),
         },
       ]

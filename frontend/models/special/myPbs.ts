@@ -2,11 +2,12 @@ import { PersonalBest } from '..'
 
 const MyPbs = <any>{
   ...PersonalBest,
-  viewRecordRoute: 'pb',
+  routeName: 'i-view',
   paginationOptions: {
     ...(!!PersonalBest.paginationOptions && PersonalBest.paginationOptions),
     downloadOptions: undefined,
   },
+  enterOptions: {},
 }
 
 MyPbs.expandTypes = [

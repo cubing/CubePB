@@ -44,8 +44,6 @@ import DeleteRecordInterface from '~/components/interface/crud/deleteRecordInter
 import ShareRecordInterface from '~/components/interface/crud/shareRecordInterface.vue'
 import RecordActionMenu from '~/components/menu/recordActionMenu.vue'
 
-import { goToPage } from '~/services/base'
-
 const modesMap = {
   add: {
     icon: 'mdi-plus',
@@ -157,14 +155,6 @@ export default {
       this.overrideMode = mode
     },
 
-    goToPage() {
-      goToPage(
-        this,
-        this.recordInfo.viewRecordRoute,
-        this.selectedItem,
-        ...arguments
-      )
-    },
     handleSubmit(data) {
       this.close()
       this.$emit('handleSubmit', data)

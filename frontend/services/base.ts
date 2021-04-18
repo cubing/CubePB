@@ -205,24 +205,44 @@ export function generateRoute(route: string, pageOptions?: any) {
   )
 }
 
+// generates a record route based on the recordInfo
+export function generateRecordRouteObject(
+  typename,
+  routeName,
+  itemId,
+  expandIndex = 0
+) {
+  if (!routeName) return null
+
+  return {
+    name: routeName,
+    query: {
+      id: itemId,
+      expand: expandIndex,
+      type: typename,
+    },
+  }
+}
+
 export function goToPage(
   that,
+  typename,
   routeName,
-  item,
+  itemId,
   openInNew = false,
   expandIndex = 0
 ) {
-  const routeObject = {
-    name: routeName,
-    query: {
-      id: item.id,
-      expand: expandIndex ?? 0,
-    },
-  }
+  const routeObject = generateRecordRouteObject(
+    typename,
+    routeName,
+    itemId,
+    expandIndex
+  )
+
+  if (!routeObject) return
 
   if (openInNew) {
-    const routeData = that.$router.resolve(routeObject)
-    window.open(routeData.href, '_blank')
+    window.open(that.$router.resolve(routeObject).href, '_blank')
   } else {
     that.$router.push(routeObject)
   }

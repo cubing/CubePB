@@ -7,7 +7,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
   name: string
   pluralName: string
   // route that shareUrl and enterItem should be based off
-  viewRecordRoute?: string
+  routeName?: string
   icon?: string
   // how to render the item as a string
   renderItem?: (item) => string
@@ -44,6 +44,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
         | 'autocomplete' // same as combobox but cannot add new inputs
         | 'server-autocomplete' // if there's lots of entries, may not want to fetch all of the entries at once. getOptions will be optional
         | 'select' // standard select
+        | 'text' // default -- standard text field
       inputRules?: any[]
       getOptions?: (that) => Promise<any[]>
       typename?: string

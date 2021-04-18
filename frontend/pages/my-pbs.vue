@@ -23,9 +23,9 @@ export default {
     return {
       recordInfo: MyPbs,
       head: {
-        title: 'My PBs',
+        title: 'My Current PBs',
       },
-      title: 'My PBs',
+      title: 'My Current PBs',
       hiddenFilters: ['createdBy.id', 'isCurrent'],
       hiddenHeaders: ['createdBy.name+createdBy.avatar+createdBy.id'],
     }

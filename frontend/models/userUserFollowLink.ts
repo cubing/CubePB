@@ -8,6 +8,7 @@ export const UserUserFollowLink = <RecordInfo<'userUserFollowLink'>>{
   name: 'UserUserFollowLink',
   pluralName: 'UserUserFollowLinks',
   icon: 'mdi-view-grid',
+  routeName: 'a-view',
   renderItem: (item) => item.name,
   fields: {
     id: {

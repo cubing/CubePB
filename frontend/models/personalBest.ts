@@ -15,6 +15,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   name: 'Personal Best',
   pluralName: 'Personal Bests',
   icon: 'mdi-timer',
+  routeName: 'a-view',
   renderItem: (item) => item.name,
   requiredFields: ['event.id', 'pbClass.id', 'setSize', 'createdBy.id'],
   fields: {

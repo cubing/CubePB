@@ -135,6 +135,8 @@ export default {
       loading: {
         loadRecord: false,
       },
+
+      recordInfoChanged: false,
     }
   },
 
@@ -186,16 +188,27 @@ export default {
     '$route.query.expand'(val) {
       this.setExpandTypeObject(val)
     },
+
+    recordInfo() {
+      this.recordInfoChanged = true
+      this.reset()
+    },
+
+    '$route.query.id'() {
+      // if this was triggered in addition to recordInfo change, do nothing and revert recordInfoChange on next tick
+      if (this.recordInfoChanged) {
+        this.$nextTick(() => {
+          this.recordInfoChanged = false
+        })
+        return
+      }
+
+      this.reset()
+    },
   },
 
   mounted() {
-    // must independently verify existence of item
-    this.loadRecord().then(() => {
-      // if expand query param set, set the initial expandTypeObject
-      if (this.$route.query.expand !== undefined) {
-        this.setExpandTypeObject(this.$route.query.expand)
-      }
-    })
+    this.reset()
   },
 
   methods: {
@@ -310,6 +323,16 @@ export default {
         handleError(this, err)
       }
       this.loading.loadRecord = false
+    },
+
+    reset() {
+      // must independently verify existence of item
+      this.loadRecord().then(() => {
+        // if expand query param set, set the initial expandTypeObject
+        if (this.$route.query.expand !== undefined) {
+          this.setExpandTypeObject(this.$route.query.expand)
+        }
+      })
     },
   },
 

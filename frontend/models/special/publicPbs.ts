@@ -13,7 +13,7 @@ const PublicPbs = <any>{
   addOptions: undefined,
   editOptions: undefined,
   copyOptions: undefined,
-  expandTypes: undefined,
+  expandTypes: [],
 }
 
 PublicPbs.expandTypes = [

@@ -16,7 +16,6 @@ import {
   downloadCSV,
   handleError,
   serializeNestedProperty,
-  goToPage,
   getPaginatorData,
   collectPaginatorData,
 } from '~/services/base'
@@ -304,6 +303,12 @@ export default {
   },
 
   created() {
+    this.$root.$on('refresh-crud-interface', () => {
+      this.reset({
+        resetExpanded: false,
+      })
+    })
+
     this.reset({
       resetSubscription: true,
       initFilters: true,
@@ -325,10 +330,6 @@ export default {
     handleSearchDialogSubmit(searchInput) {
       this.searchInput = searchInput
       this.updatePageOptions()
-    },
-
-    goToPage() {
-      goToPage(this, this.recordInfo.viewRecordRoute, ...arguments)
     },
 
     handleTableOptionsUpdated() {

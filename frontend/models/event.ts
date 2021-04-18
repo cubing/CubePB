@@ -9,6 +9,7 @@ export const Event = <RecordInfo<'event'>>{
   name: 'Event',
   pluralName: 'Events',
   icon: 'mdi-view-grid',
+  routeName: 'a-view',
   renderItem: (item) => item.name,
   fields: {
     id: {

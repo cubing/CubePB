@@ -143,11 +143,24 @@ export default {
       if (this.expandMode === 'emit')
         this.$emit('handle-expand-click', expandTypeObject, index)
       else
-        goToPage(this, this.recordInfo.viewRecordRoute, this.item, true, index)
+        goToPage(
+          this,
+          this.recordInfo.typename,
+          this.recordInfo.routeName,
+          this.item.id,
+          true,
+          index
+        )
     },
 
     goToPage() {
-      goToPage(this, this.recordInfo.viewRecordRoute, this.item, ...arguments)
+      goToPage(
+        this,
+        this.recordInfo.typename,
+        this.recordInfo.routeName,
+        this.item.id,
+        ...arguments
+      )
     },
   },
 }

@@ -7,6 +7,7 @@ export const PersonalBestClass = <RecordInfo<'personalBestClass'>>{
   name: 'Personal Best Type',
   pluralName: 'Personal Best Types',
   icon: 'mdi-content-copy',
+  routeName: 'a-view',
   renderItem: (item) => item.name,
   fields: {
     id: {

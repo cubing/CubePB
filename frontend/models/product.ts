@@ -7,6 +7,7 @@ export const Product = <RecordInfo<'product'>>{
   name: 'Product',
   pluralName: 'Products',
   icon: 'mdi-dots-grid',
+  routeName: 'a-view',
   renderItem: (item) => item.name,
   fields: {
     id: {

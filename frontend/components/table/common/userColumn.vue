@@ -104,7 +104,7 @@ export default {
 
   methods: {
     openProfile() {
-      goToPage(this, 'user', this.currentValue, true)
+      goToPage(this, 'user', 'i-record', this.currentValue.id, true)
     },
 
     openWCAProfile(wcaId) {

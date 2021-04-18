@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { copyToClipboard } from '~/services/base'
+import { copyToClipboard, generateRecordRouteObject } from '~/services/base'
 
 export default {
   props: {
@@ -47,17 +47,14 @@ export default {
 
   computed: {
     shareUrl() {
-      return this.selectedItem &&
-        this.recordInfo.shareOptions &&
-        this.recordInfo.viewRecordRoute
-        ? window.location.origin +
-            this.$router.resolve({
-              name: this.recordInfo.viewRecordRoute,
-              query: {
-                id: this.selectedItem.id,
-                expand: this.$route.query.expand ?? 0,
-              },
-            }).href
+      const routeObject = generateRecordRouteObject(
+        this.recordInfo.typename,
+        this.recordInfo.routeName,
+        this.selectedItem.id
+      )
+
+      return this.selectedItem && this.recordInfo.shareOptions && routeObject
+        ? window.location.origin + this.$router.resolve(routeObject).href
         : ''
     },
     itemIdentifier() {
