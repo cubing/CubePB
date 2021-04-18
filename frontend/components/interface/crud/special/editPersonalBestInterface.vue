@@ -159,7 +159,6 @@ export default {
           this.setInputValue('setSize', val.setSize)
         }
       }
-
       if (val && this.getInputValue('setSize')) this.focusTimeElapsedInput()
     },
     timeElapsed(val) {
@@ -178,13 +177,6 @@ export default {
         return this.setInputValue('timeElapsed', this.parseTimeString(val))
       }
     },
-  },
-
-  mounted() {
-    // focus the time field if the event and pbClass are set
-    if (this.event && this.pbClass) {
-      this.focusTimeElapsedInput()
-    }
   },
 
   methods: {
