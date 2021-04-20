@@ -261,30 +261,33 @@ export default {
         const data = await executeGiraffeql(this, {
           ['get' + this.capitalizedType]: {
             ...collapseObject(
-              fields.reduce((total, fieldKey) => {
-                const fieldInfo = this.recordInfo.fields[fieldKey]
-                // field unknown, abort
-                if (!fieldInfo) throw new Error('Unknown field: ' + fieldKey)
+              fields.reduce(
+                (total, fieldKey) => {
+                  const fieldInfo = this.recordInfo.fields[fieldKey]
+                  // field unknown, abort
+                  if (!fieldInfo) throw new Error('Unknown field: ' + fieldKey)
 
-                // if field is hidden, exclude
-                if (fieldInfo.hidden) return total
+                  // if field is hidden, exclude
+                  if (fieldInfo.hidden) return total
 
-                // if field has '+', add all of the fields
-                if (fieldKey.match(/\+/)) {
-                  fieldKey.split(/\+/).forEach((field) => {
-                    total[field] = true
-                    // assuming all fields are valid
-                    serializeMap.set(
-                      field,
-                      this.recordInfo.fields[field].serialize
-                    )
-                  })
-                } else {
-                  total[fieldKey] = true
-                  serializeMap.set(fieldKey, fieldInfo.serialize)
-                }
-                return total
-              }, {})
+                  // if field has '+', add all of the fields
+                  if (fieldKey.match(/\+/)) {
+                    fieldKey.split(/\+/).forEach((field) => {
+                      total[field] = true
+                      // assuming all fields are valid
+                      serializeMap.set(
+                        field,
+                        this.recordInfo.fields[field].serialize
+                      )
+                    })
+                  } else {
+                    total[fieldKey] = true
+                    serializeMap.set(fieldKey, fieldInfo.serialize)
+                  }
+                  return total
+                },
+                { id: true }
+              )
             ),
             __args: {
               id: this.selectedItem.id,

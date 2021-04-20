@@ -78,18 +78,37 @@
         </v-list-item-icon>
         <v-list-item-title>Delete</v-list-item-title>
       </v-list-item>
+      <template
+        v-if="recordInfo.customActions && recordInfo.customActions.length > 0"
+      >
+        <v-divider></v-divider>
+        <v-list-item
+          v-for="(actionObject, i) in recordInfo.customActions"
+          :key="'ca' + i"
+          dense
+          @click="handleCustomActionClick(actionObject)"
+        >
+          <v-list-item-icon>
+            <v-icon>{{ actionObject.icon }}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>{{ actionObject.text }} </v-list-item-title>
+        </v-list-item>
+      </template>
+
       <v-divider v-if="recordInfo.expandTypes.length > 0"></v-divider>
       <v-list-item
-        v-for="(item, i) in recordInfo.expandTypes"
+        v-for="(expandObject, i) in recordInfo.expandTypes"
         :key="i"
         dense
-        @click="openExpandType(item, i)"
+        @click="openExpandType(expandObject, i)"
       >
         <v-list-item-icon>
-          <v-icon>{{ item.icon || item.recordInfo.icon }}</v-icon>
+          <v-icon>{{
+            expandObject.icon || expandObject.recordInfo.icon
+          }}</v-icon>
         </v-list-item-icon>
         <v-list-item-title
-          >{{ item.name || item.recordInfo.name }}
+          >{{ expandObject.name || item.recordInfo.name }}
           <v-icon v-if="expandMode === 'openInNew'" small right
             >mdi-open-in-new</v-icon
           >
@@ -151,6 +170,10 @@ export default {
           true,
           index
         )
+    },
+
+    handleCustomActionClick(actionObject) {
+      this.$emit('handle-custom-action-click', actionObject, this.item)
     },
 
     goToPage() {

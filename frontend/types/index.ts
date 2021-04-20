@@ -44,7 +44,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
         | 'autocomplete' // same as combobox but cannot add new inputs
         | 'server-autocomplete' // if there's lots of entries, may not want to fetch all of the entries at once. getOptions will be optional
         | 'select' // standard select
-        | 'text' // default -- standard text field
+        | 'text'
       inputRules?: any[]
       getOptions?: (that) => Promise<any[]>
       typename?: string
@@ -179,6 +179,13 @@ export type RecordInfo<T extends keyof MainTypes> = {
       sortBy: string[]
       sortDesc: boolean[]
     }
+  }[]
+
+  customActions?: {
+    text: string
+    icon: string
+
+    handleClick: (that, item) => void
   }[]
 }
 

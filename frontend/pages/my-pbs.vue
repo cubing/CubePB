@@ -1,15 +1,19 @@
 <template>
-  <CrudRecordPage
-    :record-info="recordInfo"
-    :locked-filters="lockedFilters"
-    :hidden-filters="hiddenFilters"
-    :hidden-headers="hiddenHeaders"
-    :title="title"
-    :head="head"
-  ></CrudRecordPage>
+  <div>
+    <PbPagePreset></PbPagePreset>
+    <CrudRecordPage
+      :record-info="recordInfo"
+      :locked-filters="lockedFilters"
+      :hidden-filters="hiddenFilters"
+      :hidden-headers="hiddenHeaders"
+      :title="title"
+      :head="head"
+    ></CrudRecordPage>
+  </div>
 </template>
 
 <script>
+import PbPagePreset from '../components/page/preset/pbPagePreset.vue'
 import CrudRecordPage from '~/components/page/crudRecordPage.vue'
 import { MyPbs } from '~/models/special'
 
@@ -17,6 +21,7 @@ export default {
   middleware: ['router-auth'],
   components: {
     CrudRecordPage,
+    PbPagePreset,
   },
 
   data() {

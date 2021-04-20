@@ -246,6 +246,7 @@
                 offset-y
                 @handle-action-click="openEditDialog"
                 @handle-expand-click="openExpandDialog(props, ...$event)"
+                @handle-custom-action-click="handleCustomActionClick"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn block text v-bind="attrs" v-on="on"> Actions </v-btn>
@@ -266,6 +267,7 @@
                     v-if="headerItem.fieldInfo.component"
                     :item="props.item"
                     :field-path="headerItem.path"
+                    @submit="reset({ resetExpanded: false })"
                   ></component>
                   <span v-else>
                     {{ getTableRowData(headerItem, props.item) }}
@@ -293,11 +295,12 @@
               <RecordActionMenu
                 :record-info="recordInfo"
                 :item="props.item"
+                expand-mode="emit"
                 left
                 offset-x
-                expand-mode="emit"
                 @handle-action-click="openEditDialog"
                 @handle-expand-click="toggleItemExpanded(props, ...$event)"
+                @handle-custom-action-click="handleCustomActionClick"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon small v-bind="attrs" v-on="on"
@@ -309,13 +312,13 @@
             <span v-else-if="headerItem.value === 'rank'">
               {{ renderRank(props.index) }}
             </span>
-
             <span v-else>
               <component
                 :is="headerItem.fieldInfo.component"
                 v-if="headerItem.fieldInfo.component"
                 :item="props.item"
                 :field-path="headerItem.path"
+                @submit="reset({ resetExpanded: false })"
               ></component>
               <span v-else>
                 {{ getTableRowData(headerItem, props.item) }}

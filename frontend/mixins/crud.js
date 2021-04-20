@@ -303,12 +303,6 @@ export default {
   },
 
   created() {
-    this.$root.$on('refresh-crud-interface', () => {
-      this.reset({
-        resetExpanded: false,
-      })
-    })
-
     this.reset({
       resetSubscription: true,
       initFilters: true,
@@ -330,6 +324,10 @@ export default {
     handleSearchDialogSubmit(searchInput) {
       this.searchInput = searchInput
       this.updatePageOptions()
+    },
+
+    handleCustomActionClick(actionObject, item) {
+      actionObject.handleClick(this, item)
     },
 
     handleTableOptionsUpdated() {

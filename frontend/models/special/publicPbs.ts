@@ -22,7 +22,7 @@ PublicPbs.expandTypes = [
       ...(<any>PublicPbs),
     },
     name: 'PB History',
-    excludeFilters: ['createdBy.id', 'is_current'],
+    excludeFilters: ['createdBy.id', 'isCurrent'],
     excludeHeaders: ['createdBy.name+createdBy.avatar+createdBy.id'],
     lockedFilters: (_that, item) => {
       return [

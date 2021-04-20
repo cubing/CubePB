@@ -33,6 +33,7 @@
                         ? item.fieldInfo.compoundOptions.pathPrefix
                         : item.field
                     "
+                    @submit="$emit('handleSubmit')"
                   ></component>
                   <span v-else style="white-space: break-spaces">{{
                     getNestedProperty(currentItem, item.field)

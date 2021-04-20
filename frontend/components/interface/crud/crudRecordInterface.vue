@@ -246,6 +246,7 @@
                 offset-y
                 @handle-action-click="openEditDialog"
                 @handle-expand-click="openExpandDialog(props, ...$event)"
+                @handle-custom-action-click="handleCustomActionClick"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn block text v-bind="attrs" v-on="on"> Actions </v-btn>
@@ -262,6 +263,7 @@
                   v-if="headerItem.fieldInfo.component"
                   :item="props.item"
                   :field-path="headerItem.path"
+                  @submit="reset({ resetExpanded: false })"
                 ></component>
                 <span v-else>
                   {{ getTableRowData(headerItem, props.item) }}
@@ -293,6 +295,7 @@
                 offset-x
                 @handle-action-click="openEditDialog"
                 @handle-expand-click="toggleItemExpanded(props, ...$event)"
+                @handle-custom-action-click="handleCustomActionClick"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon small v-bind="attrs" v-on="on"
@@ -307,6 +310,7 @@
                 v-if="headerItem.fieldInfo.component"
                 :item="props.item"
                 :field-path="headerItem.path"
+                @submit="reset({ resetExpanded: false })"
               ></component>
               <span v-else>
                 {{ getTableRowData(headerItem, props.item) }}
