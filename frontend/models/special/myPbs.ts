@@ -5,7 +5,6 @@ const MyPbs = <any>{
   routeName: 'i-view',
   paginationOptions: {
     ...(!!PersonalBest.paginationOptions && PersonalBest.paginationOptions),
-    downloadOptions: undefined,
   },
   enterOptions: {},
 }

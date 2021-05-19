@@ -90,7 +90,10 @@ export type RecordInfo<T extends keyof MainTypes> = {
     // custom component
     interfaceComponent?: any
     // can the results be downloaded?
-    downloadOptions?: {}
+    downloadOptions?: {
+      // custom fields to download. otherwise, the header fields will be downloaded
+      fields?: string[]
+    }
   }
 
   addOptions?: {

@@ -522,39 +522,47 @@ export default {
         // create a map field -> serializeFn for fast serialization
         const serializeMap = new Map()
 
-        const query = collapseObject(
+        // use custom download fields if provided
+        const customFields = this.recordInfo.paginationOptions.downloadOptions
+          .fields
+        const fields =
+          customFields ??
           this.recordInfo.paginationOptions.headers
             .concat(
               (this.recordInfo.requiredFields ?? []).map((field) => ({
                 field,
               }))
             )
-            .reduce(
-              (total, headerInfo) => {
-                const fieldInfo = this.recordInfo.fields[headerInfo.field]
+            .map((headerObject) => headerObject.field)
 
-                // field unknown, abort
-                if (!fieldInfo)
-                  throw new Error('Unknown field: ' + headerInfo.field)
+        if (fields.length < 1) throw new Error('No fields to export')
 
-                // if field has '+', add all of the fields
-                if (headerInfo.field.match(/\+/)) {
-                  headerInfo.field.split(/\+/).forEach((field) => {
-                    total[field] = true
-                    // assuming all fields are valid
-                    serializeMap.set(
-                      field,
-                      this.recordInfo.fields[field].serialize
-                    )
-                  })
-                } else {
-                  total[headerInfo.field] = true
-                  serializeMap.set(headerInfo.field, fieldInfo.serialize)
-                }
-                return total
-              },
-              { id: true } // always add id
-            )
+        const query = collapseObject(
+          fields.reduce(
+            (total, field) => {
+              const fieldInfo = this.recordInfo.fields[field]
+
+              // field unknown, abort
+              if (!fieldInfo) throw new Error('Unknown field: ' + field)
+
+              // if field has '+', add all of the fields
+              if (field.match(/\+/)) {
+                field.split(/\+/).forEach((field) => {
+                  total[field] = true
+                  // assuming all fields are valid
+                  serializeMap.set(
+                    field,
+                    this.recordInfo.fields[field].serialize
+                  )
+                })
+              } else {
+                total[field] = true
+                serializeMap.set(field, fieldInfo.serialize)
+              }
+              return total
+            },
+            { id: true } // always add id
+          )
         )
 
         const args = {
@@ -614,18 +622,27 @@ export default {
           })
         })
 
-        const data = results.map((item) => {
-          const returnItem = {}
-          this.headers.forEach((headerObject) => {
-            if (headerObject.value) {
-              returnItem[headerObject.value] = this.getTableRowData(
-                headerObject,
-                item
-              )
-            }
-          })
-          return returnItem
-        })
+        // extract results
+        const data = customFields
+          ? results.map((item) => {
+              const returnItem = {}
+              customFields.forEach((field) => {
+                returnItem[field] = getNestedProperty(item, field)
+              })
+              return returnItem
+            })
+          : results.map((item) => {
+              const returnItem = {}
+              this.headers.forEach((headerObject) => {
+                if (headerObject.value) {
+                  returnItem[headerObject.value] = this.getTableRowData(
+                    headerObject,
+                    item
+                  )
+                }
+              })
+              return returnItem
+            })
 
         if (data.length < 1) {
           throw new Error('No results to export')

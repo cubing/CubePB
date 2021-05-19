@@ -316,7 +316,21 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         sortable: false,
       },
     ],
-    downloadOptions: {},
+    downloadOptions: {
+      fields: [
+        'event.name',
+        'pbClass.name',
+        'setSize',
+        'timeElapsed',
+        'movesCount',
+        'attemptsSucceeded',
+        'attemptsTotal',
+        'event.scoreMethod',
+        'score',
+        'happenedOn',
+        'createdBy.name',
+      ],
+    },
   },
 
   addOptions: {
