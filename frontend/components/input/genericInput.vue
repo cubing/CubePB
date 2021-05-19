@@ -3,6 +3,59 @@
     <div v-if="item.fieldInfo.inputType === 'html'" class="pb-4">
       <wysiwyg v-model="item.value" />
     </div>
+    <!-- Files Not Supported
+    <div
+      v-else-if="item.fieldInfo.inputType === 'multiple-file'"
+      class="pb-4 text-left"
+    >
+      <v-container fluid grid-list-xs class="px-0">
+        <Draggable v-model="item.value" :disabled="item.readonly">
+          <FileChip
+            v-for="(file, index) in item.value"
+            :key="index"
+            :file="file"
+            downloadable
+            small
+            label
+            :close="!item.readonly"
+            close-icon="mdi-close-outline"
+            class="mr-2"
+            @handleCloseClick="removeFileByIndex(item, index)"
+          ></FileChip>
+        </Draggable>
+      </v-container>
+      <v-file-input
+        v-model="item.input"
+        :label="
+          (item.fieldInfo.text || item.field) +
+          (item.fieldInfo.optional ? ' (optional)' : '')
+        "
+        multiple
+        :hint="item.fieldInfo.hint"
+        persistent-hint
+        :clearable="false"
+        @change="handleMultipleFileInputChange(item)"
+      >
+        <template v-slot:selection="{ file, text }">
+          <v-chip
+            small
+            label
+            color="primary"
+            close
+            close-icon="mdi-close-outline"
+            @click:close="handleMultipleFileInputClear(item, file)"
+          >
+            {{ text }} -
+            {{
+              file.fileUploadObject
+                ? file.fileUploadObject.progress.toFixed(1)
+                : ''
+            }}%
+          </v-chip>
+        </template>
+      </v-file-input>
+    </div>
+    -->
     <div
       v-else-if="item.fieldInfo.inputType === 'multiple-image'"
       class="pb-4 text-center"
@@ -117,8 +170,12 @@
     >
       <v-avatar size="64">
         <v-img v-if="item.value" :src="item.value"></v-img>
-        <v-icon v-else>mdi-account</v-icon></v-avatar
-      >
+        <v-icon v-else>{{
+          item.fieldInfo.inputOptions
+            ? item.fieldInfo.inputOptions.fallbackIcon
+            : null
+        }}</v-icon>
+      </v-avatar>
       <v-file-input
         v-if="!item.readonly"
         v-model="item.input"
@@ -269,11 +326,51 @@
       hide-no-data
       cache-items
       class="py-0"
+      :chips="
+        item.fieldInfo.inputOptions && item.fieldInfo.inputOptions.hasAvatar
+      "
       @update:search-input="handleSearchUpdate(item)"
       @blur="item.focused = false"
       @focus="item.focused = true"
       @click:append="item.value = null"
-    ></v-combobox>
+    >
+      <template
+        v-if="
+          item.fieldInfo.inputOptions && item.fieldInfo.inputOptions.hasAvatar
+        "
+        v-slot:item="data"
+      >
+        <v-chip pill>
+          <v-avatar left>
+            <v-img
+              v-if="data.item.avatar"
+              :src="data.item.avatar"
+              contain
+            ></v-img
+            ><v-icon v-else>{{ icon }} </v-icon>
+          </v-avatar>
+          {{ data.item.name }}
+        </v-chip>
+      </template>
+      <template
+        v-if="
+          item.fieldInfo.inputOptions && item.fieldInfo.inputOptions.hasAvatar
+        "
+        v-slot:selection="data"
+      >
+        <v-chip v-bind="data.attrs" pill>
+          <v-avatar left>
+            <v-img
+              v-if="data.item.avatar"
+              :src="data.item.avatar"
+              contain
+            ></v-img
+            ><v-icon v-else>{{ icon }}</v-icon>
+          </v-avatar>
+          {{ data.item.name }}
+        </v-chip>
+      </template>
+    </v-combobox>
     <v-autocomplete
       v-else-if="item.fieldInfo.inputType === 'autocomplete'"
       v-model="item.value"
@@ -318,11 +415,51 @@
       cache-items
       return-object
       class="py-0"
+      :chips="
+        item.fieldInfo.inputOptions && item.fieldInfo.inputOptions.hasAvatar
+      "
       @update:search-input="handleSearchUpdate(item)"
       @blur="item.focused = false"
       @focus="item.focused = true"
       @click:append="item.value = null"
-    ></v-autocomplete>
+    >
+      <template
+        v-if="
+          item.fieldInfo.inputOptions && item.fieldInfo.inputOptions.hasAvatar
+        "
+        v-slot:item="data"
+      >
+        <v-chip pill>
+          <v-avatar left>
+            <v-img
+              v-if="data.item.avatar"
+              :src="data.item.avatar"
+              contain
+            ></v-img
+            ><v-icon v-else>{{ icon }} </v-icon>
+          </v-avatar>
+          {{ data.item.name }}
+        </v-chip>
+      </template>
+      <template
+        v-if="
+          item.fieldInfo.inputOptions && item.fieldInfo.inputOptions.hasAvatar
+        "
+        v-slot:selection="data"
+      >
+        <v-chip v-bind="data.attrs" pill>
+          <v-avatar left>
+            <v-img
+              v-if="data.item.avatar"
+              :src="data.item.avatar"
+              contain
+            ></v-img
+            ><v-icon v-else>{{ icon }}</v-icon>
+          </v-avatar>
+          {{ data.item.name }}
+        </v-chip>
+      </template>
+    </v-autocomplete>
     <v-select
       v-else-if="item.fieldInfo.inputType === 'select'"
       v-model="item.value"
@@ -439,12 +576,19 @@
 <script>
 import Draggable from 'vuedraggable'
 // import { uploadFile } from '~/services/file'
-import { capitalizeString, isObject, handleError } from '~/services/base'
+import {
+  capitalizeString,
+  isObject,
+  handleError,
+  getIcon,
+} from '~/services/base'
 import { executeGiraffeql } from '~/services/giraffeql'
+// import FileChip from '~/components/chip/fileChip.vue'
 
 export default {
   components: {
     Draggable,
+    // FileChip,
   },
   props: {
     item: {
@@ -456,6 +600,11 @@ export default {
   computed: {
     isReadonly() {
       return this.item.readonly
+    },
+    icon() {
+      return this.item.fieldInfo.typename
+        ? getIcon(this.item.fieldInfo.typename)
+        : null
     },
   },
   methods: {
@@ -522,18 +671,20 @@ export default {
       }
     },
 
-    /*     handleMultipleFileInputChange(inputObject) {
+    /*     handleMultipleFileInputChange(inputObject, removeFromInput = true) {
       this.$set(inputObject, 'loading', true)
 
       // inputObject.input expected to be array
       inputObject.input.forEach((currentFile) => {
         uploadFile(this, currentFile, (file) => {
-          // add finished URL to value
-          inputObject.value.push(file.fileUploadObject.servingUrl)
+          // add finished fileRecord ID to value
+          inputObject.value.push(file.fileUploadObject.fileRecord)
 
           // remove file from input
-          const index = inputObject.input.indexOf(file)
-          if (index !== -1) inputObject.input.splice(index, 1)
+          if (removeFromInput) {
+            const index = inputObject.input.indexOf(file)
+            if (index !== -1) inputObject.input.splice(index, 1)
+          }
 
           // if no files left, finish up
           if (inputObject.input.length < 1) {
@@ -545,7 +696,7 @@ export default {
           }
         })
       })
-    },
+    }, */
 
     handleSingleFileInputClear(inputObject) {
       inputObject.value = null
@@ -559,7 +710,7 @@ export default {
       inputObject.loading = false
     },
 
-    handleSingleFileInputChange(inputObject) {
+    /*     handleSingleFileInputChange(inputObject) {
       if (!inputObject.input) {
         this.handleSingleFileInputClear(inputObject)
         return

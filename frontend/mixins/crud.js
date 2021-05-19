@@ -18,6 +18,7 @@ import {
   serializeNestedProperty,
   getPaginatorData,
   collectPaginatorData,
+  getIcon,
 } from '~/services/base'
 
 export default {
@@ -83,6 +84,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    pollInterval: {
+      type: Number,
+      default: 0,
+    },
   },
 
   data() {
@@ -125,6 +130,9 @@ export default {
       },
 
       tableOptionsUpdatedTrigger: null,
+
+      pollIntervalTimer: null,
+      isPolling: false,
 
       processedUpdateSort: false,
 
@@ -265,6 +273,15 @@ export default {
   },
 
   watch: {
+    isPolling(val, prevVal) {
+      if (val === prevVal) return
+      if (val) {
+        this.startPolling()
+      } else {
+        this.stopPolling()
+      }
+    },
+
     '$vuetify.breakpoint.name'(value) {
       if (value === 'xs') {
         // when switching to mobile view, un-expand all
@@ -275,6 +292,16 @@ export default {
     // this should trigger mainly when switching routes on admin pages
     recordInfo() {
       this.recordInfoChanged = true
+      this.reset({
+        resetSubscription: true,
+        initFilters: true,
+        resetSort: true,
+        resetCursor: true,
+      })
+    },
+
+    // this should trigger if the locked filters gets updated
+    lockedFilters() {
       this.reset({
         resetSubscription: true,
         initFilters: true,
@@ -303,20 +330,61 @@ export default {
   },
 
   created() {
+    if (this.pollInterval > 0) this.isPolling = true
+
     this.reset({
       resetSubscription: true,
       initFilters: true,
       resetSort: true,
     })
+
+    document.addEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange,
+      false
+    )
   },
 
   destroyed() {
     // unsubscribe from channels on this page
     if (this.useSubscription) unsubscribeChannels(this.subscriptionChannels)
+
+    this.stopPolling()
+    document.removeEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange
+    )
   },
 
   methods: {
     generateTimeAgoString,
+    getIcon,
+
+    startPolling() {
+      // set the interval for refreshing, if pollInterval > 0 and not polling
+      if (this.pollInterval > 0 && !this.pollIntervalTimer) {
+        this.pollIntervalTimer = setInterval(() => {
+          this.reset()
+        }, this.pollInterval)
+      }
+    },
+
+    stopPolling() {
+      clearInterval(this.pollIntervalTimer)
+      this.pollIntervalTimer = null
+    },
+
+    handleVisibilityChange() {
+      if (!this.isPolling) return
+      if (document.hidden) {
+        // clear the pollIntervalTimer
+        this.stopPolling()
+      } else {
+        // start the pollIntervalTimer again
+        this.startPolling()
+      }
+    },
+
     setTableOptionsUpdatedTrigger(trigger) {
       this.tableOptionsUpdatedTrigger = trigger
     },
@@ -369,6 +437,9 @@ export default {
               node: {
                 id: true,
                 name: true,
+                ...(inputObject.fieldInfo.inputOptions?.hasAvatar && {
+                  avatar: true,
+                }),
               },
             },
             __args: {
@@ -764,8 +835,8 @@ export default {
         if (matchingInputObject) {
           // if inputType is server-X, do not apply the value unless init
           if (
-            matchingInputObject.fieldInfo.inputType !== 'server-autocomplete' &&
-            matchingInputObject.fieldInfo.inputType !== 'server-combobox'
+            matchingInputObject.inputType !== 'server-autocomplete' &&
+            matchingInputObject.inputType !== 'server-combobox'
           ) {
             matchingInputObject.value = ele.value
           }
@@ -773,9 +844,8 @@ export default {
           if (init) {
             // if inputType === 'server-X', only populate the options with the specific entry, if any
             if (
-              matchingInputObject.fieldInfo.inputType ===
-                'server-autocomplete' ||
-              matchingInputObject.fieldInfo.inputType === 'server-combobox'
+              matchingInputObject.inputType === 'server-autocomplete' ||
+              matchingInputObject.inputType === 'server-combobox'
             ) {
               matchingInputObject.value = ele.value
               if (matchingInputObject.value) {
@@ -785,6 +855,8 @@ export default {
                   )}`]: {
                     id: true,
                     name: true,
+                    ...(matchingInputObject.fieldInfo.inputOptions
+                      ?.hasAvatar && { avatar: true }),
                     __args: {
                       id: ele.value,
                     },
@@ -833,6 +905,7 @@ export default {
       resetCursor = false,
       resetExpanded = true,
       reloadData = true,
+      resetPolling = true,
     } = {}) {
       let actuallyReloadData = reloadData
 
@@ -840,6 +913,11 @@ export default {
 
       if (resetSubscription) {
         if (this.useSubscription) this.subscribeEvents()
+      }
+
+      if (resetPolling && this.isPolling) {
+        this.stopPolling()
+        this.startPolling()
       }
 
       if (initFilters) {
@@ -855,6 +933,7 @@ export default {
               fieldInfo,
               title: ele.title,
               operator: ele.operator,
+              inputType: ele.inputType ?? fieldInfo.inputType,
               options: [],
               value: null,
               loading: false,

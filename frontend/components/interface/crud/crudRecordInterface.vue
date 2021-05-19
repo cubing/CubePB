@@ -19,7 +19,7 @@
       @update:page="setTableOptionsUpdatedTrigger('page')"
     >
       <template v-slot:top>
-        <v-toolbar flat color="accent">
+        <v-toolbar flat color="accent" dense>
           <v-icon left>{{ icon || recordInfo.icon || 'mdi-domain' }}</v-icon>
           <v-toolbar-title>{{
             title || `${recordInfo.pluralName}`
@@ -34,7 +34,6 @@
             v-if="recordInfo.addOptions"
             color="primary"
             darks
-            class="mb-2"
             @click="openAddRecordDialog()"
           >
             <v-icon left>mdi-plus</v-icon>
@@ -58,6 +57,12 @@
             </template>
           </SearchDialog>
           <v-spacer></v-spacer>
+          <v-switch
+            v-if="pollInterval > 0"
+            v-model="isPolling"
+            class="mt-5"
+            label="Auto-Refresh"
+          ></v-switch>
           <v-btn
             v-if="hasFilters"
             icon
@@ -112,13 +117,13 @@
               class="py-0"
             >
               <v-switch
-                v-if="item.fieldInfo.inputType === 'switch'"
+                v-if="item.inputType === 'switch'"
                 v-model="item.value"
                 :label="item.title || item.fieldInfo.text || item.field"
                 @change="filterChanged = true"
               ></v-switch>
               <v-menu
-                v-else-if="item.fieldInfo.inputType === 'datepicker'"
+                v-else-if="item.inputType === 'datepicker'"
                 v-model="item.focused"
                 :close-on-content-click="false"
                 :nudge-right="40"
@@ -148,8 +153,8 @@
               </v-menu>
               <v-autocomplete
                 v-else-if="
-                  item.fieldInfo.inputType === 'autocomplete' ||
-                  item.fieldInfo.inputType === 'combobox'
+                  item.inputType === 'autocomplete' ||
+                  item.inputType === 'combobox'
                 "
                 v-model="item.value"
                 :items="item.options"
@@ -161,12 +166,59 @@
                 filled
                 return-object
                 class="py-0"
+                :chips="
+                  item.fieldInfo.inputOptions &&
+                  item.fieldInfo.inputOptions.hasAvatar
+                "
                 @change="filterChanged = true"
-              ></v-autocomplete>
+              >
+                <template
+                  v-if="
+                    item.fieldInfo.inputOptions &&
+                    item.fieldInfo.inputOptions.hasAvatar
+                  "
+                  v-slot:item="data"
+                >
+                  <v-chip pill>
+                    <v-avatar left>
+                      <v-img
+                        v-if="data.item.avatar"
+                        :src="data.item.avatar"
+                        contain
+                      ></v-img
+                      ><v-icon v-else>{{
+                        getIcon(item.fieldInfo.typename)
+                      }}</v-icon>
+                    </v-avatar>
+                    {{ data.item.name }}
+                  </v-chip>
+                </template>
+                <template
+                  v-if="
+                    item.fieldInfo.inputOptions &&
+                    item.fieldInfo.inputOptions.hasAvatar
+                  "
+                  v-slot:selection="data"
+                >
+                  <v-chip v-bind="data.attrs" pill>
+                    <v-avatar left>
+                      <v-img
+                        v-if="data.item.avatar"
+                        :src="data.item.avatar"
+                        contain
+                      ></v-img
+                      ><v-icon v-else
+                        >{{ getIcon(item.fieldInfo.typename) }}
+                      </v-icon>
+                    </v-avatar>
+                    {{ data.item.name }}
+                  </v-chip>
+                </template>
+              </v-autocomplete>
               <v-autocomplete
                 v-else-if="
-                  item.fieldInfo.inputType === 'server-autocomplete' ||
-                  item.fieldInfo.inputType === 'server-combobox'
+                  item.inputType === 'server-autocomplete' ||
+                  item.inputType === 'server-combobox'
                 "
                 v-model="item.value"
                 :loading="item.loading"
@@ -182,19 +234,81 @@
                 cache-items
                 return-object
                 class="py-0"
+                :chips="
+                  item.fieldInfo.inputOptions &&
+                  item.fieldInfo.inputOptions.hasAvatar
+                "
                 @update:search-input="handleSearchUpdate(item)"
                 @blur="item.focused = false"
                 @focus="item.focused = true"
                 @change="filterChanged = true"
-              ></v-autocomplete>
+              >
+                <template
+                  v-if="
+                    item.fieldInfo.inputOptions &&
+                    item.fieldInfo.inputOptions.hasAvatar
+                  "
+                  v-slot:item="data"
+                >
+                  <v-chip pill>
+                    <v-avatar left>
+                      <v-img
+                        v-if="data.item.avatar"
+                        :src="data.item.avatar"
+                        contain
+                      ></v-img
+                      ><v-icon v-else>{{
+                        getIcon(item.fieldInfo.typename)
+                      }}</v-icon>
+                    </v-avatar>
+                    {{ data.item.name }}
+                  </v-chip>
+                </template>
+                <template
+                  v-if="
+                    item.fieldInfo.inputOptions &&
+                    item.fieldInfo.inputOptions.hasAvatar
+                  "
+                  v-slot:selection="data"
+                >
+                  <v-chip v-bind="data.attrs" pill>
+                    <v-avatar left>
+                      <v-img
+                        v-if="data.item.avatar"
+                        :src="data.item.avatar"
+                        contain
+                      ></v-img
+                      ><v-icon v-else>{{
+                        getIcon(item.fieldInfo.typename)
+                      }}</v-icon>
+                    </v-avatar>
+                    {{ data.item.name }}
+                  </v-chip>
+                </template>
+              </v-autocomplete>
               <v-select
-                v-else-if="item.fieldInfo.inputType === 'select'"
+                v-else-if="item.inputType === 'select'"
                 v-model="item.value"
                 :items="item.options"
                 filled
                 :label="item.title || item.fieldInfo.text || item.field"
                 :prepend-icon="item.fieldInfo.icon"
                 clearable
+                return-object
+                item-text="name"
+                item-value="id"
+                class="py-0"
+                @change="filterChanged = true"
+              ></v-select>
+              <v-select
+                v-else-if="item.inputType === 'multiple-select'"
+                v-model="item.value"
+                :items="item.options"
+                filled
+                :label="item.title || item.fieldInfo.text || item.field"
+                :prepend-icon="item.fieldInfo.icon"
+                clearable
+                multiple
                 return-object
                 item-text="name"
                 item-value="id"

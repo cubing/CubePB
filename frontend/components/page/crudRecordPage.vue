@@ -12,8 +12,10 @@
             :hidden-headers="hiddenHeaders"
             :title="title"
             :icon="icon"
+            :poll-interval="pollInterval"
             dense
             @pageOptions-updated="handlePageOptionsUpdated"
+            @record-changed="$emit('record-changed', $event)"
           ></component>
         </v-col>
       </v-row>
@@ -54,6 +56,10 @@ export default {
     head: {
       type: Object,
       default: () => null,
+    },
+    pollInterval: {
+      type: Number,
+      default: 0,
     },
   },
   computed: {

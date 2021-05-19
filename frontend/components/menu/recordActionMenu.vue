@@ -108,7 +108,7 @@
           }}</v-icon>
         </v-list-item-icon>
         <v-list-item-title
-          >{{ expandObject.name || item.recordInfo.name }}
+          >{{ expandObject.name || expandObject.recordInfo.name }}
           <v-icon v-if="expandMode === 'openInNew'" small right
             >mdi-open-in-new</v-icon
           >

@@ -34,6 +34,9 @@ export const User = <RecordInfo<'user'>>{
     avatar: {
       text: 'Avatar URL',
       inputType: 'avatar',
+      inputOptions: {
+        fallbackIcon: 'mdi-account',
+      },
     },
     country: {
       text: 'Country',

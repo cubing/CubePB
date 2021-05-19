@@ -218,7 +218,6 @@ export default {
           this.inputs.event = this.events.find(
             (event) => event.id === eventFilterObject.value
           )
-          console.log(this.inputs.event)
         } else {
           this.inputs.event = null
         }

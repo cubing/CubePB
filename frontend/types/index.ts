@@ -30,21 +30,16 @@ export type RecordInfo<T extends keyof MainTypes> = {
         // which field should the primary field, for sort purposes
         primaryField: string
       }
-      inputType?:
-        | 'html'
-        | 'single-image'
-        | 'multiple-image'
-        | 'key-value-array'
-        | 'avatar'
-        | 'datepicker'
-        | 'switch'
-        | 'textarea'
-        | 'combobox' // combobox allows the user to add new inputs on the fly (will change to autocomplete in filter interfaces)
-        | 'server-combobox' // server-combobox allows the user to add new inputs on the fly with getOptions optional, and fetching results from server (will change to autocomplete in filter interfaces)
-        | 'autocomplete' // same as combobox but cannot add new inputs
-        | 'server-autocomplete' // if there's lots of entries, may not want to fetch all of the entries at once. getOptions will be optional
-        | 'select' // standard select
-        | 'text'
+      inputType?: InputType
+
+      // special options pertaining to the specific inputType
+      inputOptions?: {
+        // for server-autocomplete and server-combobox
+        hasAvatar?: boolean
+        // for avatar
+        fallbackIcon?: string
+      }
+
       inputRules?: any[]
       getOptions?: (that) => Promise<any[]>
       typename?: string
@@ -199,4 +194,23 @@ type FilterObject = {
 type RecordFilter<T> = {
   field: keyof T
   operator: keyof FilterByField<any>
+  inputType?: InputType
 }
+
+type InputType =
+  | 'html'
+  | 'single-image'
+  | 'multiple-image'
+  | 'multiple-file'
+  | 'key-value-array'
+  | 'avatar'
+  | 'datepicker'
+  | 'switch'
+  | 'textarea'
+  | 'combobox' // combobox allows the user to add new inputs on the fly (will change to autocomplete in filter interfaces)
+  | 'server-combobox' // server-combobox allows the user to add new inputs on the fly with getOptions optional, and fetching results from server (will change to autocomplete in filter interfaces)
+  | 'autocomplete' // same as combobox but cannot add new inputs
+  | 'server-autocomplete' // if there's lots of entries, may not want to fetch all of the entries at once. getOptions will be optional
+  | 'select' // standard select
+  | 'multiple-select' // multiple select
+  | 'text'

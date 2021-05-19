@@ -1,8 +1,13 @@
 import { format } from 'timeago.js'
 import { convertArrayToCSV } from 'convert-array-to-csv'
 import { executeGiraffeql } from '~/services/giraffeql'
+import * as models from '~/models'
 
 type StringKeyObject = { [x: string]: any }
+
+export function getIcon(typename: string) {
+  return models[capitalizeString(typename)]?.icon
+}
 
 export function generateTimeAgoString(unixTimestamp: number | null) {
   if (!unixTimestamp) return 'None'

@@ -313,68 +313,101 @@ export default {
           this.mode === 'copy' ? this.recordInfo.addOptions.fields : fields
 
         // build inputs Array
-        this.inputsArray = inputFields.map((fieldKey) => {
-          const fieldInfo = this.recordInfo.fields[fieldKey]
+        this.inputsArray = await Promise.all(
+          inputFields.map(async (fieldKey) => {
+            const fieldInfo = this.recordInfo.fields[fieldKey]
 
-          // field unknown, abort
-          if (!fieldInfo) throw new Error('Unknown field: ' + fieldKey)
+            // field unknown, abort
+            if (!fieldInfo) throw new Error('Unknown field: ' + fieldKey)
 
-          let fieldValue
+            let fieldValue
 
-          // if copy mode and fieldKey not in original fields, use default
-          if (this.mode === 'copy' && !fields.includes(fieldKey)) {
-            fieldValue = fieldInfo.default ? fieldInfo.default(this) : null
-          } else {
-            fieldValue = fieldInfo.hidden
-              ? null
-              : getNestedProperty(data, fieldKey)
-          }
+            // if copy mode and fieldKey not in original fields, use default
+            if (this.mode === 'copy' && !fields.includes(fieldKey)) {
+              fieldValue = fieldInfo.default ? fieldInfo.default(this) : null
+            } else {
+              fieldValue = fieldInfo.hidden
+                ? null
+                : getNestedProperty(data, fieldKey)
+            }
 
-          const inputObject = {
-            field: fieldKey.split(/\+/)[0],
-            fieldInfo,
-            value: fieldValue, // already serialized
-            options: [],
-            readonly:
-              this.mode === 'view'
-                ? true
-                : this.mode === 'copy'
-                ? fields.includes(fieldKey)
-                : false,
-          }
-
-          // if inputType === 'server-autocomplete', only populate the options with the specific entry, if any, and if inputObject.value not null
-          if (
-            fieldInfo.inputType === 'server-autocomplete' ||
-            fieldInfo.inputType === 'server-combobox'
-          ) {
-            inputObject.value = null // set this to null initially while the results load, to prevent console error
-            if (fieldValue) {
-              executeGiraffeql(this, {
-                [`get${capitalizeString(fieldInfo.typename)}`]: {
-                  id: true,
-                  name: true,
+            // if field is 'multiple-file' inputType, retrieve the file data from api
+            if (
+              fieldInfo.inputType === 'multiple-file' &&
+              fieldValue.length > 0
+            ) {
+              const fileData = await executeGiraffeql(this, {
+                getFilePaginator: {
+                  edges: {
+                    node: {
+                      id: true,
+                      name: true,
+                      size: true,
+                      location: true,
+                    },
+                  },
                   __args: {
-                    id: fieldValue,
+                    first: 100,
+                    filterBy: [
+                      {
+                        id: {
+                          in: fieldValue,
+                        },
+                      },
+                    ],
                   },
                 },
               })
-                .then((res) => {
-                  // change value to object
-                  inputObject.value = res
-
-                  inputObject.options = [res]
-                })
-                .catch((e) => e)
+              fieldValue = fileData.edges.map((ele) => ele.node)
             }
-          } else {
-            fieldInfo.getOptions &&
-              fieldInfo
-                .getOptions(this)
-                .then((res) => (inputObject.options = res))
-          }
-          return inputObject
-        })
+
+            const inputObject = {
+              field: fieldKey.split(/\+/)[0],
+              fieldInfo,
+              value: fieldValue, // already serialized
+              options: [],
+              readonly:
+                this.mode === 'view'
+                  ? true
+                  : this.mode === 'copy'
+                  ? fields.includes(fieldKey)
+                  : false,
+            }
+
+            // if inputType === 'server-autocomplete', only populate the options with the specific entry, if any, and if inputObject.value not null
+            if (
+              fieldInfo.inputType === 'server-autocomplete' ||
+              fieldInfo.inputType === 'server-combobox'
+            ) {
+              inputObject.value = null // set this to null initially while the results load, to prevent console error
+              if (fieldValue) {
+                executeGiraffeql(this, {
+                  [`get${capitalizeString(fieldInfo.typename)}`]: {
+                    id: true,
+                    name: true,
+                    ...(fieldInfo.inputOptions?.hasAvatar && { avatar: true }),
+                    __args: {
+                      id: fieldValue,
+                    },
+                  },
+                })
+                  .then((res) => {
+                    // change value to object
+                    inputObject.value = res
+
+                    inputObject.options = [res]
+                  })
+                  .catch((e) => e)
+              }
+            } else {
+              fieldInfo.getOptions &&
+                fieldInfo
+                  .getOptions(this)
+                  .then((res) => (inputObject.options = res))
+            }
+            return inputObject
+          })
+        )
       } catch (err) {
         handleError(this, err)
       }
@@ -443,6 +476,7 @@ export default {
                 [`get${capitalizeString(fieldInfo.typename)}`]: {
                   id: true,
                   name: true,
+                  ...(fieldInfo.inputOptions?.hasAvatar && { avatar: true }),
                   __args: {
                     id: inputObject.value,
                   },
