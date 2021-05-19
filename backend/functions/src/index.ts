@@ -1,5 +1,7 @@
 import * as functions from "firebase-functions";
 import * as express from "express";
+import * as admin from "firebase-admin";
+admin.initializeApp();
 
 import { initializeGiraffeql } from "giraffeql";
 import "./schema";

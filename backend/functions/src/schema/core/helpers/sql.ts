@@ -353,22 +353,34 @@ function applyWhere(
           break;
         case "in":
           if (Array.isArray(whereSubObject.value)) {
-            whereSubstatement += ` IN (${whereSubObject.value.map(() => "?")})`;
-            whereSubObject.value.forEach((ele) => {
-              bindings.push(ele);
-            });
+            // if array is empty, is equivalent of FALSE
+            if (whereSubObject.value.length < 1) {
+              whereSubstatement = "FALSE";
+            } else {
+              whereSubstatement += ` IN (${whereSubObject.value.map(
+                () => "?"
+              )})`;
+              whereSubObject.value.forEach((ele) => {
+                bindings.push(ele);
+              });
+            }
           } else {
             throw new Error("Must provide array for in/nin operators");
           }
           break;
         case "nin":
           if (Array.isArray(whereSubObject.value)) {
-            whereSubstatement += ` NOT IN (${whereSubObject.value.map(
-              () => "?"
-            )})`;
-            whereSubObject.value.forEach((ele) => {
-              bindings.push(ele);
-            });
+            // if array is empty, is equivalent of TRUE
+            if (whereSubObject.value.length < 1) {
+              whereSubstatement = "TRUE";
+            } else {
+              whereSubstatement += ` NOT IN (${whereSubObject.value.map(
+                () => "?"
+              )})`;
+              whereSubObject.value.forEach((ele) => {
+                bindings.push(ele);
+              });
+            }
           } else {
             throw new Error("Must provide array for in/nin operators");
           }
