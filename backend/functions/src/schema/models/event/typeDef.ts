@@ -8,6 +8,7 @@ import {
   generateStringField,
   generateTypenameField,
   generateEnumField,
+  generateTextField,
 } from "../../core/helpers/typeDef";
 import * as Scalars from "../../scalars";
 
@@ -18,6 +19,7 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
     ...generateIdField(),
     ...generateTypenameField(Event),
     name: generateStringField({ allowNull: false }),
+    description: generateTextField({ allowNull: true }),
     code: generateStringField({
       allowNull: false,
       sqlOptions: {

@@ -16,11 +16,12 @@
 
 <script>
 import ViewRecordPage from '~/components/page/viewRecordPage.vue'
-import { PublicUsers, PublicPbs } from '~/models/special'
+import { PublicUsers, PublicPbs, PublicEvents } from '~/models/special'
 
 const modelsTypeMap = {
   user: PublicUsers,
   personalBest: PublicPbs,
+  event: PublicEvents,
 }
 
 export default {

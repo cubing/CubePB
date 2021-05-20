@@ -1,6 +1,7 @@
 // Query builder (Typescript version >= 4.1.3 required)
 /* const queryResult = executeGiraffeql({
   // Start typing here to get hints
+  
 }); */
 
 export function executeGiraffeql<Key extends keyof Root>(
@@ -209,12 +210,14 @@ export type FilterByField<T> = {
   }
   createEvent: {
     name: Scalars['string']
+    description?: Scalars['string'] | null
     code: Scalars['string']
     cubingIcon?: Scalars['string'] | null
     scoreMethod: Scalars['scoreMethod']
   }
   updateEventFields: {
     name?: Scalars['string']
+    description?: Scalars['string'] | null
     code?: Scalars['string']
     cubingIcon?: Scalars['string'] | null
     scoreMethod?: Scalars['scoreMethod']
@@ -325,7 +328,7 @@ export type FilterByField<T> = {
     attemptsSucceeded?: Scalars['number'] | null
     attemptsTotal?: Scalars['number'] | null
     product?: InputTypes['product'] | null
-    happenedOn: Scalars['unixTimestamp']
+    happenedOn?: Scalars['unixTimestamp']
     timeElapsed?: Scalars['number'] | null
     movesCount?: Scalars['number'] | null
     publicComments?: Scalars['string'] | null
@@ -348,7 +351,11 @@ export type FilterByField<T> = {
   }
   apiKey: { id?: Scalars['id'] }
   'apiKeyFilterByField/id': FilterByField<Scalars['id']>
-  apiKeyFilterByObject: { id?: InputTypes['apiKeyFilterByField/id'] }
+  'apiKeyFilterByField/user.id': FilterByField<Scalars['id']>
+  apiKeyFilterByObject: {
+    id?: InputTypes['apiKeyFilterByField/id']
+    'user.id'?: InputTypes['apiKeyFilterByField/user.id']
+  }
   apiKeyPaginator: {
     first?: Scalars['number']
     last?: Scalars['number']
@@ -613,6 +620,7 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>
     Args: [Scalars['number']]
   }
   name: { Type: Scalars['string']; Args: undefined }
+  description: { Type: Scalars['string'] | null; Args: undefined }
   code: { Type: Scalars['string']; Args: undefined }
   cubingIcon: { Type: Scalars['string'] | null; Args: undefined }
   scoreMethod: { Type: Scalars['scoreMethod']; Args: undefined }

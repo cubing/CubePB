@@ -18,6 +18,10 @@ export const Event = <RecordInfo<'event'>>{
     name: {
       text: 'Name',
     },
+    description: {
+      text: 'Description',
+      inputType: 'textarea',
+    },
     'name+code': {
       text: 'Name',
       compoundOptions: {
@@ -82,13 +86,13 @@ export const Event = <RecordInfo<'event'>>{
     downloadOptions: {},
   },
   addOptions: {
-    fields: ['name', 'code', 'cubingIcon', 'scoreMethod'],
+    fields: ['name', 'description', 'code', 'cubingIcon', 'scoreMethod'],
   },
   editOptions: {
-    fields: ['name', 'code', 'cubingIcon'],
+    fields: ['name', 'description', 'code', 'cubingIcon'],
   },
   viewOptions: {
-    fields: ['name', 'code', 'cubingIcon', 'scoreMethod'],
+    fields: ['name', 'description', 'code', 'cubingIcon', 'scoreMethod'],
   },
   deleteOptions: {},
   shareOptions: undefined,
