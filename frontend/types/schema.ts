@@ -214,6 +214,8 @@ export type FilterByField<T> = {
     code: Scalars['string']
     cubingIcon?: Scalars['string'] | null
     scoreMethod: Scalars['scoreMethod']
+    isSubEvent?: Scalars['boolean']
+    isWcaEvent?: Scalars['boolean']
   }
   updateEventFields: {
     name?: Scalars['string']
@@ -221,6 +223,8 @@ export type FilterByField<T> = {
     code?: Scalars['string']
     cubingIcon?: Scalars['string'] | null
     scoreMethod?: Scalars['scoreMethod']
+    isSubEvent?: Scalars['boolean']
+    isWcaEvent?: Scalars['boolean']
   }
   updateEvent: {
     item: InputTypes['event']
@@ -624,6 +628,8 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>
   code: { Type: Scalars['string']; Args: undefined }
   cubingIcon: { Type: Scalars['string'] | null; Args: undefined }
   scoreMethod: { Type: Scalars['scoreMethod']; Args: undefined }
+  isSubEvent: { Type: Scalars['boolean']; Args: undefined }
+  isWcaEvent: { Type: Scalars['boolean']; Args: undefined }
   /**When the record was created*/ createdAt: {
     Type: Scalars['unixTimestamp']
     Args: undefined

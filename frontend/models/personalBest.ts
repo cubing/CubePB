@@ -56,7 +56,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     'event.cubingIcon': {
       text: 'Event Icon',
     },
-    'event.name+event.cubingIcon': {
+    'event.id+event.name+event.cubingIcon': {
       text: 'Event',
       compoundOptions: {
         pathPrefix: 'event',
@@ -293,7 +293,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     ],
     headers: [
       {
-        field: 'event.name+event.cubingIcon',
+        field: 'event.id+event.name+event.cubingIcon',
         width: '200px',
       },
       {
@@ -355,7 +355,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   },
   viewOptions: {
     fields: [
-      'event.name+event.cubingIcon',
+      'event.id+event.name+event.cubingIcon',
       'pbClass.name+setSize',
       'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod',
       'ranking',

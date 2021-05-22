@@ -40,6 +40,16 @@ export const Event = <RecordInfo<'event'>>{
       getOptions: getScoreMethods,
       inputType: 'select',
     },
+    isSubEvent: {
+      text: 'Sub Event',
+      inputType: 'switch',
+      parseQueryValue: (val) => val === 'true',
+    },
+    isWcaEvent: {
+      text: 'WCA Event',
+      inputType: 'switch',
+      parseQueryValue: (val) => val === 'true',
+    },
     createdAt: {
       text: 'Created At',
       component: TimeagoColumn,
@@ -56,6 +66,16 @@ export const Event = <RecordInfo<'event'>>{
       {
         field: 'name+code',
         sortable: true,
+      },
+      {
+        field: 'isSubEvent',
+        sortable: false,
+        width: '150px',
+      },
+      {
+        field: 'isWcaEvent',
+        sortable: false,
+        width: '150px',
       },
       {
         field: 'scoreMethod',
@@ -86,13 +106,29 @@ export const Event = <RecordInfo<'event'>>{
     downloadOptions: {},
   },
   addOptions: {
-    fields: ['name', 'description', 'code', 'cubingIcon', 'scoreMethod'],
+    fields: [
+      'name',
+      'description',
+      'code',
+      'cubingIcon',
+      'scoreMethod',
+      'isSubEvent',
+      'isWcaEvent',
+    ],
   },
   editOptions: {
-    fields: ['name', 'description', 'code', 'cubingIcon'],
+    fields: ['name', 'description', 'code', 'cubingIcon', 'isWcaEvent'],
   },
   viewOptions: {
-    fields: ['name', 'description', 'code', 'cubingIcon', 'scoreMethod'],
+    fields: [
+      'name',
+      'description',
+      'code',
+      'cubingIcon',
+      'scoreMethod',
+      'isSubEvent',
+      'isWcaEvent',
+    ],
   },
   deleteOptions: {},
   shareOptions: undefined,

@@ -11,7 +11,12 @@
       <template v-slot:activator="{ on }">
         <v-chip pill small v-on="on">
           <v-avatar left>
-            <span class="cubing-icon" :class="currentValue.cubingIcon"></span>
+            <span
+              v-if="currentValue.cubingIcon"
+              class="cubing-icon"
+              :class="currentValue.cubingIcon"
+            ></span>
+            <v-icon v-else>mdi-square-medium</v-icon>
           </v-avatar>
           {{ currentValue.name }}
         </v-chip>
@@ -21,7 +26,12 @@
         <v-list>
           <v-list-item>
             <v-list-item-avatar>
-              <span class="cubing-icon" :class="currentValue.cubingIcon"></span>
+              <span
+                v-if="currentValue.cubingIcon"
+                class="cubing-icon"
+                :class="currentValue.cubingIcon"
+              ></span>
+              <v-icon v-else>mdi-square-medium</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
               <template>
@@ -35,6 +45,14 @@
                     >Score Method:
                     {{ currentEvent.scoreMethod }}</v-list-item-subtitle
                   >
+                  <v-list-item-subtitle>
+                    <v-chip v-if="currentEvent.isSubEvent" small
+                      >Sub-Event</v-chip
+                    >
+                    <v-chip v-if="currentEvent.isWcaEvent" small
+                      >WCA Event</v-chip
+                    >
+                  </v-list-item-subtitle>
                 </template>
               </template>
             </v-list-item-content>
@@ -93,6 +111,8 @@ export default {
           getEvent: {
             description: true,
             scoreMethod: true,
+            isSubEvent: true,
+            isWcaEvent: true,
             __args: {
               id: this.currentValue.id,
             },

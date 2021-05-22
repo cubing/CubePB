@@ -9,6 +9,7 @@ import {
   generateTypenameField,
   generateEnumField,
   generateTextField,
+  generateBooleanField,
 } from "../../core/helpers/typeDef";
 import * as Scalars from "../../scalars";
 
@@ -36,6 +37,20 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
       scalarDefinition: Scalars.scoreMethod,
       allowNull: false,
       sqlOptions: { field: "score_method" },
+    }),
+    isSubEvent: generateBooleanField({
+      allowNull: false,
+      defaultValue: false,
+      sqlOptions: {
+        field: "is_sub_event",
+      },
+    }),
+    isWcaEvent: generateBooleanField({
+      allowNull: false,
+      defaultValue: false,
+      sqlOptions: {
+        field: "is_wca_event",
+      },
     }),
     ...generateCreatedAtField(),
     ...generateUpdatedAtField(),
