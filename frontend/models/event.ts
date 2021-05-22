@@ -44,11 +44,13 @@ export const Event = <RecordInfo<'event'>>{
       text: 'Sub Event',
       inputType: 'switch',
       parseQueryValue: (val) => val === 'true',
+      default: () => false,
     },
     isWcaEvent: {
       text: 'WCA Event',
       inputType: 'switch',
       parseQueryValue: (val) => val === 'true',
+      default: () => false,
     },
     createdAt: {
       text: 'Created At',
