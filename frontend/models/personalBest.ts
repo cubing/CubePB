@@ -1,4 +1,5 @@
 import { getEvents, getPersonalBestClasses } from '../services/dropdown'
+import { flagPersonalBest } from './actions'
 import type { RecordInfo } from '~/types'
 import TimeagoColumn from '~/components/table/common/timeagoColumn.vue'
 import UserColumn from '~/components/table/common/userColumn.vue'
@@ -237,6 +238,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       inputType: 'switch',
       parseQueryValue: (val) => val === 'true',
     },
+    isFlagged: {
+      text: 'Is Flagged',
+      inputType: 'switch',
+      parseQueryValue: (val) => val === 'true',
+    },
     'createdBy.userUserFollowLink/user.id': {},
     publicComments: {
       text: 'Public Comments',
@@ -288,6 +294,10 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       },
       {
         field: 'isCurrent',
+        operator: 'eq',
+      },
+      {
+        field: 'isFlagged',
         operator: 'eq',
       },
     ],
@@ -349,9 +359,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     component: EditPersonalBestInterface,
   },
   editOptions: {
-    fields: ['publicComments', 'product.id'],
-    icon: 'mdi-comment-edit',
-    text: 'Comments',
+    fields: ['publicComments', 'product.id', 'isFlagged'],
   },
   viewOptions: {
     fields: [
@@ -363,6 +371,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       'publicComments',
       'product.name',
       'isCurrent',
+      'isFlagged',
       'createdBy.name+createdBy.avatar+createdBy.id',
     ],
     component: ViewRecordTableInterface,
@@ -377,4 +386,12 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
   },
 
   expandTypes: [],
+
+  customActions: [
+    {
+      text: 'Flag PB',
+      icon: 'mdi-flag',
+      handleClick: flagPersonalBest,
+    },
+  ],
 }

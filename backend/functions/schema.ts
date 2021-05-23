@@ -88,7 +88,8 @@ export type FilterByField<T> = {
   /**Enum stored as a separate key value*/ userRole:
     | "NORMAL"
     | "NONE"
-    | "ADMIN";
+    | "ADMIN"
+    | "MODERATOR";
   /**Enum stored as is*/ userPermission:
     | "A_A"
     | "user_x"
@@ -98,6 +99,7 @@ export type FilterByField<T> = {
     | "user_create"
     | "user_delete"
     | "personalBest_create"
+    | "personalBest_flag"
     | "product_create"
     | "apiKey_create"
     | "userUserFollowLink_get";
@@ -307,6 +309,7 @@ export type FilterByField<T> = {
   "personalBestFilterByField/createdBy.userUserFollowLink/user.id": FilterByField<
     Scalars["id"]
   >;
+  "personalBestFilterByField/isFlagged": FilterByField<Scalars["boolean"]>;
   personalBestFilterByObject: {
     id?: InputTypes["personalBestFilterByField/id"];
     "createdBy.id"?: InputTypes["personalBestFilterByField/createdBy.id"];
@@ -318,6 +321,7 @@ export type FilterByField<T> = {
     isCurrent?: InputTypes["personalBestFilterByField/isCurrent"];
     setSize?: InputTypes["personalBestFilterByField/setSize"];
     "createdBy.userUserFollowLink/user.id"?: InputTypes["personalBestFilterByField/createdBy.userUserFollowLink/user.id"];
+    isFlagged?: InputTypes["personalBestFilterByField/isFlagged"];
   };
   personalBestPaginator: {
     first?: Scalars["number"];
@@ -343,21 +347,15 @@ export type FilterByField<T> = {
     publicComments?: Scalars["string"] | null;
   };
   updatePersonalBestFields: {
-    pbClass?: InputTypes["personalBestClass"];
-    event?: InputTypes["event"];
-    setSize?: Scalars["number"];
-    attemptsSucceeded?: Scalars["number"] | null;
-    attemptsTotal?: Scalars["number"] | null;
     product?: InputTypes["product"] | null;
-    happenedOn?: Scalars["unixTimestamp"];
-    timeElapsed?: Scalars["number"] | null;
-    movesCount?: Scalars["number"] | null;
+    isFlagged?: Scalars["boolean"];
     publicComments?: Scalars["string"] | null;
   };
   updatePersonalBest: {
     item: InputTypes["personalBest"];
     fields: InputTypes["updatePersonalBestFields"];
   };
+  flagPersonalBest: { item: InputTypes["personalBest"] };
   apiKey: { id?: Scalars["id"] };
   "apiKeyFilterByField/id": FilterByField<Scalars["id"]>;
   "apiKeyFilterByField/user.id": FilterByField<Scalars["id"]>;
@@ -710,6 +708,7 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
     Args: undefined;
   };
   isCurrent: { Type: Scalars["boolean"]; Args: undefined };
+  isFlagged: { Type: Scalars["boolean"]; Args: undefined };
   publicComments: { Type: Scalars["string"] | null; Args: undefined };
   /**The numerical score rank of this PB given its event, pbClass, and setSize, among public PBs only*/ ranking: {
     Type: Scalars["number"] | null;
@@ -807,6 +806,10 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   updatePersonalBest: {
     Type: PersonalBest;
     Args: InputTypes["updatePersonalBest"];
+  };
+  flagPersonalBest: {
+    Type: PersonalBest;
+    Args: InputTypes["flagPersonalBest"];
   };
   getApiKey: { Type: ApiKey; Args: InputTypes["apiKey"] };
   getApiKeyPaginator: {

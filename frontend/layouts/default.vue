@@ -280,6 +280,11 @@ export default {
                 operator: 'eq',
                 value: 1,
               },
+              {
+                field: 'isFlagged',
+                operator: 'eq',
+                value: false,
+              },
             ],
           }),
           loginRequired: false,

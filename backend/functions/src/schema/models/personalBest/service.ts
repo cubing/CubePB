@@ -20,6 +20,7 @@ export class PersonalBestService extends PaginatedService {
     isCurrent: {},
     setSize: {},
     "createdBy.userUserFollowLink/user.id": {},
+    isFlagged: {},
   };
 
   uniqueKeyMap = {
@@ -487,6 +488,50 @@ export class PersonalBestService extends PaginatedService {
       isAdmin,
       data,
     });
+  }
+
+  @permissionsCheck("flag")
+  async flagRecord({
+    req,
+    fieldPath,
+    args,
+    query,
+    data = {},
+    isAdmin = false,
+  }: ServiceFunctionInputs) {
+    // args should be validated already
+    const validatedArgs = <any>args;
+
+    const item = await this.lookupRecord(
+      [{ field: "id" }],
+      validatedArgs.item,
+      fieldPath
+    );
+
+    // convert any lookup/joined fields into IDs
+    await this.handleLookupArgs(validatedArgs.fields, fieldPath);
+
+    await Resolver.updateObjectType({
+      typename: this.typename,
+      id: item.id,
+      updateFields: {
+        isFlagged: true,
+        updatedAt: 1,
+      },
+      req,
+      fieldPath,
+    });
+
+    const returnData = await this.getRecord({
+      req,
+      args: { id: item.id },
+      query,
+      fieldPath,
+      isAdmin,
+      data,
+    });
+
+    return returnData;
   }
 
   @permissionsCheck("delete")

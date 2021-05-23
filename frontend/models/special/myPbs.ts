@@ -6,6 +6,11 @@ const MyPbs = <any>{
   paginationOptions: {
     ...(!!PersonalBest.paginationOptions && PersonalBest.paginationOptions),
   },
+  editOptions: {
+    fields: ['publicComments', 'product.id'],
+    icon: 'mdi-comment-edit',
+    text: 'Comments',
+  },
   enterOptions: {},
 }
 

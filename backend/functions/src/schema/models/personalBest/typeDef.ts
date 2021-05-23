@@ -35,16 +35,19 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
       sqlOptions: {
         field: "pb_class",
       },
+      typeDefOptions: { addable: true, updateable: false },
     }),
     event: generateJoinableField({
       service: Event,
       allowNull: false,
+      typeDefOptions: { addable: true, updateable: false },
     }),
     setSize: generateIntegerField({
       allowNull: false,
       sqlOptions: {
         field: "set_size",
       },
+      typeDefOptions: { addable: true, updateable: false },
     }),
     score: generateIntegerField({
       allowNull: false,
@@ -54,11 +57,13 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
       allowNull: true,
       description: "The number of successful attempts",
       sqlOptions: { field: "attempts_succeeded" },
+      typeDefOptions: { addable: true, updateable: false },
     }),
     attemptsTotal: generateIntegerField({
       allowNull: true,
       description: "The total number of attempts",
       sqlOptions: { field: "attempts_total" },
+      typeDefOptions: { addable: true, updateable: false },
     }),
     product: generateJoinableField({
       service: Product,
@@ -68,21 +73,30 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
       allowNull: false,
       defaultValue: knex.fn.now(), // not really setting via DB. default is calculated manually in the createRecord function
       sqlOptions: { field: "happened_on" },
+      typeDefOptions: { addable: true, updateable: false },
     }),
     timeElapsed: generateIntegerField({
       allowNull: true,
       description: "The amount of ms time elapsed for the pb attempt",
       sqlOptions: { field: "time_elapsed" },
+      typeDefOptions: { addable: true, updateable: false },
     }),
     movesCount: generateDecimalField({
       allowNull: true,
       description: "The amount of moves used in the pb attempt",
       sqlOptions: { field: "moves_count" },
+      typeDefOptions: { addable: true, updateable: false },
     }),
     isCurrent: generateBooleanField({
       allowNull: false,
       typeDefOptions: { addable: false, updateable: false },
       sqlOptions: { field: "is_current" },
+    }),
+    isFlagged: generateBooleanField({
+      allowNull: false,
+      defaultValue: false,
+      typeDefOptions: { addable: false, updateable: true },
+      sqlOptions: { field: "is_flagged" },
     }),
     publicComments: generateTextField({
       allowNull: true,
@@ -101,11 +115,16 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
         "pbClass.id",
         "setSize",
         "isCurrent",
+        "isFlagged",
         "createdBy.isPublic",
       ],
       async resolver({ parentValue, fieldPath }) {
-        // if not a current PB or user is not public, return null
-        if (!parentValue.isCurrent || !parentValue.createdBy.isPublic)
+        // if not a current PB or user is not public or isFlagged, return null
+        if (
+          !parentValue.isCurrent ||
+          !parentValue.createdBy.isPublic ||
+          parentValue.isFlagged
+        )
           return null;
 
         const resultsCount = await Resolver.countObjectType(
@@ -142,6 +161,11 @@ export default new GiraffeqlObjectType(<ObjectTypeDefinition>{
                 field: "isCurrent",
                 operator: "eq",
                 value: true,
+              },
+              {
+                field: "isFlagged",
+                operator: "eq",
+                value: false,
               },
             ],
           },

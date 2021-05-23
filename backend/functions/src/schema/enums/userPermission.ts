@@ -14,6 +14,10 @@ export class userPermissionEnum extends Enum {
     "personalBest_create"
   );
 
+  static readonly personalBest_flag = new userPermissionEnum(
+    "personalBest_flag"
+  );
+
   static readonly product_create = new userPermissionEnum("product_create");
 
   static readonly apiKey_create = new userPermissionEnum("apiKey_create");

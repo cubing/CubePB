@@ -71,6 +71,7 @@ export async function up(knex: Knex): Promise<void[]> {
       table.integer("time_elapsed").nullable();
       table.decimal("moves_count").nullable();
       table.boolean("is_current").notNullable();
+      table.boolean("is_flagged").notNullable().defaultTo(false);
       table.text("public_comments").nullable();
       table.dateTime("created_at").notNullable().defaultTo(knex.fn.now());
       table.dateTime("updated_at").nullable();
