@@ -30,32 +30,30 @@ app.use(async function (req, res, next) {
     } else if (req.headers.authorization) {
       req.user = await validateToken(req.headers.authorization);
     }
-
-    // handle origins -- only accepting string type origins.
-    const origin =
-      Array.isArray(allowedOrigins) && allowedOrigins.length
-        ? typeof req.headers.origin === "string" &&
-          allowedOrigins.includes(req.headers.origin)
-          ? req.headers.origin
-          : allowedOrigins[0]
-        : "*";
-
-    res.header("Access-Control-Allow-Origin", origin);
-    if (origin !== "*") {
-      res.header("Vary", "Origin");
-    }
-
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control"
-    );
-    res.header(
-      "Access-Control-Allow-Methods",
-      "PUT, POST, GET, DELETE, OPTIONS"
-    );
   } catch (err) {
     console.log(err);
   }
+
+  // handle origins -- only accepting string type origins.
+  const origin =
+    Array.isArray(allowedOrigins) && allowedOrigins.length
+      ? typeof req.headers.origin === "string" &&
+        allowedOrigins.includes(req.headers.origin)
+        ? req.headers.origin
+        : allowedOrigins[0]
+      : "*";
+
+  res.header("Access-Control-Allow-Origin", origin);
+  if (origin !== "*") {
+    res.header("Vary", "Origin");
+  }
+
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control"
+  );
+  res.header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS");
+
   next();
 });
 
