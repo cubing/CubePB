@@ -118,7 +118,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       hint: 'Type in the numbers only, the numbers will be auto-formatted',
       inputRules: [
         (value) => {
-          const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
+          const regEx = /^(\d+:)?[1-5]?\d\.\d{2}$/
           return (
             !value ||
             regEx.test(value) ||

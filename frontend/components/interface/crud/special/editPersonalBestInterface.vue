@@ -165,7 +165,7 @@ export default {
       if (!val) return
 
       // if pasted value matches the correct format, don't do anything
-      if (val.match(/^(\d+:)?\d{1,2}\.\d{2}$/)) return
+      if (val.match(/^(\d+:)?[1-5]?\d\.\d{2}$/)) return
 
       // if val is 1 or more digits only, parse
       if (val.match(/^\d+$/)) {
@@ -173,7 +173,7 @@ export default {
       }
 
       // if val is 1 digit off from a correct string, must be due to a keyboard action. parse
-      if (val.match(/^(\d+:)?\d{1,2}\.\d{1,3}$/)) {
+      if (val.match(/^(\d+:)?[1-5]?\d\.\d{1,3}$/)) {
         return this.setInputValue('timeElapsed', this.parseTimeString(val))
       }
     },
