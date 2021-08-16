@@ -118,11 +118,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       hint: 'Type in the numbers only, the numbers will be auto-formatted',
       inputRules: [
         (value) => {
-          const regEx = /^(\d+:)?[1-5]?\d\.\d{2}$/
+          const regEx = /^(\d+:)?([0-5]?\d:)?[1-5]?\d\.\d{2}$/
           return (
             !value ||
             regEx.test(value) ||
-            'Invalid Time Format, must be like 1234:56.78'
+            'Invalid Time Format, must be like 12:34:56.78'
           )
         },
       ],
@@ -130,7 +130,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       parseValue: (value) => {
         if (!value) return null
         if (typeof value !== 'string') throw new Error('Invalid value')
-        const regEx = /^(\d+:)?\d{1,2}\.\d{2}$/
+        const regEx = /^(\d+:)?([0-5]?\d:)?[1-5]?\d\.\d{2}$/
         if (!regEx.test(value)) throw new Error('Invalid value')
 
         // convert string to number of ms.

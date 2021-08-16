@@ -165,7 +165,7 @@ export default {
       if (!val) return
 
       // if pasted value matches the correct format, don't do anything
-      if (val.match(/^(\d+:)?[1-5]?\d\.\d{2}$/)) return
+      if (val.match(/^(\d+:)?([0-5]?\d:)?[1-5]?\d\.\d{2}$/)) return
 
       // if val is 1 or more digits only, parse
       if (val.match(/^\d+$/)) {
@@ -173,7 +173,7 @@ export default {
       }
 
       // if val is 1 digit off from a correct string, must be due to a keyboard action. parse
-      if (val.match(/^(\d+:)?[1-5]?\d\.\d{1,3}$/)) {
+      if (val.match(/^(\d+:)?(\d{1,2}:)?\d{1,2}\.\d{1,3}$/)) {
         return this.setInputValue('timeElapsed', this.parseTimeString(val))
       }
     },
@@ -197,7 +197,7 @@ export default {
 
     // remove : and ., then apply them at appropriate places
     parseTimeString(str) {
-      const strParts = [...str.replace(/\./, '').replace(/:/, '')]
+      const strParts = [...str.replace(/\./g, '').replace(/:/g, '')]
 
       // if length <= 2, pad with 0s so min length is 3
       while (strParts.length < 3) {
@@ -213,9 +213,20 @@ export default {
       }
 
       // if length is greater than 5, add the ":"
-      // and get rid of any leading 0s
       if (strParts.length > 5) {
         strParts.splice(-5, 0, ':')
+        // if length is less than 9, no hours, so remove any leading 0s
+        if (strParts.length < 9) {
+          while (strParts[0] === '0') {
+            strParts.shift()
+          }
+        }
+      }
+
+      // if length is greater than 8, add another ":"
+      // and get rid of any leading 0s
+      if (strParts.length > 8) {
+        strParts.splice(-8, 0, ':')
         while (strParts[0] === '0') {
           strParts.shift()
         }
