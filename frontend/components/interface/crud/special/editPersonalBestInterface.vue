@@ -165,7 +165,7 @@ export default {
       if (!val) return
 
       // if pasted value matches the correct format, don't do anything
-      if (val.match(/^(\d+:)?([0-5]?\d:)?[1-5]?\d\.\d{2}$/)) return
+      if (val.match(/^(\d+:)?([0-5]?\d:)?[0-5]?\d\.\d{2}$/)) return
 
       // if val is 1 or more digits only, parse
       if (val.match(/^\d+$/)) {
