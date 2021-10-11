@@ -232,6 +232,7 @@
         </v-file-input>
       </div>
     </div>
+    -->
     <div
       v-else-if="item.fieldInfo.inputType === 'avatar'"
       class="mb-4"
@@ -277,7 +278,6 @@
         </template>
       </v-file-input>
     </div>
-    -->
     <v-textarea
       v-else-if="item.fieldInfo.inputType === 'textarea'"
       v-model="item.value"
