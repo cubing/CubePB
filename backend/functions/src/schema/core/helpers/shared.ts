@@ -55,3 +55,16 @@ export function capitalizeString(str: string): string {
 export function lowercaseString(str: string): string {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
+
+export function objectOnlyHasFields(
+  obj: StringKeyObject,
+  fields: string[],
+  allFieldsRequired = false
+) {
+  const objKeys = Object.keys(obj);
+
+  return allFieldsRequired
+    ? objKeys.length === fields.length &&
+        objKeys.every((key) => fields.includes(key))
+    : objKeys.every((key) => fields.includes(key));
+}

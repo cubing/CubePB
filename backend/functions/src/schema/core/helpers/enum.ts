@@ -29,6 +29,16 @@ export abstract class Kenum {
     );
   }
 
+  static fromUnknown(key: unknown): Kenum {
+    if (typeof key === "number") return this.fromIndex(key);
+
+    if (typeof key === "string") return this.fromName(key);
+
+    throw new Error(
+      "Invalid key type for kenum. Only Number or String allowed"
+    );
+  }
+
   public get parsed(): number {
     return this.index;
   }

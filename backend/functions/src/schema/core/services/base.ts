@@ -5,6 +5,7 @@ import {
 } from "../../../types";
 import { userPermissionEnum } from "../../enums";
 import { lookupSymbol, GiraffeqlRootResolverType } from "giraffeql";
+import { badPermissionsError, PermissionsError } from "../helpers/error";
 
 export abstract class BaseService {
   typename: string;
@@ -85,10 +86,15 @@ export abstract class BaseService {
           : false;
       }
 
+      if (!allowed) throw badPermissionsError(fieldPath);
+
       return allowed;
-    } catch {
-      // if any error is thrown, return false
-      return false;
+    } catch (err: unknown) {
+      if (err instanceof Error && !(err instanceof PermissionsError)) {
+        throw badPermissionsError(fieldPath, err.message);
+      }
+
+      throw err;
     }
   }
 }

@@ -54,9 +54,13 @@ export type SqlWhereFieldOperator =
   | "regex"
   | "like"
   | "gt"
+  | "gtornull"
   | "gte"
+  | "gteornull"
   | "lt"
-  | "lte";
+  | "ltornull"
+  | "lte"
+  | "lteornull";
 
 export type SqlSelectQuery = {
   select: SqlSelectQueryObject[];
@@ -102,9 +106,18 @@ export type SqlDeleteQuery = {
   extendFn?: KnexExtendFunction;
 };
 
-function generateError(err: Error, fieldPath?: string[]) {
-  const errMessage = isDev ? err.message : "A SQL error has occurred";
+function generateError(err: unknown, fieldPath?: string[]) {
   console.log(err);
+
+  // double check if err is type Error
+  let errMessage: string;
+  if (err instanceof Error) {
+    errMessage = isDev ? err.message : "A SQL error has occurred";
+  } else {
+    console.log("Invalid error was thrown");
+    errMessage = "A SQL error has occurred";
+  }
+
   return new GiraffeqlBaseError({
     message: errMessage,
     fieldPath,
@@ -197,21 +210,26 @@ function processFields(relevantFields: Set<string>, table: string) {
         // set the actualFieldPart to the 2nd part
         actualFieldPart = subParts[1];
 
-        const linkTableAlias = acquireTableAlias(tableIndexMap, linkJoinType);
+        // only proceed IF the ${linkJoinType}/* is not already in the joinObject
+        const linkJoinTypeStr = linkJoinType + "/*";
+        if (!(linkJoinTypeStr in currentJoinObject)) {
+          const linkTableAlias = acquireTableAlias(tableIndexMap, linkJoinType);
 
-        // set and advance the join table
-        currentJoinObject[fieldPart] = {
-          table: linkJoinType,
-          alias: linkTableAlias,
-          field: "id",
-          joinField,
-          nested: {},
-        };
-
-        currentJoinObject = currentJoinObject[fieldPart].nested;
+          // set and advance the join table
+          currentJoinObject[linkJoinTypeStr] = {
+            table: linkJoinType,
+            alias: linkTableAlias,
+            field: "id",
+            joinField,
+            nested: {},
+          };
+        }
 
         // set currentTableAlias
-        currentTableAlias = linkTableAlias;
+        currentTableAlias = currentJoinObject[linkJoinTypeStr].alias;
+
+        // advance the join object
+        currentJoinObject = currentJoinObject[linkJoinTypeStr].nested;
       }
 
       // find the field on the currentTypeDef
@@ -327,11 +345,27 @@ function applyWhere(
             bindings.push(whereSubObject.value);
           }
           break;
+        case "gtornull":
+          if (whereSubObject.value === null) {
+            throw new Error("Can't use this operator with null");
+          } else {
+            whereSubstatement = `(${whereSubstatement} > ? OR ${whereSubstatement} IS NULL)`;
+            bindings.push(whereSubObject.value);
+          }
+          break;
         case "gte":
           if (whereSubObject.value === null) {
             throw new Error("Can't use this operator with null");
           } else {
             whereSubstatement += " >= ?";
+            bindings.push(whereSubObject.value);
+          }
+          break;
+        case "gteornull":
+          if (whereSubObject.value === null) {
+            throw new Error("Can't use this operator with null");
+          } else {
+            whereSubstatement = `(${whereSubstatement} >= ? OR ${whereSubstatement} IS NULL)`;
             bindings.push(whereSubObject.value);
           }
           break;
@@ -343,11 +377,27 @@ function applyWhere(
             bindings.push(whereSubObject.value);
           }
           break;
+        case "ltornull":
+          if (whereSubObject.value === null) {
+            throw new Error("Can't use this operator with null");
+          } else {
+            whereSubstatement = `(${whereSubstatement} < ? OR ${whereSubstatement} IS NULL)`;
+            bindings.push(whereSubObject.value);
+          }
+          break;
         case "lte":
           if (whereSubObject.value === null) {
             throw new Error("Can't use this operator with null");
           } else {
             whereSubstatement += " <= ?";
+            bindings.push(whereSubObject.value);
+          }
+          break;
+        case "lteornull":
+          if (whereSubObject.value === null) {
+            throw new Error("Can't use this operator with null");
+          } else {
+            whereSubstatement = `(${whereSubstatement} <= ? OR ${whereSubstatement} IS NULL)`;
             bindings.push(whereSubObject.value);
           }
           break;

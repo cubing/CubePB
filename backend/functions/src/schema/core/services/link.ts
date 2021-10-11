@@ -5,7 +5,10 @@ import { GiraffeqlObjectType } from "giraffeql";
 import { PaginatedService } from "./paginated";
 
 type ServicesObjectMap = {
-  [x: string]: NormalService;
+  [x: string]: {
+    allowNull?: boolean;
+    service: NormalService;
+  };
 };
 
 type JoinFieldMap = {

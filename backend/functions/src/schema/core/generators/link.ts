@@ -11,7 +11,10 @@ import {
 import { ObjectTypeDefinition, ObjectTypeDefinitionField } from "giraffeql";
 
 type ServicesObjectMap = {
-  [x: string]: NormalService;
+  [x: string]: {
+    allowNull?: boolean;
+    service: NormalService;
+  };
 };
 
 export function generateLinkTypeDef(
@@ -23,8 +26,8 @@ export function generateLinkTypeDef(
 
   for (const field in servicesObjectMap) {
     typeDefFields[field] = generateJoinableField({
-      allowNull: false,
-      service: servicesObjectMap[field],
+      service: servicesObjectMap[field].service,
+      allowNull: servicesObjectMap[field].allowNull ?? false,
       sqlOptions: { unique: "compositeIndex" },
     });
   }

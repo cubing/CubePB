@@ -113,7 +113,7 @@ export async function createObjectType({
   for (const field in addFields) {
     if (!(field in typeDef.definition.fields)) {
       throw new GiraffeqlBaseError({
-        message: `Invalid field`,
+        message: `Invalid add field: ${field}`,
         fieldPath,
       });
     }

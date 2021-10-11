@@ -81,14 +81,20 @@ export class NormalService extends BaseService {
       const uniqueKeyMap = {};
       Object.entries(this.uniqueKeyMap).forEach(([uniqueKeyName, entry]) => {
         entry.forEach((key) => {
-          const fieldType = this.getTypeDef().definition.fields[key].type;
-          if (!(fieldType instanceof GiraffeqlScalarType)) {
+          const typeDefField = this.getTypeDef().definition.fields[key];
+          if (!typeDefField) {
             throw new GiraffeqlInitializationError({
-              message: `Unique key map must lead to scalar value`,
+              message: `Unique key map field not found. Nested values not allowed`,
             });
           }
+
+          this.getTypeDef().definition.fields[key].allowNull;
           uniqueKeyMap[key] = new GiraffeqlInputFieldType({
-            type: fieldType,
+            type:
+              typeDefField.type instanceof GiraffeqlScalarType
+                ? typeDefField.type
+                : new GiraffeqlInputTypeLookup(key),
+            allowNull: typeDefField.allowNull,
           });
         });
       });
@@ -249,6 +255,7 @@ export class NormalService extends BaseService {
   }: ServiceFunctionInputs) {
     // args should be validated already
     const validatedArgs = <any>args;
+    await this.handleLookupArgs(args, fieldPath);
 
     const selectQuery = query ?? Object.assign({}, this.presets.default);
 
@@ -299,6 +306,7 @@ export class NormalService extends BaseService {
   }: ServiceFunctionInputs) {
     // args should be validated already
     const validatedArgs = <any>args;
+
     const whereObject: SqlWhereObject = {
       connective: "AND",
       fields: [],
@@ -646,12 +654,15 @@ export class NormalService extends BaseService {
 
   // looks up a record using its keys
   async lookupRecord(
-    selectFields: SqlSelectQueryObject[],
+    selectFields: string[],
     args: any,
     fieldPath: string[]
   ): Promise<any> {
     const results = await fetchTableRows({
-      select: selectFields ?? [{ field: "id" }],
+      select:
+        selectFields.length > 0
+          ? selectFields.map((field) => ({ field }))
+          : [{ field: "id" }],
       from: this.typename,
       where: {
         connective: "AND",
@@ -670,6 +681,28 @@ export class NormalService extends BaseService {
     }
 
     return results[0];
+  }
+
+  // look up multiple records
+  async lookupMultipleRecord(
+    selectFields: string[],
+    whereObject: SqlWhereObject,
+    fieldPath: string[]
+  ): Promise<any> {
+    const results = await fetchTableRows({
+      select:
+        selectFields.length > 0
+          ? selectFields.map((field) => ({ field }))
+          : [{ field: "id" }],
+      from: this.typename,
+      where: whereObject,
+    });
+
+    return results;
+  }
+
+  isEmptyQuery(query: unknown) {
+    return isObject(query) && Object.keys(query).length < 1;
   }
 
   @permissionsCheck("create")
@@ -695,36 +728,32 @@ export class NormalService extends BaseService {
       fieldPath,
     });
 
-    // args that will be compared with subscription args
-    /*     const subscriptionFilterableArgs = {
-      createdBy: req.user?.id,
-    };
-
-    handleJqlSubscriptionTriggerIterative(
-      req,
-      this,
-      this.typename + "Created",
-      subscriptionFilterableArgs,
-      { id: addResults.id }
+    // do post-create fn, if any
+    await this.afterCreateProcess(
+      {
+        req,
+        fieldPath,
+        args,
+        query,
+        data,
+        isAdmin,
+      },
+      addResults.id
     );
 
-    handleJqlSubscriptionTriggerIterative(
-      req,
-      this,
-      this.typename + "ListUpdated",
-      subscriptionFilterableArgs,
-      { id: addResults.id }
-    ); */
-
-    return this.getRecord({
-      req,
-      args: { id: addResults.id },
-      query,
-      fieldPath,
-      isAdmin,
-      data,
-    });
+    return this.isEmptyQuery(query)
+      ? {}
+      : await this.getRecord({
+          req,
+          args: { id: addResults.id },
+          query,
+          fieldPath,
+          isAdmin,
+          data,
+        });
   }
+
+  async afterCreateProcess(inputs: ServiceFunctionInputs, itemId: number) {}
 
   @permissionsCheck("update")
   async updateRecord({
@@ -738,11 +767,7 @@ export class NormalService extends BaseService {
     // args should be validated already
     const validatedArgs = <any>args;
 
-    const item = await this.lookupRecord(
-      [{ field: "id" }],
-      validatedArgs.item,
-      fieldPath
-    );
+    const item = await this.lookupRecord(["id"], validatedArgs.item, fieldPath);
 
     // convert any lookup/joined fields into IDs
     await this.handleLookupArgs(validatedArgs.fields, fieldPath);
@@ -758,17 +783,32 @@ export class NormalService extends BaseService {
       fieldPath,
     });
 
-    const returnData = await this.getRecord({
-      req,
-      args: { id: item.id },
-      query,
-      fieldPath,
-      isAdmin,
-      data,
-    });
+    // do post-update fn, if any
+    await this.afterUpdateProcess(
+      {
+        req,
+        fieldPath,
+        args,
+        query,
+        data,
+        isAdmin,
+      },
+      item.id
+    );
 
-    return returnData;
+    return this.isEmptyQuery(query)
+      ? {}
+      : await this.getRecord({
+          req,
+          args: { id: item.id },
+          query,
+          fieldPath,
+          isAdmin,
+          data,
+        });
   }
+
+  async afterUpdateProcess(inputs: ServiceFunctionInputs, itemId: number) {}
 
   @permissionsCheck("delete")
   async deleteRecord({
@@ -782,21 +822,19 @@ export class NormalService extends BaseService {
     // args should be validated already
     const validatedArgs = <any>args;
     // confirm existence of item and get ID
-    const item = await this.lookupRecord(
-      [{ field: "id" }],
-      validatedArgs,
-      fieldPath
-    );
+    const item = await this.lookupRecord(["id"], validatedArgs, fieldPath);
 
     // first, fetch the requested query, if any
-    const requestedResults = await this.getRecord({
-      req,
-      args,
-      query,
-      fieldPath,
-      isAdmin,
-      data,
-    });
+    const requestedResults = this.isEmptyQuery(query)
+      ? {}
+      : await this.getRecord({
+          req,
+          args,
+          query,
+          fieldPath,
+          isAdmin,
+          data,
+        });
 
     await Resolver.deleteObjectType({
       typename: this.typename,

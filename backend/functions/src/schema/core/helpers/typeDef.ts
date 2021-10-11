@@ -169,7 +169,10 @@ export function generateUnixTimestampField(
       parseValue: nowOnly
         ? () => knex.fn.now()
         : (value: unknown) => {
-            if (typeof value !== "number") throw 1; // should never happen
+            // if null, allow null value
+            if (value === null) return null;
+            if (typeof value !== "number")
+              throw new Error("Unix timestamp must be sent in seconds"); // should never happen
             // assuming the timestamp is being sent in seconds
             return new Date(value * 1000);
           },
@@ -784,7 +787,37 @@ export function generatePaginatorPivotResolverObject(params: {
                   required: false,
                   allowNull: false,
                 }),
+                gtornull: new GiraffeqlInputFieldType({
+                  type: currentType,
+                  required: false,
+                  allowNull: false,
+                }),
                 lt: new GiraffeqlInputFieldType({
+                  type: currentType,
+                  required: false,
+                  allowNull: false,
+                }),
+                ltornull: new GiraffeqlInputFieldType({
+                  type: currentType,
+                  required: false,
+                  allowNull: false,
+                }),
+                gte: new GiraffeqlInputFieldType({
+                  type: currentType,
+                  required: false,
+                  allowNull: false,
+                }),
+                gteornull: new GiraffeqlInputFieldType({
+                  type: currentType,
+                  required: false,
+                  allowNull: false,
+                }),
+                lte: new GiraffeqlInputFieldType({
+                  type: currentType,
+                  required: false,
+                  allowNull: false,
+                }),
+                lteornull: new GiraffeqlInputFieldType({
                   type: currentType,
                   required: false,
                   allowNull: false,
