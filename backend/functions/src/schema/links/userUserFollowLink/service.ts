@@ -1,9 +1,5 @@
 import { LinkService } from "../../core/services";
-import {
-  generateUserRoleGuard,
-  permissionsCheck,
-} from "../../core/helpers/permissions";
-import { userRoleKenum } from "../../enums";
+import { permissionsCheck } from "../../core/helpers/permissions";
 import { ServiceFunctionInputs, AccessControlMap } from "../../../types";
 import * as Resolver from "../../core/helpers/resolver";
 import { User } from "../../services";
@@ -40,11 +36,7 @@ export class UserUserFollowLinkService extends LinkService {
 
       // target must be public user
       const targetUser = await User.lookupRecord(
-        [
-          {
-            field: "isPublic",
-          },
-        ],
+        ["isPublic"],
         args.target,
         fieldPath
       );
@@ -58,15 +50,7 @@ export class UserUserFollowLinkService extends LinkService {
       if (!req.user) return false;
 
       // "user" field on the link must be current user, else deny
-      const record = await this.lookupRecord(
-        [
-          {
-            field: "user.id",
-          },
-        ],
-        args,
-        fieldPath
-      );
+      const record = await this.lookupRecord(["user.id"], args, fieldPath);
 
       if (record["user.id"] !== req.user.id) return false;
 

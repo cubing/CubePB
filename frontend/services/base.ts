@@ -6,13 +6,27 @@ import * as models from '~/models'
 type StringKeyObject = { [x: string]: any }
 
 export function getIcon(typename: string) {
-  return models[capitalizeString(typename)]?.icon
+  return models[capitalizeString(typename)]?.icon ?? null
 }
 
 export function generateTimeAgoString(unixTimestamp: number | null) {
   if (!unixTimestamp) return 'None'
 
   return format(unixTimestamp * 1000)
+}
+
+// unix timestamp to YYYY-MM-DD HH:MM:SS
+export function generateDateLocaleString(unixTimestamp: number | null) {
+  if (!unixTimestamp) return 'None'
+
+  const dateObject = new Date(unixTimestamp * 1000)
+
+  return `${dateObject.getFullYear()}-${String(
+    dateObject.getMonth() + 1
+  ).padStart(2, '0')}-${String(dateObject.getDate()).padStart(
+    2,
+    '0'
+  )} ${dateObject.toLocaleTimeString()}`
 }
 
 export function capitalizeString(str: string | undefined): string {
@@ -183,16 +197,38 @@ export function downloadCSV(
 
 export function handleError(that, err) {
   if (that) {
+    // error thrown by server
     if (err.response && err.response.data.error.message) {
       that.$notifier.showSnackbar({
-        message: err.response.data.error.message,
+        message: `${
+          err.response.data.error.message
+        } at [${err.response.data.error.fieldPath
+          .filter((ele) => ele !== '__args')
+          .join('-')}]`,
         variant: 'error',
+        copyableMessage: JSON.stringify(
+          {
+            ...err.response.data.error,
+            payload: err.response.config.data,
+          },
+          null,
+          2
+        ),
       })
       console.log(err.response.data.error)
     } else {
+      // error thrown on client side
       that.$notifier.showSnackbar({
         message: err.message,
         variant: 'error',
+        copyableMessage: JSON.stringify(
+          {
+            message: err.message,
+            stack: err.stack,
+          },
+          null,
+          2
+        ),
       })
       console.log(err)
     }
@@ -299,4 +335,59 @@ export async function collectPaginatorData(
   }
 
   return allResults
+}
+
+export function setInputValue(inputObjectsArray, key, value) {
+  const inputObject = inputObjectsArray.find((ele) => ele.field === key)
+  if (!inputObject) throw new Error(`Input key not found: '${key}'`)
+
+  inputObject.value = value
+}
+
+export function getInputValue(inputObjectsArray, key) {
+  const inputObject = inputObjectsArray.find((ele) => ele.field === key)
+  if (!inputObject) throw new Error(`Input key not found: '${key}'`)
+  return inputObject.value
+}
+
+export function getInputObject(inputObjectsArray, key) {
+  const inputObject = inputObjectsArray.find((ele) => ele.field === key)
+  if (!inputObject) throw new Error(`Input key not found: '${key}'`)
+  return inputObject
+}
+
+export function convertCSVToJSON(text: string) {
+  let p = ''
+  let l
+  let row = ['']
+  const ret = [row]
+  let i = 0
+  let r = 0
+  let s = !0
+
+  for (l of text) {
+    if (l === '"') {
+      if (s && l === p) row[i] += l
+      s = !s
+    } else if (l === ',' && s) l = row[++i] = ''
+    else if (l === '\n' && s) {
+      if (p === '\r') row[i] = row[i].slice(0, -1)
+      row = ret[++r] = [(l = '')]
+      i = 0
+    } else row[i] += l
+    p = l
+  }
+  const objArray: StringKeyObject[] = []
+  const headers = ret[0]
+  for (let k = 1; k < ret.length; k++) {
+    const o = {}
+    let hasUndefined = false
+    for (let j = 0; j < headers.length; j++) {
+      o[headers[j]] = ret[k][j]
+      if (ret[k][j] === undefined) hasUndefined = true
+    }
+    // not pushing rows where at least one column is undefined
+    if (!hasUndefined) objArray.push(o)
+  }
+  return objArray
 }

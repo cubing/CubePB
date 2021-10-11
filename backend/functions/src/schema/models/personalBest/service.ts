@@ -49,11 +49,7 @@ export class PersonalBestService extends PaginatedService {
     get: async ({ args, fieldPath }) => {
       // check the createdBy.isPublic to see if true
       const result = await this.lookupRecord(
-        [
-          {
-            field: "createdBy.isPublic",
-          },
-        ],
+        ["createdBy.isPublic"],
         args,
         fieldPath
       );
@@ -99,11 +95,7 @@ export class PersonalBestService extends PaginatedService {
 
       // must be creator of the PB to update it
       const result = await this.lookupRecord(
-        [
-          {
-            field: "createdBy.id",
-          },
-        ],
+        ["createdBy.id"],
         args.item,
         fieldPath
       );
@@ -112,15 +104,7 @@ export class PersonalBestService extends PaginatedService {
 
     delete: async ({ req, args, fieldPath }) => {
       // must be creator of the PB to delete it
-      const result = await this.lookupRecord(
-        [
-          {
-            field: "createdBy.id",
-          },
-        ],
-        args,
-        fieldPath
-      );
+      const result = await this.lookupRecord(["createdBy.id"], args, fieldPath);
       return req.user?.id === result["createdBy.id"];
     },
   };
@@ -502,11 +486,7 @@ export class PersonalBestService extends PaginatedService {
     // args should be validated already
     const validatedArgs = <any>args;
 
-    const item = await this.lookupRecord(
-      [{ field: "id" }],
-      validatedArgs.item,
-      fieldPath
-    );
+    const item = await this.lookupRecord(["id"], validatedArgs.item, fieldPath);
 
     // convert any lookup/joined fields into IDs
     await this.handleLookupArgs(validatedArgs.fields, fieldPath);
@@ -547,15 +527,7 @@ export class PersonalBestService extends PaginatedService {
     const validatedArgs = <any>args;
     // confirm existence of item and get ID
     const item = await this.lookupRecord(
-      [
-        { field: "id" },
-        { field: "event" },
-        { field: "pbClass" },
-        { field: "setSize" },
-        { field: "createdBy" },
-        { field: "isCurrent" },
-        { field: "happenedOn" },
-      ],
+      ["id", "pbClass", "setSize", "createdBy", "isCurrent", "happenedOn"],
       validatedArgs,
       fieldPath
     );

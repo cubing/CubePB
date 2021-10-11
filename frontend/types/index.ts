@@ -37,7 +37,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
         // for server-autocomplete and server-combobox
         hasAvatar?: boolean
         // for avatar
-        fallbackIcon?: string
+        // fallbackIcon?: string
       }
 
       inputRules?: any[]
@@ -57,6 +57,8 @@ export type RecordInfo<T extends keyof MainTypes> = {
       parseValue?: (val: unknown) => unknown
       // for crudRecordPage. parsing the query params
       parseQueryValue?: (val: unknown) => unknown
+      // for parsing CSV imports
+      parseImportValue?: (val: unknown) => unknown
       component?: any // component for rendering the field in table
     }
   }
@@ -97,6 +99,15 @@ export type RecordInfo<T extends keyof MainTypes> = {
   }
 
   addOptions?: {
+    // required: fields that can be added
+    fields: string[]
+    // custom component
+    component?: any
+    // if not createX, the custom create operation name
+    operationName?: string
+  }
+
+  importOptions?: {
     // required: fields that can be added
     fields: string[]
     // custom component
@@ -182,7 +193,7 @@ export type RecordInfo<T extends keyof MainTypes> = {
   customActions?: {
     text: string
     icon: string
-
+    showIf?: (that, item) => boolean
     handleClick: (that, item) => void
   }[]
 }
@@ -196,6 +207,7 @@ type FilterObject = {
 
 type RecordFilter<T> = {
   field: keyof T
+  title?: string
   operator: keyof FilterByField<any>
   inputType?: InputType
 }
@@ -204,6 +216,7 @@ type InputType =
   | 'html'
   | 'single-image'
   | 'multiple-image'
+  | 'multiple-media'
   | 'multiple-file'
   | 'key-value-array'
   | 'avatar'

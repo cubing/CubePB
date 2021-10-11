@@ -6,6 +6,9 @@ import {
   handleError,
   isObject,
   serializeNestedProperty,
+  setInputValue,
+  getInputValue,
+  getInputObject,
 } from '~/services/base'
 import GenericInput from '~/components/input/genericInput.vue'
 
@@ -24,6 +27,11 @@ export default {
       required: true,
     },
 
+    // custom fields that will override add/edit/view options on recordInfo
+    customFields: {
+      type: Array,
+    },
+
     // must be add, edit, view, or copy
     mode: {
       type: String,
@@ -37,6 +45,21 @@ export default {
     dialogMode: {
       type: Boolean,
       default: false,
+    },
+
+    generation: {
+      type: Number,
+      default: 0,
+    },
+
+    hiddenFields: {
+      type: Array,
+      default: () => [],
+    },
+
+    // the fields to return with handleSubmit, if any
+    returnFields: {
+      type: Object,
     },
   },
   data() {
@@ -61,6 +84,10 @@ export default {
   },
 
   computed: {
+    isLoading() {
+      return this.loading.loadRecord || this.loading.loadDropdowns
+    },
+
     capitalizedType() {
       return capitalizeString(this.recordInfo.typename)
     },
@@ -82,11 +109,29 @@ export default {
         ? 'mdi-pencil'
         : 'mdi-eye'
     },
+
+    visibleInputsArray() {
+      return this.hiddenFields.length
+        ? this.inputsArray.filter(
+            (inputObject) => !this.hiddenFields.includes(inputObject.field)
+          )
+        : this.inputsArray
+    },
+
+    /*     currentItem() {
+      return {
+        type: this.recordInfo.typename,
+        id: this.selectedItem.id,
+      }
+    }, */
   },
 
   watch: {
     selectedItem() {
       this.reset(true)
+    },
+    generation() {
+      this.reset()
     },
   },
 
@@ -96,22 +141,15 @@ export default {
 
   methods: {
     setInputValue(key, value) {
-      const inputObject = this.inputsArray.find((ele) => ele.field === key)
-      if (!inputObject) throw new Error(`Input key not found: '${key}'`)
-
-      inputObject.value = value
+      return setInputValue(this.inputsArray, key, value)
     },
 
     getInputValue(key) {
-      const inputObject = this.inputsArray.find((ele) => ele.field === key)
-      if (!inputObject) throw new Error(`Input key not found: '${key}'`)
-      return inputObject.value
+      return getInputValue(this.inputsArray, key)
     },
 
     getInputObject(key) {
-      const inputObject = this.inputsArray.find((ele) => ele.field === key)
-      if (!inputObject) throw new Error(`Input key not found: '${key}'`)
-      return inputObject
+      return getInputObject(this.inputsArray, key)
     },
 
     handleSubmit() {
@@ -211,6 +249,7 @@ export default {
             [this.recordInfo.addOptions.operationName ??
             'create' + this.capitalizedType]: {
               id: true,
+              ...this.returnFields,
               __args: collapseObject(inputs),
             },
           }
@@ -219,6 +258,7 @@ export default {
             [this.recordInfo.editOptions.operationName ??
             'update' + this.capitalizedType]: {
               id: true,
+              ...this.returnFields,
               __args: {
                 item: {
                   id: this.selectedItem.id,
@@ -240,6 +280,10 @@ export default {
         })
 
         this.$emit('handleSubmit', data)
+        this.$emit('close')
+
+        // reset inputs
+        this.resetInputs()
       } catch (err) {
         handleError(this, err)
       }
@@ -253,13 +297,15 @@ export default {
         const serializeMap = new Map()
 
         const fields =
-          this.mode === 'copy'
+          this.customFields ??
+          (this.mode === 'copy'
             ? this.recordInfo.copyOptions.fields
             : this.mode === 'edit'
             ? this.recordInfo.editOptions.fields
-            : this.recordInfo.viewOptions.fields
+            : this.recordInfo.viewOptions.fields)
         const data = await executeGiraffeql(this, {
           ['get' + this.capitalizedType]: {
+            __typename: true,
             ...collapseObject(
               fields.reduce(
                 (total, fieldKey) => {
@@ -312,9 +358,12 @@ export default {
         const inputFields =
           this.mode === 'copy' ? this.recordInfo.addOptions.fields : fields
 
+        // keep track of promises relating to dropdowns/options
+        const dropdownPromises = []
+
         // build inputs Array
         this.inputsArray = await Promise.all(
-          inputFields.map(async (fieldKey) => {
+          inputFields.map((fieldKey) => {
             const fieldInfo = this.recordInfo.fields[fieldKey]
 
             // field unknown, abort
@@ -331,39 +380,11 @@ export default {
                 : getNestedProperty(data, fieldKey)
             }
 
-            // if field is 'multiple-file' inputType, retrieve the file data from api
-            if (
-              fieldInfo.inputType === 'multiple-file' &&
-              fieldValue.length > 0
-            ) {
-              const fileData = await executeGiraffeql(this, {
-                getFilePaginator: {
-                  edges: {
-                    node: {
-                      id: true,
-                      name: true,
-                      size: true,
-                      location: true,
-                    },
-                  },
-                  __args: {
-                    first: 100,
-                    filterBy: [
-                      {
-                        id: {
-                          in: fieldValue,
-                        },
-                      },
-                    ],
-                  },
-                },
-              })
-              fieldValue = fileData.edges.map((ele) => ele.node)
-            }
-
             const inputObject = {
               field: fieldKey.split(/\+/)[0],
+              fieldKey,
               fieldInfo,
+              recordInfo: this.recordInfo,
               value: fieldValue, // already serialized
               options: [],
               readonly:
@@ -372,6 +393,7 @@ export default {
                   : this.mode === 'copy'
                   ? fields.includes(fieldKey)
                   : false,
+              generation: 0,
             }
 
             // if inputType === 'server-autocomplete', only populate the options with the specific entry, if any, and if inputObject.value not null
@@ -381,33 +403,42 @@ export default {
             ) {
               inputObject.value = null // set this to null initially while the results load, to prevent console error
               if (fieldValue) {
-                executeGiraffeql(this, {
-                  [`get${capitalizeString(fieldInfo.typename)}`]: {
-                    id: true,
-                    name: true,
-                    ...(fieldInfo.inputOptions?.hasAvatar && { avatar: true }),
-                    __args: {
-                      id: fieldValue,
+                dropdownPromises.push(
+                  executeGiraffeql(this, {
+                    [`get${capitalizeString(fieldInfo.typename)}`]: {
+                      id: true,
+                      name: true,
+                      ...(fieldInfo.inputOptions?.hasAvatar && {
+                        avatar: true,
+                      }),
+                      __args: {
+                        id: fieldValue,
+                      },
                     },
-                  },
-                })
-                  .then((res) => {
-                    // change value to object
-                    inputObject.value = res
-
-                    inputObject.options = [res]
                   })
-                  .catch((e) => e)
+                    .then((res) => {
+                      // change value to object
+                      inputObject.value = res
+
+                      inputObject.options = [res]
+                    })
+                    .catch((e) => e)
+                )
               }
             } else {
               fieldInfo.getOptions &&
-                fieldInfo
-                  .getOptions(this)
-                  .then((res) => (inputObject.options = res))
+                dropdownPromises.push(
+                  fieldInfo
+                    .getOptions(this)
+                    .then((res) => (inputObject.options = res))
+                )
             }
             return inputObject
           })
         )
+
+        // wait for all dropdown-related promises to complete
+        await Promise.all(dropdownPromises)
       } catch (err) {
         handleError(this, err)
       }
@@ -421,6 +452,22 @@ export default {
       this.loadMiscDropdowns && this.loadMiscDropdowns()
 
       this.loading.loadDropdowns = false
+    },
+
+    resetInputs() {
+      this.inputsArray.forEach((inputObject) => {
+        const fieldInfo = this.recordInfo.fields[inputObject.fieldKey]
+
+        // field unknown, abort
+        if (!fieldInfo)
+          throw new Error('Unknown field: ' + inputObject.fieldKey)
+
+        if (inputObject.fieldKey in this.selectedItem) {
+          inputObject.value = this.selectedItem[inputObject.fieldKey]
+        } else {
+          inputObject.value = fieldInfo.default ? fieldInfo.default(this) : null
+        }
+      })
     },
 
     reset(hardReset = false) {
@@ -456,13 +503,16 @@ export default {
 
           const inputObject = {
             field: fieldKey,
+            fieldKey,
             fieldInfo,
+            recordInfo: this.recordInfo,
             value,
             options: [],
             readonly,
             loading: false,
             input: null,
             focused: false,
+            generation: 0,
           }
 
           // if server-autocomplete and readonly, load only the specific entry

@@ -33,7 +33,6 @@
           <v-btn
             v-if="recordInfo.addOptions"
             color="primary"
-            darks
             @click="openAddRecordDialog()"
           >
             <v-icon left>mdi-plus</v-icon>
@@ -77,6 +76,13 @@
             </v-badge>
           </v-btn>
           <v-btn
+            v-if="recordInfo.importOptions"
+            icon
+            @click="openImportRecordDialog()"
+          >
+            <v-icon>mdi-upload</v-icon>
+          </v-btn>
+          <v-btn
             v-if="recordInfo.paginationOptions.downloadOptions"
             icon
             :loading="loading.exportData"
@@ -84,7 +90,11 @@
           >
             <v-icon>mdi-download</v-icon>
           </v-btn>
-          <v-btn icon @click="syncFilters() || reset()">
+          <v-btn
+            :loading="loading.loadData || loading.syncData"
+            icon
+            @click="syncFilters() || reset()"
+          >
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
           <slot name="header-action"></slot>
@@ -116,214 +126,11 @@
               lg="3"
               class="py-0"
             >
-              <v-switch
-                v-if="item.inputType === 'switch'"
-                v-model="item.value"
-                :label="item.title || item.fieldInfo.text || item.field"
-                @change="filterChanged = true"
-              ></v-switch>
-              <v-menu
-                v-else-if="item.inputType === 'datepicker'"
-                v-model="item.focused"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="item.value"
-                    :label="item.title || item.fieldInfo.text || item.field"
-                    clearable
-                    filled
-                    autocomplete="off"
-                    v-bind="attrs"
-                    v-on="on"
-                    @change="filterChanged = true"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="item.value"
-                  color="primary"
-                  no-title
-                  @input="item.focused = false"
-                  @change="filterChanged = true"
-                ></v-date-picker>
-              </v-menu>
-              <v-autocomplete
-                v-else-if="
-                  item.inputType === 'autocomplete' ||
-                  item.inputType === 'combobox'
-                "
-                v-model="item.value"
-                :items="item.options"
-                item-text="name"
-                item-value="id"
-                :label="item.title || item.fieldInfo.text || item.field"
-                :prepend-icon="item.fieldInfo.icon"
-                clearable
-                filled
-                return-object
-                class="py-0"
-                :chips="
-                  item.fieldInfo.inputOptions &&
-                  item.fieldInfo.inputOptions.hasAvatar
-                "
-                @change="filterChanged = true"
-              >
-                <template
-                  v-if="
-                    item.fieldInfo.inputOptions &&
-                    item.fieldInfo.inputOptions.hasAvatar
-                  "
-                  v-slot:item="data"
-                >
-                  <v-chip pill>
-                    <v-avatar left>
-                      <v-img
-                        v-if="data.item.avatar"
-                        :src="data.item.avatar"
-                        contain
-                      ></v-img
-                      ><v-icon v-else>{{
-                        getIcon(item.fieldInfo.typename)
-                      }}</v-icon>
-                    </v-avatar>
-                    {{ data.item.name }}
-                  </v-chip>
-                </template>
-                <template
-                  v-if="
-                    item.fieldInfo.inputOptions &&
-                    item.fieldInfo.inputOptions.hasAvatar
-                  "
-                  v-slot:selection="data"
-                >
-                  <v-chip v-bind="data.attrs" pill>
-                    <v-avatar left>
-                      <v-img
-                        v-if="data.item.avatar"
-                        :src="data.item.avatar"
-                        contain
-                      ></v-img
-                      ><v-icon v-else
-                        >{{ getIcon(item.fieldInfo.typename) }}
-                      </v-icon>
-                    </v-avatar>
-                    {{ data.item.name }}
-                  </v-chip>
-                </template>
-              </v-autocomplete>
-              <v-autocomplete
-                v-else-if="
-                  item.inputType === 'server-autocomplete' ||
-                  item.inputType === 'server-combobox'
-                "
-                v-model="item.value"
-                :loading="item.loading"
-                :search-input.sync="item.search"
-                :items="item.options"
-                item-text="name"
-                item-value="id"
-                :label="item.title || item.fieldInfo.text || item.field"
-                :prepend-icon="item.fieldInfo.icon"
-                clearable
-                filled
-                hide-no-data
-                cache-items
-                return-object
-                class="py-0"
-                :chips="
-                  item.fieldInfo.inputOptions &&
-                  item.fieldInfo.inputOptions.hasAvatar
-                "
-                @update:search-input="handleSearchUpdate(item)"
-                @blur="item.focused = false"
-                @focus="item.focused = true"
-                @change="filterChanged = true"
-              >
-                <template
-                  v-if="
-                    item.fieldInfo.inputOptions &&
-                    item.fieldInfo.inputOptions.hasAvatar
-                  "
-                  v-slot:item="data"
-                >
-                  <v-chip pill>
-                    <v-avatar left>
-                      <v-img
-                        v-if="data.item.avatar"
-                        :src="data.item.avatar"
-                        contain
-                      ></v-img
-                      ><v-icon v-else>{{
-                        getIcon(item.fieldInfo.typename)
-                      }}</v-icon>
-                    </v-avatar>
-                    {{ data.item.name }}
-                  </v-chip>
-                </template>
-                <template
-                  v-if="
-                    item.fieldInfo.inputOptions &&
-                    item.fieldInfo.inputOptions.hasAvatar
-                  "
-                  v-slot:selection="data"
-                >
-                  <v-chip v-bind="data.attrs" pill>
-                    <v-avatar left>
-                      <v-img
-                        v-if="data.item.avatar"
-                        :src="data.item.avatar"
-                        contain
-                      ></v-img
-                      ><v-icon v-else>{{
-                        getIcon(item.fieldInfo.typename)
-                      }}</v-icon>
-                    </v-avatar>
-                    {{ data.item.name }}
-                  </v-chip>
-                </template>
-              </v-autocomplete>
-              <v-select
-                v-else-if="item.inputType === 'select'"
-                v-model="item.value"
-                :items="item.options"
-                filled
-                :label="item.title || item.fieldInfo.text || item.field"
-                :prepend-icon="item.fieldInfo.icon"
-                clearable
-                return-object
-                item-text="name"
-                item-value="id"
-                class="py-0"
-                @change="filterChanged = true"
-              ></v-select>
-              <v-select
-                v-else-if="item.inputType === 'multiple-select'"
-                v-model="item.value"
-                :items="item.options"
-                filled
-                :label="item.title || item.fieldInfo.text || item.field"
-                :prepend-icon="item.fieldInfo.icon"
-                clearable
-                multiple
-                return-object
-                item-text="name"
-                item-value="id"
-                class="py-0"
-                @change="filterChanged = true"
-              ></v-select>
-              <v-text-field
-                v-else
-                v-model="item.value"
-                :label="item.title || item.fieldInfo.text || item.field"
-                :prepend-icon="item.fieldInfo.icon"
-                filled
-                clearable
-                @change="filterChanged = true"
-              ></v-text-field>
+              <GenericFilterInput
+                :item="item"
+                @handle-submit="updatePageOptions"
+                @handle-input="filterChanged = true"
+              ></GenericFilterInput>
             </v-col>
           </v-row>
           <v-toolbar v-if="filterChanged" dense flat color="transparent">
@@ -382,6 +189,7 @@
                     :item="props.item"
                     :field-path="headerItem.path"
                     @submit="reset({ resetExpanded: false })"
+                    @item-updated="reset({ resetExpanded: false })"
                   ></component>
                   <span v-else>
                     {{ getTableRowData(headerItem, props.item) }}
@@ -426,6 +234,7 @@
             <span v-else-if="headerItem.value === 'rank'">
               {{ renderRank(props.index) }}
             </span>
+
             <span v-else>
               <component
                 :is="headerItem.fieldInfo.component"
@@ -433,6 +242,7 @@
                 :item="props.item"
                 :field-path="headerItem.path"
                 @submit="reset({ resetExpanded: false })"
+                @item-updated="reset({ resetExpanded: false })"
               ></component>
               <span v-else>
                 {{ getTableRowData(headerItem, props.item) }}
@@ -475,6 +285,7 @@
       :mode="dialogs.editMode"
       @close="dialogs.editRecord = false"
       @handleSubmit="handleListChange()"
+      @item-updated="handleListChange()"
     ></EditRecordDialog>
     <v-dialog v-model="dialogs.expandRecord">
       <component
@@ -516,7 +327,6 @@ export default {
   name: 'CrudRecordInterface',
 
   mixins: [crudMixin],
-
   data() {
     return {
       rankIndex: null,

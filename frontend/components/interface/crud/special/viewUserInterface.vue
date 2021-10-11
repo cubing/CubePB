@@ -27,7 +27,12 @@
                 >{{ item.value ? 'Following' : 'Follow' }}</v-btn
               >
             </div>
-            <GenericInput v-else :item="item"></GenericInput>
+            <GenericInput
+              v-else
+              :item="item"
+              :parent-item="currentItem"
+              @handle-submit="handleSubmit()"
+            ></GenericInput>
           </v-col>
         </v-row>
       </v-container>

@@ -2,15 +2,10 @@
   <v-card flat>
     <slot name="toolbar"></slot>
     <v-card-text :class="{ 'max-height': dialogMode }" class="pt-3">
-      <v-container
-        v-if="loading.loadRecord || loading.loadDropdowns"
-        class="text-center"
-        style="height: 250px"
-        fill-height
-        justify-center
-      >
-        <v-progress-circular indeterminate></v-progress-circular>
-      </v-container>
+      <CircularLoader
+        v-if="isLoading"
+        style="min-height: 250px"
+      ></CircularLoader>
       <v-container v-else class="text-left">
         <v-row>
           <v-col
@@ -32,14 +27,12 @@
                 "
               ></component>
             </div>
-
-            <GenericInput v-else :item="item"></GenericInput>
+            <GenericInput v-else :item="item" :mode="mode"></GenericInput>
           </v-col>
         </v-row>
       </v-container>
     </v-card-text>
-
-    <v-card-actions>
+    <v-card-actions v-if="!isLoading">
       <v-spacer></v-spacer>
       <slot name="footer-action"></slot>
       <v-btn
@@ -56,8 +49,13 @@
 
 <script>
 import editRecordInterfaceMixin from '~/mixins/editRecordInterface'
+import CircularLoader from '~/components/common/circularLoader.vue'
 
 export default {
+  components: {
+    CircularLoader,
+  },
+
   mixins: [editRecordInterfaceMixin],
 }
 </script>

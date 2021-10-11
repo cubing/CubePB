@@ -5,9 +5,13 @@
       v-if="status"
       :selected-item="selectedItem"
       :record-info="recordInfo"
+      :custom-fields="customFields"
       :mode="computedMode"
       dialog-mode
+      :generation="generation"
       @handleSubmit="handleSubmit"
+      @close="close()"
+      @item-updated="$emit('item-updated')"
     >
       <template v-slot:toolbar>
         <v-toolbar flat color="accent">
@@ -17,13 +21,14 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <RecordActionMenu
-            v-if="computedMode !== 'add'"
+            v-if="computedMode !== 'add' && computedMode !== 'import'"
             :record-info="recordInfo"
             :item="selectedItem"
             expand-mode="openInNew"
             left
             offset-x
             @handle-action-click="openEditDialog"
+            @handle-custom-action-click="handleCustomActionClick"
           ></RecordActionMenu>
           <v-btn icon @click="close()">
             <v-icon>mdi-close</v-icon>
@@ -39,6 +44,7 @@
 
 <script>
 import EditRecordInterface from '~/components/interface/crud/editRecordInterface.vue'
+import ImportRecordInterface from '~/components/interface/crud/importRecordInterface.vue'
 import ViewRecordInterface from '~/components/interface/crud/viewRecordInterface.vue'
 import DeleteRecordInterface from '~/components/interface/crud/deleteRecordInterface.vue'
 import ShareRecordInterface from '~/components/interface/crud/shareRecordInterface.vue'
@@ -49,6 +55,11 @@ const modesMap = {
     icon: 'mdi-plus',
     prefix: 'New',
     defaultInterface: EditRecordInterface,
+  },
+  import: {
+    icon: 'mdi-upload',
+    prefix: 'Import',
+    defaultInterface: ImportRecordInterface,
   },
   copy: {
     icon: 'mdi-content-copy',
@@ -97,15 +108,36 @@ export default {
       required: true,
     },
 
-    // must be add, edit, or view
+    // custom fields that will override add/edit/view options on recordInfo
+    customFields: {
+      type: Array,
+    },
+
+    // this OR specialMode must be provided
     mode: {
       type: String,
-      required: true,
       validator: (value) => {
-        return ['add', 'edit', 'view', 'delete', 'copy', 'share'].includes(
-          value
-        )
+        return [
+          'add',
+          'import',
+          'edit',
+          'view',
+          'delete',
+          'copy',
+          'share',
+        ].includes(value)
       },
+    },
+
+    /*
+      {
+        icon: 'mdi-share-variant',
+        prefix: 'Share',
+        defaultInterface: ShareRecordInterface,
+      },
+    */
+    specialMode: {
+      type: Object,
     },
 
     component: {
@@ -115,6 +147,7 @@ export default {
   data() {
     return {
       overrideMode: null,
+      generation: 0,
     }
   },
 
@@ -123,18 +156,22 @@ export default {
       return this.overrideMode ?? this.mode
     },
 
+    modeObject() {
+      return this.specialMode ?? modesMap[this.computedMode]
+    },
+
     interfaceComponent() {
-      return (
-        this.recordInfo[this.computedMode + 'Options']?.component ??
-        modesMap[this.computedMode].defaultInterface
-      )
+      return this.specialMode
+        ? this.modeObject.defaultInterface
+        : this.recordInfo[this.computedMode + 'Options']?.component ??
+            this.modeObject.defaultInterface
     },
 
     title() {
-      return modesMap[this.computedMode].prefix + ' ' + this.recordInfo.name
+      return this.modeObject.prefix + ' ' + this.recordInfo.name
     },
     icon() {
-      return modesMap[this.computedMode].icon
+      return this.modeObject.icon
     },
   },
 
@@ -155,13 +192,17 @@ export default {
       this.overrideMode = mode
     },
 
+    handleCustomActionClick(actionObject, item) {
+      actionObject.handleClick(this, item)
+    },
+
     handleSubmit(data) {
-      this.close()
       this.$emit('handleSubmit', data)
     },
 
     reset() {
       this.overrideMode = null
+      this.generation++
     },
   },
 }

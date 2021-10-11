@@ -32,15 +32,7 @@ export class ApiKeyService extends PaginatedService {
       if (!req.user) return false;
 
       // "user" field on the link must be current user, else deny
-      const record = await this.lookupRecord(
-        [
-          {
-            field: "user.id",
-          },
-        ],
-        args,
-        fieldPath
-      );
+      const record = await this.lookupRecord(["user.id"], args, fieldPath);
 
       if (record["user.id"] !== req.user.id) return false;
 
@@ -69,15 +61,7 @@ export class ApiKeyService extends PaginatedService {
       if (!req.user) return false;
 
       // "user" field on the link must be current user, else deny
-      const record = await this.lookupRecord(
-        [
-          {
-            field: "user.id",
-          },
-        ],
-        args.item,
-        fieldPath
-      );
+      const record = await this.lookupRecord(["user.id"], args.item, fieldPath);
 
       if (record["user.id"] !== req.user.id) return false;
 
@@ -90,15 +74,7 @@ export class ApiKeyService extends PaginatedService {
       if (!req.user) return false;
 
       // "user" field on the link must be current user, else deny
-      const record = await this.lookupRecord(
-        [
-          {
-            field: "user.id",
-          },
-        ],
-        args,
-        fieldPath
-      );
+      const record = await this.lookupRecord(["user.id"], args, fieldPath);
 
       if (record["user.id"] !== req.user.id) return false;
 

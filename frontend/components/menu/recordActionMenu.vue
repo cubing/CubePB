@@ -78,12 +78,10 @@
         </v-list-item-icon>
         <v-list-item-title>Delete</v-list-item-title>
       </v-list-item>
-      <template
-        v-if="recordInfo.customActions && recordInfo.customActions.length > 0"
-      >
+      <template v-if="customActions.length > 0">
         <v-divider></v-divider>
         <v-list-item
-          v-for="(actionObject, i) in recordInfo.customActions"
+          v-for="(actionObject, i) in customActions"
           :key="'ca' + i"
           dense
           @click="handleCustomActionClick(actionObject)"
@@ -151,6 +149,16 @@ export default {
     return {
       status: false,
     }
+  },
+
+  computed: {
+    customActions() {
+      return this.recordInfo.customActions
+        ? this.recordInfo.customActions.filter((customAction) =>
+            customAction.showIf ? customAction.showIf(this, this.item) : true
+          )
+        : []
+    },
   },
 
   methods: {

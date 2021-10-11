@@ -6,6 +6,7 @@ import { unsubscribeChannels } from '~/services/pusher'
 import EditRecordDialog from '~/components/dialog/editRecordDialog.vue'
 import SearchDialog from '~/components/dialog/searchDialog.vue'
 import RecordActionMenu from '~/components/menu/recordActionMenu.vue'
+import GenericFilterInput from '~/components/input/genericFilterInput.vue'
 import {
   collapseObject,
   getNestedProperty,
@@ -28,6 +29,7 @@ export default {
     EditRecordDialog,
     SearchDialog,
     RecordActionMenu,
+    GenericFilterInput,
   },
 
   props: {
@@ -110,8 +112,11 @@ export default {
 
       loading: {
         loadData: false,
+        syncData: false,
         exportData: false,
       },
+
+      reloadGeneration: 0,
 
       // has the recordInfo been changed?
       recordInfoChanged: false,
@@ -133,6 +138,7 @@ export default {
 
       pollIntervalTimer: null,
       isPolling: false,
+      inactivityTimer: null,
 
       processedUpdateSort: false,
 
@@ -185,7 +191,7 @@ export default {
     },
     visibleFiltersArray() {
       return this.filterInputsArray.filter(
-        (ele) => !this.hiddenFilters.includes(ele.field)
+        (ele) => !this.hiddenFilters.includes(ele.filterInfo.field)
       )
     },
     visibleRawFiltersArray() {
@@ -330,7 +336,9 @@ export default {
   },
 
   created() {
-    if (this.pollInterval > 0) this.isPolling = true
+    if (this.pollInterval > 0) {
+      this.isPolling = true
+    }
 
     this.reset({
       resetSubscription: true,
@@ -360,18 +368,42 @@ export default {
     generateTimeAgoString,
     getIcon,
 
+    resetInactivityTimer(startInactivityTimer = true) {
+      clearTimeout(this.inactivityTimer)
+      if (startInactivityTimer)
+        this.inactivityTimer = setTimeout(
+          this.handleInactiveState,
+          30 * 60 * 1000
+        )
+    },
+
+    handleInactiveState() {
+      console.log('you are now inactive')
+      // when inactive for more than 30 mins, pause polling.
+      this.isPolling = false
+    },
+
     startPolling() {
       // set the interval for refreshing, if pollInterval > 0 and not polling
       if (this.pollInterval > 0 && !this.pollIntervalTimer) {
         this.pollIntervalTimer = setInterval(() => {
-          this.reset()
+          this.reset({
+            showLoader: false,
+            clearRecords: false,
+          })
         }, this.pollInterval)
+
+        document.addEventListener('mousemove', this.resetInactivityTimer, false)
+        document.addEventListener('keydown', this.resetInactivityTimer, false)
       }
     },
 
     stopPolling() {
       clearInterval(this.pollIntervalTimer)
       this.pollIntervalTimer = null
+
+      document.removeEventListener('mousemove', this.resetInactivityTimer)
+      document.removeEventListener('keydown', this.resetInactivityTimer)
     },
 
     handleVisibilityChange() {
@@ -379,9 +411,13 @@ export default {
       if (document.hidden) {
         // clear the pollIntervalTimer
         this.stopPolling()
+        // stop checking for inactive state
+        this.resetInactivityTimer(false)
       } else {
         // start the pollIntervalTimer again
         this.startPolling()
+        // start checking for inactivity again
+        this.resetInactivityTimer(true)
       }
     },
 
@@ -414,49 +450,6 @@ export default {
         }
         this.tableOptionsUpdatedTrigger = null
       })
-    },
-
-    handleSearchUpdate(inputObject) {
-      if (!inputObject.search || !inputObject.focused) return
-
-      // cancel pending call, if any
-      clearTimeout(this._timerId)
-
-      // delay new call 500ms
-      this._timerId = setTimeout(() => {
-        this.loadSearchResults(inputObject)
-      }, 500)
-    },
-
-    async loadSearchResults(inputObject) {
-      inputObject.loading = true
-      try {
-        const results = await executeGiraffeql(this, {
-          [`get${capitalizeString(inputObject.fieldInfo.typename)}Paginator`]: {
-            edges: {
-              node: {
-                id: true,
-                name: true,
-                ...(inputObject.fieldInfo.inputOptions?.hasAvatar && {
-                  avatar: true,
-                }),
-              },
-            },
-            __args: {
-              first: 20,
-              search: inputObject.search,
-              filterBy: inputObject.fieldInfo.lookupFilters
-                ? inputObject.fieldInfo.lookupFilters(this)
-                : [],
-            },
-          },
-        })
-
-        inputObject.options = results.edges.map((edge) => edge.node)
-      } catch (err) {
-        handleError(this, err)
-      }
-      inputObject.loading = false
     },
 
     // expanded
@@ -537,33 +530,35 @@ export default {
 
         if (fields.length < 1) throw new Error('No fields to export')
 
-        const query = collapseObject(
-          fields.reduce(
-            (total, field) => {
-              const fieldInfo = this.recordInfo.fields[field]
+        const query = {
+          ...collapseObject(
+            fields.reduce(
+              (total, field) => {
+                const fieldInfo = this.recordInfo.fields[field]
 
-              // field unknown, abort
-              if (!fieldInfo) throw new Error('Unknown field: ' + field)
+                // field unknown, abort
+                if (!fieldInfo) throw new Error('Unknown field: ' + field)
 
-              // if field has '+', add all of the fields
-              if (field.match(/\+/)) {
-                field.split(/\+/).forEach((field) => {
+                // if field has '+', add all of the fields
+                if (field.match(/\+/)) {
+                  field.split(/\+/).forEach((field) => {
+                    total[field] = true
+                    // assuming all fields are valid
+                    serializeMap.set(
+                      field,
+                      this.recordInfo.fields[field].serialize
+                    )
+                  })
+                } else {
                   total[field] = true
-                  // assuming all fields are valid
-                  serializeMap.set(
-                    field,
-                    this.recordInfo.fields[field].serialize
-                  )
-                })
-              } else {
-                total[field] = true
-                serializeMap.set(field, fieldInfo.serialize)
-              }
-              return total
-            },
-            { id: true } // always add id
-          )
-        )
+                  serializeMap.set(field, fieldInfo.serialize)
+                }
+                return total
+              },
+              { id: true, __typename: true } // always add id and typename
+            )
+          ),
+        }
 
         const args = {
           [this.positivePageDelta ? 'first' : 'last']: this.options
@@ -588,7 +583,13 @@ export default {
               if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
 
               // parse '__null' to null first
-              const value = ele.value === '__null' ? null : ele.value
+              // also parse '__now()' to current date string
+              const value =
+                ele.value === '__null'
+                  ? null
+                  : ele.value === '__now()'
+                  ? new Date().toISOString()
+                  : ele.value
 
               // apply parseValue function, if any
               total[ele.field][ele.operator] = fieldInfo.parseValue
@@ -669,8 +670,8 @@ export default {
               filterObject.value !== null && filterObject.value !== undefined
           )
           .map((filterObject) => ({
-            field: filterObject.field,
-            operator: filterObject.operator,
+            field: filterObject.filterInfo.field,
+            operator: filterObject.filterInfo.operator,
             // if object, must be from return-object. get the id
             value: isObject(filterObject.value)
               ? filterObject.value.id
@@ -690,6 +691,16 @@ export default {
       })
 
       this.openEditDialog('add', initializedRecord)
+    },
+
+    openImportRecordDialog() {
+      const initializedRecord = {}
+
+      this.lockedFilters.forEach((lockedFilter) => {
+        initializedRecord[lockedFilter.field] = lockedFilter.value
+      })
+
+      this.openEditDialog('import', initializedRecord)
     },
 
     openEditDialog(mode, selectedItem) {
@@ -713,46 +724,49 @@ export default {
       }
     },
 
-    async loadData() {
-      this.loading.loadData = true
+    async loadData(showLoader = true, currentReloadGeneration) {
+      this.loading.syncData = true
+      if (showLoader) this.loading.loadData = true
       try {
         // create a map field -> serializeFn for fast serialization
         const serializeMap = new Map()
 
-        const query = collapseObject(
-          this.recordInfo.paginationOptions.headers
-            .concat(
-              (this.recordInfo.requiredFields ?? []).map((field) => ({
-                field,
-              }))
-            )
-            .reduce(
-              (total, headerInfo) => {
-                const fieldInfo = this.recordInfo.fields[headerInfo.field]
+        const query = {
+          ...collapseObject(
+            this.recordInfo.paginationOptions.headers
+              .concat(
+                (this.recordInfo.requiredFields ?? []).map((field) => ({
+                  field,
+                }))
+              )
+              .reduce(
+                (total, headerInfo) => {
+                  const fieldInfo = this.recordInfo.fields[headerInfo.field]
 
-                // field unknown, abort
-                if (!fieldInfo)
-                  throw new Error('Unknown field: ' + headerInfo.field)
+                  // field unknown, abort
+                  if (!fieldInfo)
+                    throw new Error('Unknown field: ' + headerInfo.field)
 
-                // if field has '+', add all of the fields
-                if (headerInfo.field.match(/\+/)) {
-                  headerInfo.field.split(/\+/).forEach((field) => {
-                    total[field] = true
-                    // assuming all fields are valid
-                    serializeMap.set(
-                      field,
-                      this.recordInfo.fields[field].serialize
-                    )
-                  })
-                } else {
-                  total[headerInfo.field] = true
-                  serializeMap.set(headerInfo.field, fieldInfo.serialize)
-                }
-                return total
-              },
-              { id: true } // always add id
-            )
-        )
+                  // if field has '+', add all of the fields
+                  if (headerInfo.field.match(/\+/)) {
+                    headerInfo.field.split(/\+/).forEach((field) => {
+                      total[field] = true
+                      // assuming all fields are valid
+                      serializeMap.set(
+                        field,
+                        this.recordInfo.fields[field].serialize
+                      )
+                    })
+                  } else {
+                    total[headerInfo.field] = true
+                    serializeMap.set(headerInfo.field, fieldInfo.serialize)
+                  }
+                  return total
+                },
+                { id: true, __typename: true } // always add id, typename
+              )
+          ),
+        }
 
         const args = {
           [this.positivePageDelta ? 'first' : 'last']: this.options
@@ -777,7 +791,13 @@ export default {
               if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
 
               // parse '__null' to null first
-              const value = ele.value === '__null' ? null : ele.value
+              // also parse '__now()' to current date string
+              const value =
+                ele.value === '__null'
+                  ? null
+                  : ele.value === '__now()'
+                  ? new Date().toISOString()
+                  : ele.value
 
               // apply parseValue function, if any
               total[ele.field][ele.operator] = fieldInfo.parseValue
@@ -798,6 +818,9 @@ export default {
           args
         )
 
+        // if reloadGeneration is behind the latest one, end execution early, as the loadData request has been superseded
+        if (currentReloadGeneration < this.reloadGeneration) return
+
         // remove any undefined serializeMap elements
         serializeMap.forEach((val, key) => {
           if (val === undefined) serializeMap.delete(key)
@@ -816,7 +839,8 @@ export default {
       } catch (err) {
         handleError(this, err)
       }
-      this.loading.loadData = false
+      this.loading.syncData = false
+      if (showLoader) this.loading.loadData = false
     },
 
     async subscribeEvents() {
@@ -846,7 +870,8 @@ export default {
       this.filters.forEach((ele) => {
         const matchingInputObject = this.filterInputsArray.find(
           (input) =>
-            input.field === ele.field && input.operator === ele.operator
+            input.filterInfo.field === ele.field &&
+            input.filterInfo.operator === ele.operator
         )
 
         if (matchingInputObject) {
@@ -883,7 +908,7 @@ export default {
                     // change value to object
                     matchingInputObject.value = res
 
-                    matchingInputObject.options.push(res)
+                    matchingInputObject.options = [res]
                   })
                   .catch((e) => e)
               }
@@ -923,10 +948,14 @@ export default {
       resetExpanded = true,
       reloadData = true,
       resetPolling = true,
+      showLoader = true,
+      clearRecords = true,
     } = {}) {
+      this.reloadGeneration++
+
       let actuallyReloadData = reloadData
 
-      if (actuallyReloadData) this.records = []
+      if (actuallyReloadData && clearRecords) this.records = []
 
       if (resetSubscription) {
         if (this.useSubscription) this.subscribeEvents()
@@ -946,16 +975,15 @@ export default {
             if (!fieldInfo) throw new Error('Unknown field: ' + ele.field)
 
             const filterObject = {
-              field: ele.field,
               fieldInfo,
-              title: ele.title,
-              operator: ele.operator,
+              filterInfo: ele,
               inputType: ele.inputType ?? fieldInfo.inputType,
               options: [],
               value: null,
               loading: false,
-              search: null,
+              input: null,
               focused: false,
+              readonly: false,
             }
 
             fieldInfo.getOptions &&
@@ -1023,7 +1051,7 @@ export default {
       }
 
       if (actuallyReloadData) {
-        this.loadData()
+        this.loadData(showLoader, this.reloadGeneration)
       }
     },
   },

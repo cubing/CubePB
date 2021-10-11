@@ -23,8 +23,12 @@ export const Github = new GithubService();
 
 export const UserUserFollowLink = new UserUserFollowLinkService(
   {
-    user: User,
-    target: User,
+    user: {
+      service: User,
+    },
+    target: {
+      service: User,
+    },
   },
   {
     user: "target",

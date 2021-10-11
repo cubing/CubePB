@@ -29,7 +29,7 @@
               mode="view"
             >
               <template v-slot:toolbar>
-                <v-toolbar flat color="accent">
+                <v-toolbar flat color="accent" dense>
                   <v-icon left>{{ recordInfo.icon || 'mdi-domain' }}</v-icon>
                   <v-toolbar-title>
                     {{ recordInfo.name }}
@@ -44,6 +44,7 @@
                     left
                     offset-x
                     @handle-action-click="openEditDialog"
+                    @handle-custom-action-click="handleCustomActionClick"
                     @handle-expand-click="handleExpandClick"
                   ></RecordActionMenu>
                 </v-toolbar>
@@ -219,6 +220,10 @@ export default {
 
     handleExpandClick(_expandTypeObject, index) {
       this.toggleExpand(index)
+    },
+
+    handleCustomActionClick(actionObject, item) {
+      actionObject.handleClick(this, item)
     },
 
     toggleExpand(index) {
