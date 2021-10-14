@@ -64,6 +64,7 @@ import {
   handleError,
   collapseObject,
   capitalizeString,
+  serializeNestedProperty,
 } from '~/services/base'
 import CircularLoader from '~/components/common/circularLoader.vue'
 

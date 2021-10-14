@@ -176,7 +176,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'Date Happened',
       optional: true,
       hint:
-        'Leave this blank to set to current date. To specify the exact date and time, use format: YYYY-MM-DD 1:23 PM',
+        'Leave this blank to set to current date. To specify the exact date and time, use format: YYYY-MM-DD 1:23:45 PM',
       inputType: 'datepicker',
       // default to today.
       /*       default: () => {
@@ -193,20 +193,58 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       serialize: (val: number) =>
         val && new Date(val * 1000).toISOString().substring(0, 10),
       // YYYY-MM-DD to unix timestamp
-      parseValue: (val: string) => {
+      parseValue: (val: string): number => {
         // if falsey, default to current unix timestamp
         if (!val) return new Date().getTime() / 1000
 
         let dateString = val
 
-        // if only date specified, automatically append current time
-        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-          const currentDate = new Date()
+        let year, month, day, hours, minutes, seconds
 
-          dateString += ` ${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`
+        if (
+          !dateString.match(
+            /^\d{4}-\d{2}-\d{2}(\s\d{1,2}:\d{2}(:\d{2})?(\s(AM|PM))?)?$/
+          )
+        ) {
+          throw new Error('Invalid date format for Date Happened')
         }
 
-        const msTimestamp = new Date(dateString).getTime()
+        const dateParts = dateString.split(/-|:|\s/)
+
+        // required
+        year = Number(dateParts[0])
+        month = Number(dateParts[1]) - 1
+        day = Number(dateParts[2])
+
+        // optional
+        hours = Number(dateParts[3]) || null
+        minutes = Number(dateParts[4]) || null
+        seconds = Number(dateParts[5]) || null
+
+        // if PM, add 12 to hours
+        if (dateParts[6] === 'PM') hours += 12
+
+        if (hours > 23) throw new Error('Hours cannot be more than 23')
+
+        // if hours missing, automatically append current HH/MM/SS
+        if (hours === undefined) {
+          const currentDate = new Date()
+          hours = currentDate.getHours()
+          minutes = currentDate.getMinutes()
+          seconds = currentDate.getSeconds()
+        }
+
+        const msTimestamp = new Date(
+          year,
+          month,
+          day,
+          hours,
+          minutes,
+          seconds
+        ).getTime()
+
+        console.log(year, month, day, hours, minutes, seconds)
+
         // date cannot be to far in the future
         if (msTimestamp > new Date().getTime() + 1000 * 60 * 60 * 24) {
           throw new Error(`Date Happened cannot be in the future`)
