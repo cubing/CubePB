@@ -527,7 +527,15 @@ export class PersonalBestService extends PaginatedService {
     const validatedArgs = <any>args;
     // confirm existence of item and get ID
     const item = await this.lookupRecord(
-      ["id", "pbClass", "setSize", "createdBy", "isCurrent", "happenedOn"],
+      [
+        "id",
+        "pbClass",
+        "setSize",
+        "createdBy",
+        "isCurrent",
+        "happenedOn",
+        "event",
+      ],
       validatedArgs,
       fieldPath
     );

@@ -75,6 +75,7 @@ export default {
         })
 
         this.$emit('handleSubmit', data)
+        this.$emit('close')
       } catch (err) {
         handleError(this, err)
       }
