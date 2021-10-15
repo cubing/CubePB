@@ -243,8 +243,6 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
           seconds
         ).getTime()
 
-        console.log(year, month, day, hours, minutes, seconds)
-
         // date cannot be to far in the future
         if (msTimestamp > new Date().getTime() + 1000 * 60 * 60 * 24) {
           throw new Error(`Date Happened cannot be in the future`)
