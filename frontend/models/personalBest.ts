@@ -430,6 +430,11 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     {
       text: 'Flag PB',
       icon: 'mdi-flag',
+      showIf: (that, _item) => {
+        return ['ADMIN', 'MODERATOR'].includes(
+          that.$store.getters['auth/user']?.role
+        )
+      },
       handleClick: flagPersonalBest,
     },
   ],
