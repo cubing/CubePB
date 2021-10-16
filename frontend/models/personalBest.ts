@@ -6,6 +6,7 @@ import UserColumn from '~/components/table/common/userColumn.vue'
 import EventColumn from '~/components/table/common/eventColumn.vue'
 import ResultColumn from '~/components/table/common/resultColumn.vue'
 import PbTypeColumn from '~/components/table/common/pbTypeColumn.vue'
+import BooleanColumn from '~/components/table/common/booleanColumn.vue'
 import { serializeTime } from '~/services/base'
 import EditPersonalBestInterface from '~/components/interface/crud/special/editPersonalBestInterface.vue'
 import ViewRecordTableInterface from '~/components/interface/crud/viewRecordTableInterface.vue'
@@ -72,7 +73,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
         primaryField: 'setSize',
       },
     },
-    'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod': {
+    'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod+isFlagged': {
       text: 'Result',
       compoundOptions: {
         primaryField: 'score',
@@ -273,11 +274,13 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       text: 'Is Current PB',
       inputType: 'switch',
       parseQueryValue: (val) => val === 'true',
+      component: BooleanColumn,
     },
     isFlagged: {
       text: 'Is Flagged',
       inputType: 'switch',
       parseQueryValue: (val) => val === 'true',
+      component: BooleanColumn,
     },
     'createdBy.userUserFollowLink/user.id': {},
     publicComments: {
@@ -348,7 +351,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
       },
       {
         field:
-          'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod',
+          'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod+isFlagged',
         sortable: true,
         width: '150px',
         align: 'right',
@@ -401,7 +404,7 @@ export const PersonalBest = <RecordInfo<'personalBest'>>{
     fields: [
       'event.id+event.name+event.cubingIcon',
       'pbClass.name+setSize',
-      'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod',
+      'score+timeElapsed+movesCount+attemptsSucceeded+attemptsTotal+event.scoreMethod+isFlagged',
       'ranking',
       'happenedOn',
       'publicComments',

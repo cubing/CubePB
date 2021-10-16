@@ -1,6 +1,19 @@
 <template>
   <div v-if="currentValue">
     {{ renderedResult }}
+    <v-tooltip v-if="currentValue.isFlagged" bottom>
+      <template v-slot:activator="{ on, attrs }">
+        <v-icon small color="pink" v-bind="attrs" v-on="on">mdi-alert</v-icon>
+      </template>
+      <span
+        >A moderator has flagged this PB as suspicious.
+        <br />
+        For the PB creator: If it was mistakenly entered, please delete it and
+        re-enter the correct time.
+        <br />If you believe this was flagged in error, please contact us at
+        hello@cubepb.com with supporting evidence.</span
+      >
+    </v-tooltip>
   </div>
 </template>
 

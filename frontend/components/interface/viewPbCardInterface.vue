@@ -429,6 +429,7 @@ export default {
             attemptsSucceeded: true,
             attemptsTotal: true,
             setSize: true,
+            isFlagged: true,
             pbClass: {
               id: true,
               name: true,
