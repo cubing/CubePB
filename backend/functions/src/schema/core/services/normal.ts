@@ -28,7 +28,7 @@ import {
 
 import { ServiceFunctionInputs } from "../../../types";
 
-import { btoa, isObject } from "../helpers/shared";
+import { btoa, escapeRegExp, isObject } from "../helpers/shared";
 
 export type FieldObject = {
   field?: string;
@@ -351,7 +351,7 @@ export class NormalService extends BaseService {
       for (const prop in this.searchFieldsMap) {
         whereSubObject.fields.push({
           field: this.searchFieldsMap[prop].field ?? prop,
-          value: new RegExp(validatedArgs.search, "i"),
+          value: new RegExp(escapeRegExp(validatedArgs.search), "i"),
           operator: "regex",
         });
       }
@@ -426,7 +426,7 @@ export class NormalService extends BaseService {
       for (const prop in this.searchFieldsMap) {
         whereSubObject.fields.push({
           field: this.searchFieldsMap[prop].field ?? prop,
-          value: new RegExp(validatedArgs.search, "i"),
+          value: new RegExp(escapeRegExp(validatedArgs.search), "i"),
           operator: "regex",
         });
       }

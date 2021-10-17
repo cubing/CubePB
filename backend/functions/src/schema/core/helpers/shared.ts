@@ -56,6 +56,10 @@ export function lowercaseString(str: string): string {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
+export function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // escape regexp
+}
+
 export function objectOnlyHasFields(
   obj: StringKeyObject,
   fields: string[],
