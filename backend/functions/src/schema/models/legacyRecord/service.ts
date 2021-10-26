@@ -27,7 +27,7 @@ export class LegacyRecordService extends PaginatedService {
     - Email is not a requested field
     */
     get: async ({ query }) => {
-      if (query.email) return false;
+      if (query?.email) return false;
 
       return true;
     },
@@ -37,7 +37,7 @@ export class LegacyRecordService extends PaginatedService {
     - Email is not a requested field
     */
     getMultiple: ({ query }) => {
-      if (query.email) return false;
+      if (query?.email) return false;
 
       return true;
     },
