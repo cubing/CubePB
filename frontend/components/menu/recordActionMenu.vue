@@ -23,7 +23,7 @@
         </v-list-item-title>
       </v-list-item>
       <v-list-item
-        v-if="recordInfo.shareOptions && !hideView"
+        v-if="recordInfo.viewOptions && !hideView"
         key="view"
         @click="openEditDialog('view')"
       >

@@ -62,7 +62,7 @@ export type ServiceFunctionInputs = {
   req: Request;
   fieldPath: string[];
   args: any;
-  query?: unknown;
+  query?: any;
   data?: any;
   isAdmin?: boolean;
 };

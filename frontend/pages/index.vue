@@ -35,9 +35,12 @@
             </p>
             <p>
               If you saved your PBs on the previous version of CubePB and need
-              to get access to your PB data, please email hello@cubepb.com with
-              the email address associated with your old CubePB.com account, and
-              we'll try to recover the data for you in a spreadsheet format.
+              to get access to your PB data, please go to the
+              <nuxt-link to="/legacy-record-lookup"
+                >Legacy Record Lookup</nuxt-link
+              >
+              page, where you can lookup your old CubePB records using your
+              email address.
             </p>
             <p>
               CubePB.com is made possible with support from

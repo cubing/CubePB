@@ -7,6 +7,7 @@ import { EventService } from "./models/event/service";
 import { ProductService } from "./models/product/service";
 import { PersonalBestClassService } from "./models/personalBestClass/service";
 import { PersonalBestService } from "./models/personalBest/service";
+import { LegacyRecordService } from "./models/legacyRecord/service";
 import { GithubService } from "./models/github/service";
 import { ApiKeyService } from "./models/apiKey/service";
 
@@ -18,6 +19,7 @@ export const Product = new ProductService();
 export const Auth = new AuthService();
 export const PersonalBestClass = new PersonalBestClassService();
 export const PersonalBest = new PersonalBestService();
+export const LegacyRecord = new LegacyRecordService();
 export const ApiKey = new ApiKeyService();
 export const Github = new GithubService();
 

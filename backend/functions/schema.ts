@@ -123,6 +123,8 @@ export type FilterByField<T> = {
     | "happenedOn"
     | "isCurrent";
   personalBestGroupByKey: undefined;
+  legacyRecordSortByKey: "id";
+  legacyRecordGroupByKey: undefined;
   apiKeySortByKey: "id" | "createdAt";
   apiKeyGroupByKey: undefined;
   userUserFollowLinkSortByKey: "createdAt";
@@ -356,6 +358,49 @@ export type FilterByField<T> = {
     fields: InputTypes["updatePersonalBestFields"];
   };
   flagPersonalBest: { item: InputTypes["personalBest"] };
+  legacyRecord: { id?: Scalars["id"] };
+  "legacyRecordFilterByField/id": FilterByField<Scalars["id"]>;
+  "legacyRecordFilterByField/email": FilterByField<Scalars["string"]>;
+  legacyRecordFilterByObject: {
+    id?: InputTypes["legacyRecordFilterByField/id"];
+    email?: InputTypes["legacyRecordFilterByField/email"];
+  };
+  legacyRecordPaginator: {
+    first?: Scalars["number"];
+    last?: Scalars["number"];
+    after?: Scalars["string"];
+    before?: Scalars["string"];
+    sortBy?: Scalars["legacyRecordSortByKey"][];
+    sortDesc?: Scalars["boolean"][];
+    filterBy?: InputTypes["legacyRecordFilterByObject"][];
+    groupBy?: Scalars["legacyRecordGroupByKey"][];
+  };
+  createLegacyRecord: {
+    wcaEventId?: Scalars["string"] | null;
+    recordType: Scalars["number"];
+    numberOfSolves: Scalars["number"];
+    result: Scalars["number"];
+    otherEventName?: Scalars["string"] | null;
+    mainCube?: Scalars["string"] | null;
+    eventType: Scalars["number"];
+    date?: Scalars["unixTimestamp"] | null;
+    email: Scalars["string"];
+  };
+  updateLegacyRecordFields: {
+    wcaEventId?: Scalars["string"] | null;
+    recordType?: Scalars["number"];
+    numberOfSolves?: Scalars["number"];
+    result?: Scalars["number"];
+    otherEventName?: Scalars["string"] | null;
+    mainCube?: Scalars["string"] | null;
+    eventType?: Scalars["number"];
+    date?: Scalars["unixTimestamp"] | null;
+    email?: Scalars["string"];
+  };
+  updateLegacyRecord: {
+    item: InputTypes["legacyRecord"];
+    fields: InputTypes["updateLegacyRecordFields"];
+  };
   apiKey: { id?: Scalars["id"] };
   "apiKeyFilterByField/id": FilterByField<Scalars["id"]>;
   "apiKeyFilterByField/user.id": FilterByField<Scalars["id"]>;
@@ -439,6 +484,14 @@ export type FilterByField<T> = {
     Typename: "personalBestPaginator";
     Type: GetType<PersonalBestPaginator>;
   };
+  legacyRecordEdge: {
+    Typename: "legacyRecordEdge";
+    Type: GetType<LegacyRecordEdge>;
+  };
+  legacyRecordPaginator: {
+    Typename: "legacyRecordPaginator";
+    Type: GetType<LegacyRecordPaginator>;
+  };
   apiKeyEdge: { Typename: "apiKeyEdge"; Type: GetType<ApiKeyEdge> };
   apiKeyPaginator: {
     Typename: "apiKeyPaginator";
@@ -473,6 +526,7 @@ export type FilterByField<T> = {
     Type: GetType<PersonalBestClass>;
   };
   personalBest: { Typename: "personalBest"; Type: GetType<PersonalBest> };
+  legacyRecord: { Typename: "legacyRecord"; Type: GetType<LegacyRecord> };
   apiKey: { Typename: "apiKey"; Type: GetType<ApiKey> };
 };
 /**PaginatorInfo Type*/ export type PaginatorInfo = {
@@ -529,6 +583,15 @@ export type PersonalBestEdge = Edge<PersonalBest>;
   };
   paginatorInfo: { Type: PaginatorInfo; Args: undefined };
   edges: { Type: PersonalBestEdge[]; Args: undefined };
+};
+export type LegacyRecordEdge = Edge<LegacyRecord>;
+/**Paginator*/ export type LegacyRecordPaginator = {
+  /**The typename of the record*/ __typename: {
+    Type: Scalars["string"];
+    Args: [Scalars["number"]];
+  };
+  paginatorInfo: { Type: PaginatorInfo; Args: undefined };
+  edges: { Type: LegacyRecordEdge[]; Args: undefined };
 };
 export type ApiKeyEdge = Edge<ApiKey>;
 /**Paginator*/ export type ApiKeyPaginator = {
@@ -724,6 +787,31 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   };
   createdBy: { Type: User; Args: undefined };
 };
+/**Legacy Record*/ export type LegacyRecord = {
+  /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
+  /**The typename of the record*/ __typename: {
+    Type: Scalars["string"];
+    Args: [Scalars["number"]];
+  };
+  wcaEventId: { Type: Scalars["string"] | null; Args: undefined };
+  recordType: { Type: Scalars["number"]; Args: undefined };
+  numberOfSolves: { Type: Scalars["number"]; Args: undefined };
+  result: { Type: Scalars["number"]; Args: undefined };
+  otherEventName: { Type: Scalars["string"] | null; Args: undefined };
+  mainCube: { Type: Scalars["string"] | null; Args: undefined };
+  eventType: { Type: Scalars["number"]; Args: undefined };
+  date: { Type: Scalars["unixTimestamp"] | null; Args: undefined };
+  email: { Type: Scalars["string"]; Args: undefined };
+  /**When the record was created*/ createdAt: {
+    Type: Scalars["unixTimestamp"];
+    Args: undefined;
+  };
+  /**When the record was last updated*/ updatedAt: {
+    Type: Scalars["unixTimestamp"] | null;
+    Args: undefined;
+  };
+  createdBy: { Type: User; Args: undefined };
+};
 /**API Key Type*/ export type ApiKey = {
   /**The unique ID of the field*/ id: { Type: Scalars["id"]; Args: undefined };
   /**The typename of the record*/ __typename: {
@@ -810,6 +898,20 @@ export type UserUserFollowLinkEdge = Edge<UserUserFollowLink>;
   flagPersonalBest: {
     Type: PersonalBest;
     Args: InputTypes["flagPersonalBest"];
+  };
+  getLegacyRecord: { Type: LegacyRecord; Args: InputTypes["legacyRecord"] };
+  getLegacyRecordPaginator: {
+    Type: LegacyRecordPaginator;
+    Args: InputTypes["legacyRecordPaginator"];
+  };
+  deleteLegacyRecord: { Type: LegacyRecord; Args: InputTypes["legacyRecord"] };
+  createLegacyRecord: {
+    Type: LegacyRecord;
+    Args: InputTypes["createLegacyRecord"];
+  };
+  updateLegacyRecord: {
+    Type: LegacyRecord;
+    Args: InputTypes["updateLegacyRecord"];
   };
   getApiKey: { Type: ApiKey; Args: InputTypes["apiKey"] };
   getApiKeyPaginator: {
