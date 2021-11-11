@@ -13,6 +13,13 @@
       >
         <v-icon>mdi-share-variant</v-icon>
       </v-btn>
+      <v-btn
+        v-if="recordInfo.shareOptions && editable"
+        icon
+        @click="copyEmbedLink()"
+      >
+        <v-icon>mdi-code-tags</v-icon>
+      </v-btn>
       <v-btn icon @click="reset()">
         <v-icon>mdi-refresh</v-icon>
       </v-btn>
@@ -310,6 +317,25 @@ export default {
           },
         }).href
       copyToClipboard(this, shareUrl)
+    },
+
+    // links to a version of the page that can be embedded in an iframe
+    copyEmbedLink() {
+      const createdById = this.lockedFilters.find(
+        (ele) => ele.field === 'createdBy.id'
+      )?.value
+
+      if (!createdById) return
+
+      const embedUrl =
+        window.location.origin +
+        this.$router.resolve({
+          name: 'pb-card',
+          query: {
+            id: createdById,
+          },
+        }).href
+      copyToClipboard(this, embedUrl)
     },
 
     openAddRecordDialog(eventId, key) {
