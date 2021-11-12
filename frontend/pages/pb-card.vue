@@ -62,6 +62,11 @@ export default {
           operator: 'eq',
           value: this.$route.query.id,
         },
+        {
+          field: 'createdBy.isPublic',
+          operator: 'eq',
+          value: true,
+        },
       ]
     },
   },
@@ -81,11 +86,14 @@ export default {
         const data = await executeGiraffeql(this, {
           getUser: {
             id: true,
+            isPublic: true,
             __args: {
               id: this.$route.query.id,
             },
           },
         })
+
+        if (!data.isPublic) throw new Error('User not publicly visible')
 
         this.userId = data.id
       } catch (err) {
