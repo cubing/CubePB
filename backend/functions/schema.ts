@@ -1,8 +1,18 @@
 // Query builder (Typescript version >= 4.1.3 required)
-/* const queryResult = executeGiraffeql({
+const queryResult = executeGiraffeql({
   // Start typing here to get hints
-  
-}); */
+  getUser: {
+    id: true,
+    name: true,
+    createdBy: {
+      id: true,
+      name: true,
+    },
+    __args: {
+      id: 9,
+    },
+  },
+});
 
 export function executeGiraffeql<Key extends keyof Root>(
   query: GetQuery<Key>

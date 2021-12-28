@@ -46,14 +46,18 @@ export class PersonalBestService extends PaginatedService {
   groupByFieldsMap = {};
 
   accessControl: AccessControlMap = {
-    get: async ({ args, fieldPath }) => {
+    get: async ({ req, args, fieldPath }) => {
       // check the createdBy.isPublic to see if true
+      // OR if createdBy is current user
       const result = await this.lookupRecord(
-        ["createdBy.isPublic"],
+        ["createdBy.isPublic", "createdBy.id"],
         args,
         fieldPath
       );
-      return result["createdBy.isPublic"] === true;
+      return (
+        result["createdBy.isPublic"] === true ||
+        result["createdBy.id"] === req.user?.id
+      );
     },
 
     getMultiple: ({ req, args, query }) => {
